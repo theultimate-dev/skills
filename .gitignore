@@ -1,0 +1,12 @@
+# release artifacts
+dist/
+
+# tooling noise
+__pycache__/
+.DS_Store
+
+# local installs of this repo's own skills; never commit them
+skills-lock.json
+.agents/
+.claude/skills/
+.claude/settings.local.json
