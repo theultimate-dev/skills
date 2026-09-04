@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
+  "name": "theultimate-dev",
+  "description": "Agent skills Igor Wnek uses every day, grouped into categories. Open Agent Skills format.",
+  "owner": {
+    "name": "Igor Wnek",
+    "url": "https://theultimate.dev"
+  },
+  "metadata": {
+    "description": "The Ultimate Dev skills catalog",
+    "version": "0.0.0"
+  },
+  "plugins": [
+    {
+      "name": "foundations",
+      "description": "What every project needs regardless of stack: decision records that people and agents can read, and releases with a changelog and a tag on main.",
+      "version": "0.0.0",
+      "source": "./",
+      "strict": false,
+      "license": "MIT",
+      "homepage": "https://github.com/theultimate-dev/skills",
+      "keywords": ["decisions", "adr", "changelog", "release", "semver"],
+      "skills": [
+        "./skills/foundations/decision-records",
+        "./skills/foundations/release-process"
+      ]
+    }
+  ]
+}
