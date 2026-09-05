@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Collection</title>
+  <style>
+    /* Adapt structure and tokens to the brief. These values are a neutral starting point. */
+    :root {
+      color-scheme: light;
+      --font-body: system-ui, sans-serif;
+      --font-heading: var(--font-body);
+      --color-paper: #fafaf7;
+      --color-ink: #202722;
+      --color-muted: #515b54;
+      --color-accent: #24543c;
+      --space-1: .5rem;
+      --space-2: 1rem;
+      --space-3: 1.5rem;
+      --space-4: 2.5rem;
+      --measure: 65ch;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--color-paper); color: var(--color-ink); font: 1.0625rem/1.6 var(--font-body); }
+    a { color: var(--color-accent); text-underline-offset: .2em; }
+    :focus-visible { outline: 3px solid var(--color-accent); outline-offset: 4px; }
+    .skip-link { position: absolute; top: 0; left: var(--space-2); padding: var(--space-1); background: var(--color-paper); transform: translateY(-150%); }
+    .skip-link:focus { transform: translateY(0); }
+    .shell { width: min(100% - 2rem, 68rem); margin-inline: auto; }
+    header { padding-block: var(--space-3); border-bottom: 1px solid #a1aaa3; }
+    main { padding-block: var(--space-4); }
+    h1, h2, h3 { font-family: var(--font-heading); line-height: 1.2; overflow-wrap: anywhere; }
+    h1 { font-size: clamp(2rem, 5vw, 3.5rem); max-width: 20ch; margin: 0 0 var(--space-2); }
+    h2 { font-size: 1.5rem; margin: 0 0 var(--space-1); }
+    h3 { font-size: 1.25rem; margin: 0 0 var(--space-1); }
+    p { max-width: var(--measure); margin: 0 0 var(--space-2); }
+    .intro { color: var(--color-muted); }
+    section { margin-block-start: var(--space-4); }
+    article { padding-block: var(--space-3); border-top: 1px solid #a1aaa3; }
+    summary { cursor: pointer; padding-block: var(--space-1); color: var(--color-accent); }
+    details p { margin-block-start: var(--space-1); }
+    @media (max-width: 36rem) { :root { --space-4: 1.75rem; } }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="shell">Fieldnotes</header>
+  <main id="main" class="shell" tabindex="-1">
+    <h1>A place for useful ideas.</h1>
+    <p class="intro">Practical guides for noticing, learning, and making things.</p>
+    <section aria-labelledby="collection-heading">
+      <h2 id="collection-heading">Explore the collection</h2>
+      <article>
+        <h3>Keep a field journal</h3>
+        <p>A small habit for turning everyday observations into questions worth following.</p>
+        <details>
+          <summary>Read a short exercise</summary>
+          <p>Write down one thing you noticed today. Separate what you saw from what you think it means. Add a question you could investigate tomorrow.</p>
+        </details>
+      </article>
+    </section>
+  </main>
+</body>
+</html>

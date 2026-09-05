@@ -9,6 +9,36 @@ A skill is a set of instructions your agent follows with your permissions. Read 
 | Category | Skills | What it covers |
 |---|---|---|
 | `foundations` | [`decision-records`](skills/foundations/decision-records/SKILL.md) · [`release-process`](skills/foundations/release-process/SKILL.md) | What every project needs regardless of stack: a decision log that people and agents can read, and releases with a changelog and a tag on `main`. |
+| `product-design` | [`guiding-product-discovery`](skills/product-design/guiding-product-discovery/SKILL.md) · [`shaping-product-briefs`](skills/product-design/shaping-product-briefs/SKILL.md) · [`designing-ux-flows`](skills/product-design/designing-ux-flows/SKILL.md) · [`exploring-visual-directions`](skills/product-design/exploring-visual-directions/SKILL.md) · [`building-html-prototypes`](skills/product-design/building-html-prototypes/SKILL.md) · [`preparing-implementation-handoffs`](skills/product-design/preparing-implementation-handoffs/SKILL.md) | Rough ideas through product/design handoff: requirements, UX, contrasting visual sketches, and refined offline HTML prototypes, with user decisions at milestones. |
+
+## From an idea to a design handoff
+
+Start with `guiding-product-discovery` for the whole workflow, or invoke any specialist with the context you already have. The coordinator works without subagents; the specialists work without the coordinator. Each skill includes its own references and templates.
+
+The usual sequence is a product brief, UX flows, visual direction briefs, three comparable HTML sketches, a selected and refined prototype, then a product/design handoff. You decide scope, choose a direction after viewing the sketches, and review readiness. Small features can combine documents and skip settled phases; proofs of concept focus on the question they need to answer.
+
+The skills inspect project instructions, existing technology, and design assets. You choose whether existing visual language should be preserved, evolved, or replaced. No production stack is prescribed. Each prototype opens as one offline HTML file with embedded CSS, required assets, and minimal JavaScript; font fallbacks and simulated behavior are documented. The handoff prepares engineering planning rather than claiming implementation or deployment is complete.
+
+Example requests (use the invocation syntax your agent supports):
+
+```text
+Use guiding-product-discovery to turn my rough idea for a learning journal
+into a product/design handoff. Start from this project's instructions.
+
+Use designing-ux-flows to work out filtering and empty-state recovery for
+our saved collection. Keep the existing design and agreed product scope.
+
+Use exploring-visual-directions to propose three contrasting directions
+for this brief, paying particular attention to typography and spacing.
+
+Use building-html-prototypes to render these three direction briefs as
+independent offline HTML sketches with the same content and task.
+
+Use preparing-implementation-handoffs to reconcile this brief, selected
+prototype, and feedback into a handoff for engineering planning.
+```
+
+Install the category with `claude plugin install product-design@theultimate-dev` after adding the marketplace, or `npx skills add theultimate-dev/skills/skills/product-design`. The routes below explain setup and updates.
 
 ## Install
 

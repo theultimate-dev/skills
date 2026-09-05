@@ -9,5 +9,6 @@ Short records of the decisions that shape this repository. Read this index first
 | [0003](0003-categories-as-directories.md) | Categories are directories: `skills/<category>/<skill>/` | accepted | A category is the install unit and the plugin name. One skill, one category. Skill names unique repo-wide. |
 | [0004](0004-distribution-through-existing-installers.md) | Distribute through existing installers, no bespoke one | accepted | Plugin marketplace for Claude Code and Copilot, `npx skills` for everything else, zips on releases for GUI clients. |
 | [0005](0005-versioning-and-releases.md) | One version, hand-written changelog, releases from tags on `main` | accepted | Repo-wide SemVer, Conventional Commits, Keep a Changelog 2.0.0, GitHub Release built by an Action on tag push. |
+| [0006](0006-product-design-discovery-skills.md) | Package product discovery as independent skills with an optional coordinator | accepted | Six stack-neutral skills in `product-design`, from rough idea to product/design handoff, with user milestones and offline HTML prototypes. |
 
 Statuses: `proposed` (under discussion), `accepted` (in force), `deprecated` (no longer applies and nothing replaces it), `superseded` (replaced by a newer record; both records link to each other).

@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Saved guides — Fieldnotes</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --font-reading: Georgia, 'Times New Roman', serif;
+      --font-ui: system-ui, sans-serif;
+      --paper: #f5f3e9;
+      --ink: #202c26;
+      --muted: #526057;
+      --accent: #205d42;
+      --line: #87978b;
+      --space-xs: .5rem;
+      --space-sm: .75rem;
+      --space-md: 1rem;
+      --space-lg: 1.5rem;
+      --space-xl: 2.5rem;
+      --space-2xl: 4rem;
+    }
+    * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+    body { margin: 0; background: var(--paper); color: var(--ink); font: 1rem/1.6 var(--font-ui); }
+    a { color: var(--accent); text-underline-offset: .2em; }
+    :focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; }
+    .skip-link { position: absolute; left: var(--space-md); top: 0; padding: var(--space-sm); background: var(--paper); transform: translateY(-150%); }
+    .skip-link:focus { transform: translateY(0); }
+    .shell { width: min(100% - 2.5rem, 70rem); margin-inline: auto; }
+    header { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-md); justify-content: space-between; padding-block: var(--space-lg); border-bottom: 1px solid var(--line); }
+    .brand { font-weight: 750; letter-spacing: .04em; }
+    .edition { color: var(--muted); }
+    main { padding-block: var(--space-2xl); }
+    .intro { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: var(--space-xl); align-items: end; margin-bottom: var(--space-xl); }
+    h1 { font: 400 clamp(2.6rem, 6vw, 4.75rem)/1.08 var(--font-reading); letter-spacing: -.035em; margin: 0 0 var(--space-md); overflow-wrap: anywhere; }
+    h2 { font: 400 1.6rem/1.25 var(--font-reading); margin: 0 0 var(--space-sm); overflow-wrap: anywhere; }
+    p { margin: 0 0 var(--space-md); max-width: 65ch; }
+    .lede { font: 1.125rem/1.65 var(--font-reading); max-width: 44ch; }
+    .aside { color: var(--muted); }
+    .toolbar { display: flex; flex-wrap: wrap; align-items: end; gap: var(--space-md); border-block: 1px solid var(--line); padding-block: var(--space-lg); }
+    .field { display: grid; gap: var(--space-xs); min-width: 0; }
+    label { font-weight: 650; }
+    button, select { font: inherit; color: var(--ink); background: var(--paper); border: 1px solid var(--muted); border-radius: .25rem; padding: .65rem var(--space-md); min-height: 2.75rem; max-width: 100%; }
+    button { color: var(--paper); background: var(--accent); border-color: var(--accent); cursor: pointer; }
+    select { cursor: pointer; }
+    .count { color: var(--muted); margin: var(--space-lg) 0 var(--space-sm); }
+    .guides { list-style: none; margin: 0; padding: 0; }
+    .guide { display: grid; grid-template-columns: 9rem minmax(0, 1fr); gap: var(--space-lg); padding-block: var(--space-xl); border-bottom: 1px solid var(--line); }
+    .meta { color: var(--muted); }
+    .topic { display: block; font-weight: 650; }
+    .guide p { max-width: 62ch; }
+    summary { color: var(--accent); cursor: pointer; padding-block: var(--space-xs); width: fit-content; max-width: 100%; }
+    details[open] summary { margin-bottom: var(--space-sm); }
+    .empty { padding-block: var(--space-xl); }
+    footer { color: var(--muted); padding-block: var(--space-lg); }
+    @media (max-width: 42rem) {
+      :root { --space-2xl: 2.5rem; --space-xl: 1.75rem; }
+      .intro, .guide { grid-template-columns: minmax(0, 1fr); gap: var(--space-md); }
+      .topic { display: inline; margin-inline-end: var(--space-sm); }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to saved guides</a>
+  <header class="shell"><span class="brand">FIELDNOTES</span><span class="edition">A practice of paying attention</span></header>
+  <main id="main" class="shell" tabindex="-1">
+    <div class="intro">
+      <div><h1>Your saved guides.</h1><p class="lede">Good questions are worth returning to. Pick a thread and keep exploring.</p></div>
+      <p class="aside">A small collection of practical exercises for your next quiet hour.</p>
+    </div>
+    <div class="toolbar" id="filter-controls" hidden>
+      <div class="field"><label for="topic">Filter by topic</label><select id="topic"><option value="all">All topics</option><option value="writing">Writing</option><option value="research">Research</option><option value="making">Making</option></select></div>
+      <button type="button" id="clear" hidden>Clear filter</button>
+    </div>
+    <p class="count" id="result-count" role="status">3 saved guides</p>
+    <ul class="guides" id="guides" aria-label="Saved guides">
+      <li class="guide" data-topic="writing">
+        <div class="meta"><span class="topic">Writing</span><span>5 min</span></div>
+        <article><h2>Keep a field journal</h2><p>A small habit for turning everyday observations into questions worth following.</p><details><summary>Try the exercise</summary><p>Note one thing you saw today. Separate the observation from your interpretation, then write a question you could investigate tomorrow.</p></details></article>
+      </li>
+      <li class="guide" data-topic="research">
+        <div class="meta"><span class="topic">Research</span><span>8 min</span></div>
+        <article><h2>Observe before you interview</h2><p>Let the situation suggest better questions before you decide what to ask.</p><details><summary>Try the exercise</summary><p>Watch a familiar task being performed. Record the steps and interruptions without guessing motives. Turn one uncertainty into an open question.</p></details></article>
+      </li>
+      <li class="guide" data-topic="writing">
+        <div class="meta"><span class="topic">Writing</span><span>6 min</span></div>
+        <article><h2>Write a useful checklist for work you only do once in a while</h2><p>Help your future self remember the decisions that matter, without documenting every obvious step.</p><details><summary>Try the exercise</summary><p>Choose an occasional task. List the three omissions most likely to cause trouble, then write a short check for each. Try the list the next time the task occurs.</p></details></article>
+      </li>
+    </ul>
+    <section class="empty" id="empty" aria-labelledby="empty-heading" hidden><h2 id="empty-heading">No saved guides in this topic.</h2><p>Choose another topic or use Clear filter to return to your collection.</p></section>
+    <noscript><p>All saved guides are shown. Topic filtering requires JavaScript.</p></noscript>
+  </main>
+  <footer class="shell">Keep noticing. Leave room for a better question.</footer>
+  <script>
+    const topic = document.querySelector('#topic');
+    const clear = document.querySelector('#clear');
+    const guides = [...document.querySelectorAll('[data-topic]')];
+    const resultCount = document.querySelector('#result-count');
+    const empty = document.querySelector('#empty');
+    function updateResults() {
+      let count = 0;
+      for (const guide of guides) {
+        guide.hidden = topic.value !== 'all' && guide.dataset.topic !== topic.value;
+        if (!guide.hidden) count += 1;
+      }
+      resultCount.textContent = `${count} saved ${count === 1 ? 'guide' : 'guides'}`;
+      empty.hidden = count !== 0;
+      clear.hidden = topic.value === 'all';
+    }
+    topic.addEventListener('change', updateResults);
+    clear.addEventListener('click', () => {
+      topic.value = 'all';
+      topic.focus();
+      updateResults();
+    });
+    document.querySelector('#filter-controls').hidden = false;
+  </script>
+</body>
+</html>

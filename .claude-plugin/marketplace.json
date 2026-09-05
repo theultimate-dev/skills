@@ -24,6 +24,24 @@
         "./skills/foundations/decision-records",
         "./skills/foundations/release-process"
       ]
+    },
+    {
+      "name": "product-design",
+      "description": "From rough ideas to product/design handoffs: requirements, UX flows, visual directions, and independent offline HTML prototypes, with an optional discovery coordinator.",
+      "version": "0.0.0",
+      "source": "./",
+      "strict": false,
+      "license": "MIT",
+      "homepage": "https://github.com/theultimate-dev/skills",
+      "keywords": ["discovery", "requirements", "ux", "design", "prototypes", "handoff"],
+      "skills": [
+        "./skills/product-design/guiding-product-discovery",
+        "./skills/product-design/shaping-product-briefs",
+        "./skills/product-design/designing-ux-flows",
+        "./skills/product-design/exploring-visual-directions",
+        "./skills/product-design/building-html-prototypes",
+        "./skills/product-design/preparing-implementation-handoffs"
+      ]
     }
   ]
 }
