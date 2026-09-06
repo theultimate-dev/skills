@@ -1,0 +1,17 @@
+{
+  "result": "pass",
+  "head": "unborn; no commits created",
+  "test_command": "python3 -B test_logic.py",
+  "test_exit_code": 0,
+  "initial": "eb8ff00aeb69bf938049f13afd8ce8fc67b923bea719a84a550ab2c7b9fcce5f",
+  "untracked_changed": "2b953e112513349ed139dec22e53ba2dbb6c1824ed2b954207361e6eeec9b3c3",
+  "staged_changed": "88752d1cccacabd200c7eb3695fa18d4027c88f191f6cc6ee282b48ba219d3f6",
+  "restored": "eb8ff00aeb69bf938049f13afd8ce8fc67b923bea719a84a550ab2c7b9fcce5f",
+  "assertions": [
+    "captures index and worktree divergence",
+    "captures untracked test bytes",
+    "untracked mutation invalidates identity",
+    "index-only mutation invalidates identity despite unchanged worktree",
+    "restoration reproduces original identity"
+  ]
+}

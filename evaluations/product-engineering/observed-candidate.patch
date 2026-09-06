@@ -1,0 +1,143 @@
+--- a/app.py
++++ b/app.py
+@@ -30 +30 @@
+-            if record is None:
++            if record is None or record["owner"] != principal:
+@@ -49,0 +50,6 @@
++let requestGeneration = 0;
++principal.onchange = () => {
++  requestGeneration++;
++  title.value = '';
++  status.textContent = 'Choose a principal and load the record.';
++};
+@@ -50,0 +57 @@
++  const generation = ++requestGeneration;
+@@ -55,0 +63 @@
++    if (generation !== requestGeneration) return;
+@@ -59 +67,5 @@
+-  } catch (error) { status.textContent = error.message; }
++  } catch (error) {
++    if (generation !== requestGeneration) return;
++    if (method === 'GET') title.value = '';
++    status.textContent = error.message;
++  }
+--- a/test_app.py
++++ b/test_app.py
+@@ -0,0 +1 @@
++import json
+@@ -1,0 +3 @@
++import threading
+@@ -2,0 +5,2 @@
++from http.client import HTTPConnection
++from http.server import ThreadingHTTPServer
+@@ -5 +9 @@
+-from app import Store
++from app import Store, make_handler
+@@ -8 +12,7 @@
+-class HappyPathTests(unittest.TestCase):
++class StoreBehaviorTests(unittest.TestCase):
++    def setUp(self):
++        self.directory = tempfile.TemporaryDirectory()
++        self.addCleanup(self.directory.cleanup)
++        self.path = Path(self.directory.name) / 'records.json'
++        self.store = Store(self.path)
++
+@@ -10,5 +20,31 @@
+-        with tempfile.TemporaryDirectory() as directory:
+-            path = Path(directory) / "records.json"
+-            store = Store(path)
+-            store.update("alice", "1", "Updated note")
+-            self.assertEqual(Store(path).read("alice", "1")["title"], "Updated note")
++        self.store.update('alice', '1', 'Updated note')
++        self.assertEqual(Store(self.path).read('alice', '1')['title'], 'Updated note')
++
++    def test_denied_read_does_not_expose_record(self):
++        for principal in ('bob', ''):
++            with self.subTest(principal=principal), self.assertRaises(PermissionError):
++                self.store.read(principal, '1')
++
++    def test_denied_update_leaves_exact_stored_data_unchanged(self):
++        before = self.path.read_bytes()
++        for principal in ('bob', ''):
++            with self.subTest(principal=principal):
++                with self.assertRaises(PermissionError):
++                    self.store.update(principal, '1', 'Unauthorized replacement')
++                self.assertEqual(self.path.read_bytes(), before)
++                self.assertEqual(Store(self.path).read('alice', '1')['title'], 'First note')
++
++    def test_missing_record_is_unavailable(self):
++        before = self.path.read_bytes()
++        for method in (lambda: self.store.read('alice', 'missing'),
++                       lambda: self.store.update('alice', 'missing', 'New title')):
++            with self.assertRaises(PermissionError):
++                method()
++        self.assertEqual(self.path.read_bytes(), before)
++
++    def test_invalid_title_preserves_data(self):
++        before = self.path.read_bytes()
++        for title in ('', '  ', None, 5):
++            with self.subTest(title=title), self.assertRaises(ValueError):
++                self.store.update('alice', '1', title)
++            self.assertEqual(self.path.read_bytes(), before)
+@@ -17 +53,60 @@
+-if __name__ == "__main__":
++class HTTPBehaviorTests(unittest.TestCase):
++    def setUp(self):
++        self.directory = tempfile.TemporaryDirectory()
++        self.addCleanup(self.directory.cleanup)
++        self.path = Path(self.directory.name) / 'records.json'
++        self.start_server()
++        self.addCleanup(self.stop_server)
++
++    def start_server(self):
++        self.server = ThreadingHTTPServer(('127.0.0.1', 0), make_handler(Store(self.path)))
++        self.thread = threading.Thread(target=self.server.serve_forever, daemon=True)
++        self.thread.start()
++
++    def stop_server(self):
++        self.server.shutdown()
++        self.server.server_close()
++        self.thread.join(timeout=3)
++
++    def request(self, method, principal, body=None):
++        connection = HTTPConnection('127.0.0.1', self.server.server_port, timeout=3)
++        try:
++            headers = {'Content-Type': 'application/json'}
++            if principal is not None:
++                headers['X-Principal'] = principal
++            connection.request(method, '/records/1',
++                               body=None if body is None else json.dumps(body), headers=headers)
++            response = connection.getresponse()
++            return response.status, json.loads(response.read())
++        finally:
++            connection.close()
++
++    def test_save_read_and_restart_use_real_disk(self):
++        self.assertEqual(self.request('PUT', 'alice', {'title': 'Persisted via HTTP'}),
++                         (200, {'owner': 'alice', 'title': 'Persisted via HTTP'}))
++        self.stop_server()
++        self.start_server()
++        self.assertEqual(self.request('GET', 'alice'),
++                         (200, {'owner': 'alice', 'title': 'Persisted via HTTP'}))
++
++    def test_denied_reads_and_updates_preserve_disk_and_owner_read(self):
++        self.assertEqual(self.request('PUT', 'alice', {'title': 'Owner value'})[0], 200)
++        before = self.path.read_bytes()
++        for principal in ('bob', None):
++            for method, body in (('GET', None), ('PUT', {'title': 'Forbidden'})):
++                with self.subTest(principal=principal, method=method):
++                    status, payload = self.request(method, principal, body)
++                    self.assertEqual(status, 403)
++                    self.assertEqual(payload, {'error': 'Record unavailable'})
++                    self.assertEqual(self.path.read_bytes(), before)
++                    self.assertEqual(self.request('GET', 'alice')[1]['title'], 'Owner value')
++
++    def test_invalid_input_returns_feedback_without_mutation(self):
++        before = self.path.read_bytes()
++        status, payload = self.request('PUT', 'alice', {'title': ' '})
++        self.assertEqual(status, 400)
++        self.assertEqual(payload, {'error': 'Title is required'})
++        self.assertEqual(self.path.read_bytes(), before)
++
++
++if __name__ == '__main__':

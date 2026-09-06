@@ -1,0 +1,13 @@
+test_denied_reads_and_updates_preserve_disk_and_owner_read (test_app.HTTPBehaviorTests.test_denied_reads_and_updates_preserve_disk_and_owner_read) ... ok
+test_invalid_input_returns_feedback_without_mutation (test_app.HTTPBehaviorTests.test_invalid_input_returns_feedback_without_mutation) ... ok
+test_save_read_and_restart_use_real_disk (test_app.HTTPBehaviorTests.test_save_read_and_restart_use_real_disk) ... ok
+test_denied_read_does_not_expose_record (test_app.StoreBehaviorTests.test_denied_read_does_not_expose_record) ... ok
+test_denied_update_leaves_exact_stored_data_unchanged (test_app.StoreBehaviorTests.test_denied_update_leaves_exact_stored_data_unchanged) ... ok
+test_invalid_title_preserves_data (test_app.StoreBehaviorTests.test_invalid_title_preserves_data) ... ok
+test_missing_record_is_unavailable (test_app.StoreBehaviorTests.test_missing_record_is_unavailable) ... ok
+test_owner_update_survives_reopen (test_app.StoreBehaviorTests.test_owner_update_survives_reopen) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 2.110s
+
+OK

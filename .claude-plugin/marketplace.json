@@ -42,6 +42,26 @@
         "./skills/product-design/building-html-prototypes",
         "./skills/product-design/preparing-implementation-handoffs"
       ]
+    },
+    {
+      "name": "product-engineering",
+      "description": "From agreed architecture to a verified pull request: bounded implementation, runtime capability routing, meaningful tests, review and repair, and durable worklogs.",
+      "version": "0.0.0",
+      "source": "./",
+      "strict": false,
+      "license": "MIT",
+      "homepage": "https://github.com/theultimate-dev/skills",
+      "keywords": ["engineering", "implementation", "verification", "review", "agents", "pull-requests"],
+      "skills": [
+        "./skills/product-engineering/running-implementation-loops",
+        "./skills/product-engineering/preparing-engineering-specs",
+        "./skills/product-engineering/planning-implementation",
+        "./skills/product-engineering/implementing-work-packages",
+        "./skills/product-engineering/verifying-implementation",
+        "./skills/product-engineering/reviewing-code-changes",
+        "./skills/product-engineering/recording-worklogs",
+        "./skills/product-engineering/preparing-pull-requests"
+      ]
     }
   ]
 }

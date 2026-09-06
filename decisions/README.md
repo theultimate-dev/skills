@@ -10,5 +10,6 @@ Short records of the decisions that shape this repository. Read this index first
 | [0004](0004-distribution-through-existing-installers.md) | Distribute through existing installers, no bespoke one | accepted | Plugin marketplace for Claude Code and Copilot, `npx skills` for everything else, zips on releases for GUI clients. |
 | [0005](0005-versioning-and-releases.md) | One version, hand-written changelog, releases from tags on `main` | accepted | Repo-wide SemVer, Conventional Commits, Keep a Changelog 2.0.0, GitHub Release built by an Action on tag push. |
 | [0006](0006-product-design-discovery-skills.md) | Package product discovery as independent skills with an optional coordinator | accepted | Six stack-neutral skills in `product-design`, from rough idea to product/design handoff, with user milestones and offline HTML prototypes. |
+| [0007](0007-product-engineering-loop.md) | Package engineering delivery as a verified implementation loop | accepted | Eight skills in `product-engineering`, from architecture agreement through bounded implementation, evidence-based repair, and an open PR; runtime capability routing and compact artifacts. |
 
 Statuses: `proposed` (under discussion), `accepted` (in force), `deprecated` (no longer applies and nothing replaces it), `superseded` (replaced by a newer record; both records link to each other).

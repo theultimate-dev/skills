@@ -1,0 +1,10 @@
+{
+  "app.py": {
+    "baseline": "272df9f5dec3353b3c8a74dc116ba96ce02d5bd1c63db19b518181994809f3b3",
+    "candidate": "9998aba34ae779616b79b0e357786f9d51d560d385037eed054238b83cf5e413"
+  },
+  "test_app.py": {
+    "baseline": "7d5f107122b75e3973e7e44fc5f35f8804c084b5816cddbf42166c303d359199",
+    "candidate": "6247828c56344e861de5bcf007f4eac228cdf4adcb91e834cbc04d15887eeaa9"
+  }
+}

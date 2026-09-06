@@ -1,0 +1,25 @@
+[
+  {
+    "case": "partial-write retry",
+    "response": "Done",
+    "result": "pass",
+    "evidence": "logs/interrupted.md",
+    "event_E2_count": 1,
+    "checkpoint": "E2"
+  },
+  {
+    "case": "retry after later checkpoint",
+    "response": "Done",
+    "result": "pass",
+    "evidence": "logs/newer.md",
+    "checkpoint": "E3",
+    "byte_identical": true
+  },
+  {
+    "case": "conflicting predecessor",
+    "response": "Conflict: checkpoint E9 does not match expected E1 and has no established supersession.",
+    "result": "pass",
+    "evidence": "logs/conflicting.md",
+    "byte_identical": true
+  }
+]

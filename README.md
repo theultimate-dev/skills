@@ -10,6 +10,7 @@ A skill is a set of instructions your agent follows with your permissions. Read 
 |---|---|---|
 | `foundations` | [`decision-records`](skills/foundations/decision-records/SKILL.md) · [`release-process`](skills/foundations/release-process/SKILL.md) | What every project needs regardless of stack: a decision log that people and agents can read, and releases with a changelog and a tag on `main`. |
 | `product-design` | [`guiding-product-discovery`](skills/product-design/guiding-product-discovery/SKILL.md) · [`shaping-product-briefs`](skills/product-design/shaping-product-briefs/SKILL.md) · [`designing-ux-flows`](skills/product-design/designing-ux-flows/SKILL.md) · [`exploring-visual-directions`](skills/product-design/exploring-visual-directions/SKILL.md) · [`building-html-prototypes`](skills/product-design/building-html-prototypes/SKILL.md) · [`preparing-implementation-handoffs`](skills/product-design/preparing-implementation-handoffs/SKILL.md) | Rough ideas through product/design handoff: requirements, UX, contrasting visual sketches, and refined offline HTML prototypes, with user decisions at milestones. |
+| `product-engineering` | [`running-implementation-loops`](skills/product-engineering/running-implementation-loops/SKILL.md) · [`preparing-engineering-specs`](skills/product-engineering/preparing-engineering-specs/SKILL.md) · [`planning-implementation`](skills/product-engineering/planning-implementation/SKILL.md) · [`implementing-work-packages`](skills/product-engineering/implementing-work-packages/SKILL.md) · [`verifying-implementation`](skills/product-engineering/verifying-implementation/SKILL.md) · [`reviewing-code-changes`](skills/product-engineering/reviewing-code-changes/SKILL.md) · [`recording-worklogs`](skills/product-engineering/recording-worklogs/SKILL.md) · [`preparing-pull-requests`](skills/product-engineering/preparing-pull-requests/SKILL.md) | Agreed architecture through a verified PR: bounded implementation, model-tier routing, meaningful tests, review and repair, and resumable evidence. |
 
 ## From an idea to a design handoff
 
@@ -39,6 +40,30 @@ prototype, and feedback into a handoff for engineering planning.
 ```
 
 Install the category with `claude plugin install product-design@theultimate-dev` after adding the marketplace, or `npx skills add theultimate-dev/skills/skills/product-design`. The routes below explain setup and updates.
+
+## From a design handoff to a verified PR
+
+Start with `running-implementation-loops` for the whole engineering workflow. It consumes the product-design handoff or equivalent requirements, inspects the code, and prepares consequential architecture choices for your agreement. Within that baseline, it coordinates implementation packages, tests, independent review where supported, defect repair, integration, and an open PR within your authorization.
+
+The loop plans verification before coding. Unit, integration, and critical E2E checks cover the behavior and boundaries that matter; reviewers examine tests as well as code. Confirmed actionable defects are repaired at every priority. Combined changes receive aggregate verification, and evidence records the revision actually checked. Missing mandatory checks remain blockers.
+
+Agents and model tiers are discovered from the host, with reasoning effort chosen separately from change risk. No model or custom agent names are hardcoded. Hosts without these controls run with explicit limitations. A factual worklog supports resumption, and small tasks can combine specification, plan, review, and evidence sections in one document.
+
+Install with `claude plugin install product-engineering@theultimate-dev` after marketplace setup, or `npx skills add theultimate-dev/skills/skills/product-engineering`. Invoke only the coordinator for the complete loop; each specialist also works on its own. Publication follows the project's permissions, and merge, release, and deployment remain separate.
+
+```text
+Use running-implementation-loops with this product/design handoff.
+Work out the consequential architecture choices with me, then implement
+and verify the agreed scope. Prepare a PR for my review.
+
+Use reviewing-code-changes to review this package against its plan,
+including test quality. Record findings and verify the subsequent fixes.
+
+Use verifying-implementation to challenge this test strategy before
+coding, then record acceptance evidence against the implemented revision.
+```
+
+The [evaluation exercises](evaluations/product-engineering/README.md) describe isolated behavioral trials and their observed limits.
 
 ## Install
 
