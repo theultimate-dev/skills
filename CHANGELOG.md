@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Implementation lifecycle diagrams and operating guidance in the product-engineering evaluation README, covering architecture agreement, package repair loops, evidence, recovery, and PR handoff.
 - `product-engineering` category with eight skills for a single-entry implementation loop: technical specifications and architecture agreement, work-package planning, implementation, verification, code review and repair, factual worklogs, and pull request delivery. Includes runtime model-tier routing, portable delegation packets, compact evidence artifacts, and behavioral evaluation scenarios.
 - `product-design` category with six stack-neutral skills for guided discovery, product briefs, UX flows, visual direction exploration, offline HTML prototypes, and product/design handoffs. Includes copyable templates, fictional worked examples, typography and spacing guidance, and checkpoints for user decisions.
 - `foundations` category with two skills: `decision-records` keeps a project's decision log, `release-process` keeps its changelog and cuts tagged releases.
