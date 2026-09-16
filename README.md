@@ -11,6 +11,7 @@ A skill is a set of instructions your agent follows with your permissions. Read 
 | `foundations` | [`decision-records`](skills/foundations/decision-records/SKILL.md) · [`release-process`](skills/foundations/release-process/SKILL.md) | What every project needs regardless of stack: a decision log that people and agents can read, and releases with a changelog and a tag on `main`. |
 | `product-design` | [`guiding-product-discovery`](skills/product-design/guiding-product-discovery/SKILL.md) · [`shaping-product-briefs`](skills/product-design/shaping-product-briefs/SKILL.md) · [`designing-ux-flows`](skills/product-design/designing-ux-flows/SKILL.md) · [`exploring-visual-directions`](skills/product-design/exploring-visual-directions/SKILL.md) · [`building-html-prototypes`](skills/product-design/building-html-prototypes/SKILL.md) · [`preparing-implementation-handoffs`](skills/product-design/preparing-implementation-handoffs/SKILL.md) | Rough ideas through product/design handoff: requirements, UX, contrasting visual sketches, and refined offline HTML prototypes, with user decisions at milestones. |
 | `product-engineering` | [`running-implementation-loops`](skills/product-engineering/running-implementation-loops/SKILL.md) · [`preparing-engineering-specs`](skills/product-engineering/preparing-engineering-specs/SKILL.md) · [`planning-implementation`](skills/product-engineering/planning-implementation/SKILL.md) · [`implementing-work-packages`](skills/product-engineering/implementing-work-packages/SKILL.md) · [`verifying-implementation`](skills/product-engineering/verifying-implementation/SKILL.md) · [`reviewing-code-changes`](skills/product-engineering/reviewing-code-changes/SKILL.md) · [`recording-worklogs`](skills/product-engineering/recording-worklogs/SKILL.md) · [`preparing-pull-requests`](skills/product-engineering/preparing-pull-requests/SKILL.md) | Agreed architecture through a verified PR: bounded implementation, model-tier routing, meaningful tests, review and repair, and resumable evidence. |
+| `prompt-engineering` | [`improving-prompts`](skills/prompt-engineering/improving-prompts/SKILL.md) | A rough prompt to an engineered one: destination and gap diagnosis, a technique catalog with apply and reject criteria, dated model-family notes, and a copy-paste-ready result with the reasoning behind it. |
 
 ## From an idea to a design handoff
 
@@ -64,6 +65,25 @@ coding, then record acceptance evidence against the implemented revision.
 ```
 
 The [evaluation exercises](evaluations/product-engineering/README.md) describe isolated behavioral trials and their observed limits.
+
+## From a rough prompt to an engineered one
+
+Hand `improving-prompts` the prompt you were about to send, in any language, for any model or harness. It works out where the prompt will run, diagnoses what is missing or in the way, and applies only the prompt and context engineering techniques that close those gaps. Missing facts become marked placeholders rather than invented details, and the skill never stops to ask questions, so it also works in non-interactive runs.
+
+The reply is a short report and the prompt itself: the techniques applied and why, the techniques considered and rejected and why, the placeholders to fill, settings that belong outside the prompt text, and the enhanced prompt inside an `enhanced_prompt` tag, ready to copy. Name the target model to get the dated model-family adjustments; leave it out to get a neutral prompt.
+
+Install with `claude plugin install prompt-engineering@theultimate-dev` after marketplace setup, or `npx skills add theultimate-dev/skills/skills/prompt-engineering`.
+
+```text
+Use improving-prompts on this prompt: "write a blog post about our new
+export feature"
+
+Use improving-prompts on the task below. It will run unattended in a
+coding agent with the test suite available.
+
+Use improving-prompts to turn this draft into a system prompt for a
+support assistant that reads customer emails. Target Claude Opus 5.
+```
 
 ## Install
 

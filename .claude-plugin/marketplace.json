@@ -62,6 +62,19 @@
         "./skills/product-engineering/recording-worklogs",
         "./skills/product-engineering/preparing-pull-requests"
       ]
+    },
+    {
+      "name": "prompt-engineering",
+      "description": "From a rough prompt to an engineered one: destination and gap diagnosis, a catalog of prompt and context engineering techniques with apply and reject criteria, dated model-family notes, and a copy-paste-ready result with the reasoning behind it.",
+      "version": "0.0.0",
+      "source": "./",
+      "strict": false,
+      "license": "MIT",
+      "homepage": "https://github.com/theultimate-dev/skills",
+      "keywords": ["prompts", "prompt-engineering", "context-engineering", "system-prompts", "agents"],
+      "skills": [
+        "./skills/prompt-engineering/improving-prompts"
+      ]
     }
   ]
 }
