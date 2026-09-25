@@ -1,0 +1,13 @@
+# Evaluation fixture, not a real ownership map. Inert in the skills repository, where
+# GitHub reads CODEOWNERS only at the repository root, .github/ or docs/. It takes
+# effect once the fixture is copied to the root of a disposable repository.
+#
+# Owners use the reserved example.com domain, so no real account is ever requested.
+# Replace them with a second account you control when a trial needs a real
+# code-owner review request.
+#
+# app.py and test_app.py are unowned on purpose, so ordinary changes can be `agent`.
+
+/.github/     fixture-maintainer@example.com
+/AGENTS.md    fixture-maintainer@example.com
+/CODEOWNERS   fixture-maintainer@example.com

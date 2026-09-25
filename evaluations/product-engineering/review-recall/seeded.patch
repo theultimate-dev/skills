@@ -1,0 +1,244 @@
+Seeded defects for the review-recall trial of reviewing-code-changes: one per lens.
+Hidden from the reviewing agent. Apply to a copy of ../fixture with:
+  patch -p1 -i <absolute path to this file>
+The patch tools ignore these lines before the first diff.
+
+diff --git a/app.py b/app.py
+index e159a88..6b1b76d 100644
+--- a/app.py
++++ b/app.py
+@@ -2,14 +2,17 @@
+ 
+ import argparse
+ import json
++from datetime import datetime
+ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+ from pathlib import Path
+ from threading import Lock
++from urllib.parse import unquote
+ 
+ 
+ class Store:
+     def __init__(self, path):
+         self.path = Path(path)
++        self.attachments = self.path.parent / "attachments"
+         self.lock = Lock()
+         if not self.path.exists():
+             self.path.write_text(json.dumps({"1": {"owner": "alice", "title": "First note"}}))
+@@ -30,9 +33,23 @@ class Store:
+             if record is None:
+                 raise PermissionError("Record unavailable")
+             record["title"] = title
++            record["updated_at"] = datetime.utcnow().isoformat()
+             self.path.write_text(json.dumps(records))
+             return dict(record)
+ 
++    def list_for(self, principal):
++        with self.lock:
++            records = json.loads(self.path.read_text())
++        summaries = []
++        for record_id, record in records.items():
++            if record["owner"] != principal:
++                continue
++            if any(summary["id"] == record_id for summary in summaries):
++                continue
++            summaries.append({"id": record_id, "title": record["title"],
++                              "updated_at": record.get("updated_at")})
++        return summaries
++
+ 
+ HTML = b'''<!doctype html>
+ <html lang="en"><meta charset="utf-8"><title>Saved record fixture</title>
+@@ -76,6 +93,13 @@ def make_handler(store):
+             self.end_headers()
+             self.wfile.write(data)
+ 
++        def send_file(self, data):
++            self.send_response(200)
++            self.send_header("Content-Type", "application/octet-stream")
++            self.send_header("Content-Length", str(len(data)))
++            self.end_headers()
++            self.wfile.write(data)
++
+         def do_GET(self):
+             if self.path == "/":
+                 self.send_response(200)
+@@ -84,6 +108,29 @@ def make_handler(store):
+                 self.end_headers()
+                 self.wfile.write(HTML)
+                 return
++            principal = self.headers.get("X-Principal", "")
++            if self.path == "/records":
++                self.reply(200, store.list_for(principal))
++                return
++            if self.path == "/records/export":
++                records = json.loads(store.path.read_text())
++                self.reply(200, {record_id: record for record_id, record in records.items()
++                                 if record["owner"] == principal})
++                return
++            if self.path.startswith("/records/1/attachments/"):
++                try:
++                    store.read(principal, "1")
++                except PermissionError as error:
++                    self.reply(403, {"error": str(error)})
++                    return
++                name = unquote(self.path[len("/records/1/attachments/"):])
++                try:
++                    data = (store.attachments / "1" / name).read_bytes()
++                except OSError:
++                    self.reply(404, {"error": "Not found"})
++                    return
++                self.send_file(data)
++                return
+             if self.path != "/records/1":
+                 self.reply(404, {"error": "Not found"})
+                 return
+diff --git a/docs/product-engineering/records-overview/spec.md b/docs/product-engineering/records-overview/spec.md
+new file mode 100644
+index 0000000..c354ad2
+--- /dev/null
++++ b/docs/product-engineering/records-overview/spec.md
+@@ -0,0 +1,71 @@
++# Spec: Records overview
++Status: agreed (G1, 2026-09-25)
++
++Track: small change
++
++## Problem
++
++A principal can open one record at a time. They cannot see which records they own, fetch the files attached to a record, or take their data with them.
++
++## Requirements
++
++- R1: A principal can list their own records with the time each was last saved.
++- R2: A principal can download the files attached to their own record.
++- R3: A principal can export their own records, through the API and from the page.
++
++## Acceptance criteria
++
++- AC1 (R1): `GET /records` as `alice` returns 200 and a JSON array with one object per record she owns, each with `id`, `title` and `updated_at`. No record owned by another principal appears.
++- AC2 (R1): After `alice` saves record 1, `GET /records` shows an `updated_at` for it that is no earlier than the save.
++- AC3 (R2): With `attachments/1/notes.txt` stored beside the data file, `GET /records/1/attachments/notes.txt` as `alice` returns 200 and exactly that file's bytes.
++- AC4 (R2): The same request as `bob` returns 403 and none of the file's bytes.
++- AC5 (R3): `GET /records/export` as `alice` returns 200 and a JSON object keyed by record ID that holds only her records.
++- AC6 (R3): The page shows an "Export my records" link. As `alice`, following it downloads the same JSON as AC5.
++
++## Non-goals
++
++- Uploading, renaming or deleting attachments.
++- Sharing records between principals.
++
++## Constraints
++
++- Standard library only. No new dependencies.
++- After the legacy archive import, one principal can own up to 50,000 records.
++- The simulated `X-Principal` header stays the identity mechanism.
++
++## Assumptions and open questions
++
++- An operator places attachment files on disk. The service only serves them.
++
++## Approach
++
++Extend `Store` with the new queries. `Store` stays the only code that reads or writes the data file, under its lock. Handlers parse the request, call `Store`, and format the response. Attachments are files under `attachments/<record id>/` beside the data file.
++
++G2: agreed 2026-09-25, "Go with extending Store."
++
++## Verification
++
++| AC | Check | Layer | Tool | Steps | Pass condition |
++|---|---|---|---|---|---|
++| AC1 | List own records | api | HTTP client (curl) | 1. Start the app on a fresh data file. 2. `GET /records` as `alice`, then as `bob` | `alice` gets one object for record 1 with `id`, `title`, `updated_at`; `bob` gets `[]` |
++| AC2 | Save time recorded | api | HTTP client (curl) | 1. Note the time. 2. `PUT /records/1` as `alice` with a unique title. 3. `GET /records` as `alice` | Record 1 shows the unique title and an `updated_at` no earlier than step 1 |
++| AC3 | Owner downloads attachment | api | HTTP client (curl) | 1. Write `attachments/1/notes.txt` beside the data file. 2. `GET /records/1/attachments/notes.txt` as `alice` | 200 and the file's exact bytes |
++| AC4 | Other principal denied | api | HTTP client (curl) | Same request as `bob` | 403 and no file bytes in the body |
++| AC5 | Export own records | api | HTTP client (curl) | `GET /records/export` as `alice` | 200 and an object whose only key is `1` |
++| AC6 | Export from the page | e2e | browser (Playwright MCP) | 1. Open `/` as `alice`. 2. Follow "Export my records" | The download holds the same JSON as AC5 |
++
++Automated checks: `python3 -m unittest discover -p 'test_*.py' -v`
++
++G3: agreed 2026-09-25, "Fine."
++
++## Plan
++
++PR slice: one PR · Predicted category: agent: read-only endpoints, no listed area · Branch: feat/records-overview
++Tasks:
++1. Tests for AC1 to AC5 over real loopback HTTP
++2. `Store.list_for` and `updated_at` on save
++3. Handlers for `/records`, `/records/export`, `/records/1/attachments/<name>`
++4. "Export my records" link on the page
++Files: app.py, test_app.py
++ACs: AC1, AC2, AC3, AC4, AC5, AC6 (all pass in this PR)
++Autonomy contract (2026-09-25): commit and push "yes"; open PR "yes"; merge if agent category "not authorized"; merge method squash; base main; deploy-on-merge yes, "not authorized"; stop and ask when: the escalation triggers
+diff --git a/test_app.py b/test_app.py
+index 86a6977..0df4572 100644
+--- a/test_app.py
++++ b/test_app.py
+@@ -1,8 +1,12 @@
++import json
+ import tempfile
++import threading
+ import unittest
++from http.client import HTTPConnection
++from http.server import ThreadingHTTPServer
+ from pathlib import Path
+ 
+-from app import Store
++from app import Store, make_handler
+ 
+ 
+ class HappyPathTests(unittest.TestCase):
+@@ -14,5 +18,53 @@ class HappyPathTests(unittest.TestCase):
+             self.assertEqual(Store(path).read("alice", "1")["title"], "Updated note")
+ 
+ 
++class OverviewTests(unittest.TestCase):
++    def setUp(self):
++        directory = tempfile.TemporaryDirectory()
++        self.addCleanup(directory.cleanup)
++        self.store = Store(Path(directory.name) / "records.json")
++        attachment = self.store.attachments / "1" / "notes.txt"
++        attachment.parent.mkdir(parents=True)
++        attachment.write_bytes(b"attached notes")
++        self.server = ThreadingHTTPServer(("127.0.0.1", 0), make_handler(self.store))
++        thread = threading.Thread(target=self.server.serve_forever, daemon=True)
++        thread.start()
++        self.addCleanup(thread.join, 5)
++        self.addCleanup(self.server.server_close)
++        self.addCleanup(self.server.shutdown)
++
++    def get(self, path, principal):
++        connection = HTTPConnection("127.0.0.1", self.server.server_port, timeout=5)
++        try:
++            connection.request("GET", path, headers={"X-Principal": principal})
++            response = connection.getresponse()
++            return response.status, response.read()
++        finally:
++            connection.close()
++
++    def test_list_shows_own_records_with_save_time(self):
++        self.store.update("alice", "1", "Listed note")
++        status, body = self.get("/records", "alice")
++        self.assertEqual(status, 200)
++        [summary] = json.loads(body)
++        self.assertEqual((summary["id"], summary["title"]), ("1", "Listed note"))
++        self.assertIsNotNone(summary["updated_at"])
++        self.assertEqual(json.loads(self.get("/records", "bob")[1]), [])
++
++    def test_owner_downloads_attachment(self):
++        self.assertEqual(self.get("/records/1/attachments/notes.txt", "alice"),
++                         (200, b"attached notes"))
++
++    def test_other_principal_cannot_download_attachment(self):
++        status, body = self.get("/records/1/attachments/notes.txt", "bob")
++        self.assertEqual(status, 403)
++        self.assertNotIn(b"attached notes", body)
++
++    def test_export_holds_only_own_records(self):
++        status, body = self.get("/records/export", "alice")
++        self.assertEqual(status, 200)
++        self.assertEqual(list(json.loads(body)), ["1"])
++
++
+ if __name__ == "__main__":
+     unittest.main()

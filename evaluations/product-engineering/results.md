@@ -1,5 +1,55 @@
 # Observed evaluation results
 
+> The first section records trials of the current nine-skill set. The sections after it cover the 2026-09-06 eight-skill set, which [decision 0009](../../decisions/0009-product-engineering-front-loaded-loop.md) superseded.
+
+## 2026-09-25: trials of the nine-skill loop
+
+Bounded trials of the rebuilt skills, run from Claude Code on macOS with Python 3.13.2. Every agent ran on Opus 5.5. Reviewers and the classifier had no access to this directory. These results come from one host and one trial each; they do not establish repeatability.
+
+### Scenario 7: full-review recall
+
+The coordinating agent followed `reviewing-code-changes` in full mode: it filled one [lens brief](../../skills/product-engineering/reviewing-code-changes/templates/lens-brief.md) per lens, pasted in the lens file, and launched five fresh-context agents in parallel on a fixture copy with [`seeded.patch`](review-recall/seeded.patch) applied (head `3b7963b`). Running code was allowed locally. Findings were graded against the [answer key](review-recall/answer-key.md).
+
+| Trial | P1 security | P2 efficiency | P3 conventions | P4 architecture | P5 intent | N1 | False positives | Noise | Verdict | Category flagged | Lens runs |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | found, blocking | found, blocking | found, blocking | found, blocking | found, blocking | reported (security, should-fix) | 0 | 1 | REQUEST CHANGES (from the confirmed blocking findings) | yes: the security lens says the PR is `human`, not the claimed `agent` | parallel agent ×5 |
+
+- Every planted defect was found by its owning lens and confirmed by execution:
+  - **P1:** traversal to another principal's attachment, to `records.json` and to `/etc/hosts`.
+  - **P2:** 41.3 s for `GET /records` at 50,000 records.
+  - **P3:** a DeprecationWarning, and a naive timestamp that fails AC2 on a UTC+2 host.
+  - **P4:** 342 of 1,200 exports failed under concurrent saves.
+  - **P5:** no export link on the page, and the report's missing AC6 row.
+- The lenses stayed in lane: each listed the other planted defects as left to the owning lens.
+- The intent lens found the same timestamp and export-lock defects through their effect on the ACs. Synthesis would deduplicate those into P3 and P4.
+- **Additional true findings:**
+  - the attachment path is built outside `Store`, against the Approach (architecture, should-fix);
+  - two weak tests, shown by surviving mutations (intent, should-fix).
+- **Noise:** one `unconfirmed` question about streaming large attachments.
+- **Not exercised in this trial:** synthesis, posting, and delta rounds.
+
+### Scenario 1: track classification
+
+One agent with only the installed skills classified the seven requests in the scenario catalog and wrote its first message for each. The first attempt ended on an API connection error; the retry is recorded here.
+
+| Request | Track | First message matches the rubric |
+|---|---|---|
+| Save button copy | quick fix | yes: no interview. It asked the authorization question, with the UI and copy release, open issues and the deploy clause. It added the environment question and a missing-remote question |
+| Bob overwrites Alice | bugfix, G1 skipped | yes: reproduced at `ec2825a` before messaging. `Status: agreed (G1 skipped: repro reproduced at ec2825a)`. One message held the short spec, the approach, the repro as the first check, the authorization and deploy questions, and the data-repair scope. No roadmap. The PR is `human` (authorization) |
+| Trim title | small change | yes: one interview round, then the batched gates |
+| Read-only sharing | feature | yes: G1 round 1, on one theme, with 4 questions, each carrying a recommended default |
+| Team reading list | new app | yes: the repository question, and product discovery routed to `guiding-product-discovery` |
+| Storage interface | refactor | yes: G1 opens with the invariants. It flagged that characterization would pin the pre-existing owner bug |
+| 50,000-record feasibility | spike | yes: question, exit observation, limits and timebox, plus permission for the spike branch in the same message. No spec. Never merged |
+
+**Not yet run:**
+- interview quality against a hidden answer sheet (scenario 2);
+- real driving with a seeded title (scenario 5);
+- merge safety and stacks on a disposable repository (scenarios 9 and 10, which need explicit authorization);
+- the scenarios added in the catalog after these trials.
+
+## 2026-09-06: trials of the eight-skill set
+
 Date: 2026-09-06. Initial product-engineering implementation, followed by repairs from independent review. These are bounded trials, not a cross-host reliability benchmark.
 
 Final format validation: `python3 scripts/validate.py` reported **0 errors, 0 warnings**; `git diff --check` passed and evaluation Markdown links resolved. The recorded candidate patch reconstructs the exact app/test hashes in its manifest. The 31-file skill corpus fingerprint is `eaaf1d741606b00f29ce180ca9054ca6c6565b41f7148e195ef193f05de70a97` (SHA-256 over sorted skill-relative paths plus each file's SHA-256, separated by a colon and terminated by a newline).
