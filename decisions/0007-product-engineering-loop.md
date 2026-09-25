@@ -1,7 +1,8 @@
 # 0007: Package engineering delivery as a verified implementation loop
 
-- Status: accepted
+- Status: superseded
 - Date: 2026-09-06
+- Superseded by: 0009
 
 ## Context
 

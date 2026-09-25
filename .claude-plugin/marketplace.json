@@ -45,22 +45,23 @@
     },
     {
       "name": "product-engineering",
-      "description": "From agreed architecture to a verified pull request: bounded implementation, runtime capability routing, meaningful tests, review and repair, and durable worklogs.",
+      "description": "One implementation loop from a work item to merged pull requests: you are interviewed, pick an approach, agree the verification method and approve the roadmap; the agent then implements, verifies in the running app, reviews with five parallel lenses, and merges the PRs it may merge.",
       "version": "0.0.0",
       "source": "./",
       "strict": false,
       "license": "MIT",
       "homepage": "https://github.com/theultimate-dev/skills",
-      "keywords": ["engineering", "implementation", "verification", "review", "agents", "pull-requests"],
+      "keywords": ["engineering", "specification", "implementation", "verification", "code-review", "pull-requests", "agents", "autonomy"],
       "skills": [
         "./skills/product-engineering/running-implementation-loops",
-        "./skills/product-engineering/preparing-engineering-specs",
+        "./skills/product-engineering/specifying-work-items",
+        "./skills/product-engineering/brainstorming-solutions",
+        "./skills/product-engineering/defining-verification",
         "./skills/product-engineering/planning-implementation",
-        "./skills/product-engineering/implementing-work-packages",
+        "./skills/product-engineering/implementing-plans",
         "./skills/product-engineering/verifying-implementation",
         "./skills/product-engineering/reviewing-code-changes",
-        "./skills/product-engineering/recording-worklogs",
-        "./skills/product-engineering/preparing-pull-requests"
+        "./skills/product-engineering/shipping-pull-requests"
       ]
     },
     {

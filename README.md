@@ -10,7 +10,7 @@ A skill is a set of instructions your agent follows with your permissions. Read 
 |---|---|---|
 | `foundations` | [`decision-records`](skills/foundations/decision-records/SKILL.md) · [`release-process`](skills/foundations/release-process/SKILL.md) | What every project needs regardless of stack: a decision log that people and agents can read, and releases with a changelog and a tag on `main`. |
 | `product-design` | [`guiding-product-discovery`](skills/product-design/guiding-product-discovery/SKILL.md) · [`shaping-product-briefs`](skills/product-design/shaping-product-briefs/SKILL.md) · [`designing-ux-flows`](skills/product-design/designing-ux-flows/SKILL.md) · [`exploring-visual-directions`](skills/product-design/exploring-visual-directions/SKILL.md) · [`building-html-prototypes`](skills/product-design/building-html-prototypes/SKILL.md) · [`preparing-implementation-handoffs`](skills/product-design/preparing-implementation-handoffs/SKILL.md) | Rough ideas through product/design handoff: requirements, UX, contrasting visual sketches, and refined offline HTML prototypes, with user decisions at milestones. |
-| `product-engineering` | [`running-implementation-loops`](skills/product-engineering/running-implementation-loops/SKILL.md) · [`preparing-engineering-specs`](skills/product-engineering/preparing-engineering-specs/SKILL.md) · [`planning-implementation`](skills/product-engineering/planning-implementation/SKILL.md) · [`implementing-work-packages`](skills/product-engineering/implementing-work-packages/SKILL.md) · [`verifying-implementation`](skills/product-engineering/verifying-implementation/SKILL.md) · [`reviewing-code-changes`](skills/product-engineering/reviewing-code-changes/SKILL.md) · [`recording-worklogs`](skills/product-engineering/recording-worklogs/SKILL.md) · [`preparing-pull-requests`](skills/product-engineering/preparing-pull-requests/SKILL.md) | Agreed architecture through a verified PR: bounded implementation, model-tier routing, meaningful tests, review and repair, and resumable evidence. |
+| `product-engineering` | [`running-implementation-loops`](skills/product-engineering/running-implementation-loops/SKILL.md) · [`specifying-work-items`](skills/product-engineering/specifying-work-items/SKILL.md) · [`brainstorming-solutions`](skills/product-engineering/brainstorming-solutions/SKILL.md) · [`defining-verification`](skills/product-engineering/defining-verification/SKILL.md) · [`planning-implementation`](skills/product-engineering/planning-implementation/SKILL.md) · [`implementing-plans`](skills/product-engineering/implementing-plans/SKILL.md) · [`verifying-implementation`](skills/product-engineering/verifying-implementation/SKILL.md) · [`reviewing-code-changes`](skills/product-engineering/reviewing-code-changes/SKILL.md) · [`shipping-pull-requests`](skills/product-engineering/shipping-pull-requests/SKILL.md) | Specify by interview, brainstorm and pick an approach, agree how the agent verifies itself, approve the roadmap; then autonomous implementation, real verification in the running app, quick and five-lens review, and one PR per slice, merged by the agent when safe and authorized. |
 | `prompt-engineering` | [`improving-prompts`](skills/prompt-engineering/improving-prompts/SKILL.md) | A rough prompt to an engineered one: destination and gap diagnosis, a technique catalog with apply and reject criteria, dated model-family notes, and a copy-paste-ready result with the reasoning behind it. |
 
 ## From an idea to a design handoff
@@ -42,29 +42,54 @@ prototype, and feedback into a handoff for engineering planning.
 
 Install the category with `claude plugin install product-design@theultimate-dev` after adding the marketplace, or `npx skills add theultimate-dev/skills/skills/product-design`. The routes below explain setup and updates.
 
-## From a design handoff to a verified PR
+## From a work item to merged PRs
 
-Start with `running-implementation-loops` for the whole engineering workflow. It consumes the product-design handoff or equivalent requirements, inspects the code, and prepares consequential architecture choices for your agreement. Within that baseline, it coordinates implementation packages, tests, independent review where supported, defect repair, integration, and an open PR within your authorization.
+`product-engineering` runs one loop for everything from a one-line fix to a new app. You take part at the start; after that the agent works on its own and comes back only for PRs you want to see yourself, or when something changes what you agreed.
 
-The loop plans verification before coding. Unit, integration, and critical E2E checks cover the behavior and boundaries that matter; reviewers examine tests as well as code. Confirmed actionable defects are repaired at every priority. Combined changes receive aggregate verification, and evidence records the revision actually checked. Missing mandatory checks remain blockers.
+| Stage | Skill | Who | What comes out |
+|---|---|---|---|
+| Start or resume | `running-implementation-loops` | agent | The track for this work item; live state read from open and merged PRs |
+| 1. Specify | `specifying-work-items` | you + agent | The agent interviews you about the unknowns, then writes `spec.md` with requirements and acceptance criteria |
+| 2. Approach | `brainstorming-solutions` | you + agent | Two to four distinct approaches compared; you pick or combine one |
+| 3. Verification | `defining-verification` | you + agent | How the agent proves each acceptance criterion in the running app, plus a reusable `verification-profile.md` for the project |
+| 4. Launch | `planning-implementation` | you approve | `roadmap.md`: plans, phases, one PR per slice, which PRs need a human, and the autonomy contract (what the agent may push and merge) |
+| 5. Implement | `implementing-plans` | agent | A branch and small commits for each PR slice |
+| 6. Verify | `verifying-implementation` | agent | The app started and driven by browser, API or CLI; observed evidence for every acceptance criterion |
+| 7. Quick review | `reviewing-code-changes` | agent | A fresh-context check that the change does what the spec says, before the PR exists |
+| 8. Open the PR | `shipping-pull-requests` | agent | A PR with the verification report, marked `review:human` or `review:agent` |
+| 9. Full review | `reviewing-code-changes` | agent | Five parallel reviewers: architecture, security, conventions and idioms, efficiency, intent |
+| 10. Land | `shipping-pull-requests` | agent or you | Agent PRs merge once approved, green on the reviewed head, and authorized; human PRs wait for you while the agent continues with independent work |
 
-Agents and model tiers are discovered from the host, with reasoning effort chosen separately from change risk. No model or custom agent names are hardcoded. Hosts without these controls run with explicit limitations. A factual worklog supports resumption, and small tasks can combine specification, plan, review, and evidence sections in one document.
+Not every work item needs every stage:
 
-Install with `claude plugin install product-engineering@theultimate-dev` after marketplace setup, or `npx skills add theultimate-dev/skills/skills/product-engineering`. Invoke only the coordinator for the complete loop; each specialist also works on its own. Publication follows the project's permissions, and merge, release, and deployment remain separate.
+| Track | Stages |
+|---|---|
+| Quick fix | Implement, verify, PR with a review sized to the diff |
+| Bugfix | A short spec from the repro, a failing check first, then the loop |
+| Small change | The four starting stages in one message, one plan inline in the spec |
+| Feature | All stages, one loop per PR slice |
+| New app | `product-design` first if the product or UX is still open, then all stages with a walking skeleton as plan 1 |
+| Refactor | Invariants in the spec, characterization checks before the first edit, small mechanical PRs |
+| Spike | A timeboxed branch that is never merged; its findings feed the approach |
+
+By default, the agent leaves these to your review: changes to authentication or authorization, crypto, secrets, payments or personal data; schemas, migrations and backfills; breaking public APIs; new or major-bumped dependencies; CI, infrastructure and build configuration; instruction files such as AGENTS.md; and user-visible UI, which you can release to the agent when you approve the roadmap. Deleted or weakened tests, unobserved acceptance criteria, and reviews that ran without a fresh context always go to you. Your project's pull request policy can change the defaults. The agent merges only with your recorded permission, only the exact commit it reviewed, never bypasses branch protection, never approves its own PR on the host, and asks before a merge that would deploy. Browser checks use whatever the agent can drive: Playwright MCP, Chrome DevTools MCP, Claude in Chrome, the Playwright test runner, or plain HTTP and CLI calls. A check that cannot run is reported as blocked, never as passed, and stops that slice until you decide how to verify it.
+
+Install with `claude plugin install product-engineering@theultimate-dev` after marketplace setup, or `npx skills add theultimate-dev/skills/skills/product-engineering`. Start with the coordinator, or call any stage on its own:
 
 ```text
-Use running-implementation-loops with this product/design handoff.
-Work out the consequential architecture choices with me, then implement
-and verify the agreed scope. Prepare a PR for my review.
+Use running-implementation-loops for this feature: saved searches with
+email alerts. Interview me first, then take it all the way to PRs.
 
-Use reviewing-code-changes to review this package against its plan,
-including test quality. Record findings and verify the subsequent fixes.
+Use specifying-work-items to interview me about this bug report and
+write the spec.
 
-Use verifying-implementation to challenge this test strategy before
-coding, then record acceptance evidence against the implemented revision.
+Use reviewing-code-changes to run the full five-lens review on PR 42.
+
+Use shipping-pull-requests to open this branch as a PR and merge it if
+it qualifies for agent review.
 ```
 
-The [evaluation exercises](evaluations/product-engineering/README.md) describe isolated behavioral trials and their observed limits.
+The [evaluation guide](evaluations/product-engineering/README.md) describes the behavioral trials and what they have shown so far.
 
 ## From a rough prompt to an engineered one
 
