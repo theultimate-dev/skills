@@ -6,7 +6,7 @@ Run `python3 scripts/validate.py [repo-root]`. Violations print as
 
 Layout: `SKILL.md` only at `skills/<category>/<skill>/SKILL.md`, kebab-case
   directory names of at most 64 characters, every category holding at least one
-  skill directory and nothing but directories.
+  skill directory, its `CHANGELOG.md`, and nothing else.
 Frontmatter: `---` at byte 0, a closing `---`, and between them plain
   `key: value` lines carrying exactly name, description and license; `name`
   matches the directory and is unique repository-wide, `description` is
@@ -17,12 +17,18 @@ Self-containment: relative links resolve inside the skill (links inside fenced
   `../` or a harness path even in a fence, `SKILL.md` is at most 500 lines
   (warning past 250).
 Marketplace: one plugin per category, each with `source` `"./"`, `strict` false,
-  a `skills` array matching the directories on disk, and versions equal to the
-  newest released changelog version, or `0.0.0` before the first release.
+  a `skills` array matching the directories on disk, and a `version` equal to the
+  newest released version in `skills/<category>/CHANGELOG.md`; `metadata.version`
+  equal to the newest released version in the root `CHANGELOG.md`; `0.0.0` before
+  a first release. `renames`, when present, maps former names only.
 Decisions: `decisions/README.md` links every `NNNN-kebab-title.md` record,
   record numbers are unique, every record carries a `- Status:` line.
-Changelog: `## [Unreleased]` plus version headings in strictly descending order,
-  each with a link reference definition.
+Changelogs: the root one (tags `vX.Y.Z`) and one per category (tags
+  `<category>--vX.Y.Z`), each with `## [Unreleased]` plus version headings in
+  strictly descending order. The first version links to its tag's release page,
+  every later one to a compare from the version below it, and `[Unreleased]` to
+  a compare from the newest tag to `HEAD`, or to a `commits/` page before a
+  first release.
 Hygiene: `AGENTS.md` has no unbackticked `@path` import, `README.md` names every
   skill.
 """
@@ -135,7 +141,8 @@ def check_layout(root: Path, report: Report) -> dict[str, dict[str, Path]]:
         skills: dict[str, Path] = {}
         for entry in sorted(category_dir.iterdir()):
             if not entry.is_dir():
-                report.error(entry, "a category directory holds only skill directories")
+                if entry.name != "CHANGELOG.md":
+                    report.error(entry, "a category directory holds only skill directories and CHANGELOG.md")
                 continue
             check_name(entry, "skill", report)
             if not (entry / "SKILL.md").is_file():
@@ -266,7 +273,8 @@ def check_links(path: Path, skill_root: Path, line: str, number: int, report: Re
             report.error(path, f"link target {target!r} does not exist", line=number)
 
 
-def check_marketplace(root: Path, categories: dict[str, dict[str, Path]], version: str, report: Report) -> None:
+def check_marketplace(root: Path, categories: dict[str, dict[str, Path]], version: str | None,
+                      plugin_versions: dict[str, str | None], report: Report) -> None:
     path = root / ".claude-plugin" / "marketplace.json"
     text = read_required(path, report, "marketplace manifest")
     if text is None:
@@ -284,12 +292,11 @@ def check_marketplace(root: Path, categories: dict[str, dict[str, Path]], versio
     owner = data.get("owner")
     if not isinstance(owner, dict) or not isinstance(owner.get("name"), str):
         report.error(path, "'owner' must be an object with a string 'name'")
-    if "metadata" in data:
-        metadata = data["metadata"]
-        if not isinstance(metadata, dict) or "version" not in metadata:
-            report.error(path, "'metadata' must be an object carrying a 'version'")
-        else:
-            check_version(path, metadata["version"], version, "metadata.version", report)
+    metadata = data.get("metadata")
+    if not isinstance(metadata, dict) or "version" not in metadata:
+        report.error(path, "'metadata' must be an object carrying the marketplace 'version'")
+    else:
+        check_version(path, metadata["version"], version or "0.0.0", "metadata.version", "CHANGELOG.md", report)
     plugins = data.get("plugins")
     if not isinstance(plugins, list) or not plugins:
         report.error(path, "'plugins' must be a non-empty array")
@@ -302,11 +309,12 @@ def check_marketplace(root: Path, categories: dict[str, dict[str, Path]], versio
         if plugin["name"] in named:
             report.error(path, f"duplicate plugin name {plugin['name']!r}")
         named.add(plugin["name"])
-        check_plugin(root, path, plugin, categories, version, report)
+        check_plugin(root, path, plugin, categories, plugin_versions.get(plugin["name"]) or "0.0.0", report)
     for missing in sorted(set(categories) - named):
         report.error(path, f"category {missing!r} has no plugin entry")
     for extra in sorted(named - set(categories)):
         report.error(path, f"plugin {extra!r} has no matching category directory under skills/")
+    check_renames(path, data.get("renames"), named, report)
 
 
 def check_plugin(root: Path, path: Path, plugin: dict, categories: dict, version: str, report: Report) -> None:
@@ -318,7 +326,8 @@ def check_plugin(root: Path, path: Path, plugin: dict, categories: dict, version
     if "version" not in plugin:
         report.error(path, f"plugin {name!r}: 'version' is missing")
     else:
-        check_version(path, plugin["version"], version, f"plugin {name!r} version", report)
+        check_version(path, plugin["version"], version, f"plugin {name!r} version",
+                      f"skills/{name}/CHANGELOG.md", report)
     listed = plugin.get("skills")
     if not isinstance(listed, list) or not listed:
         report.error(path, f"plugin {name!r}: 'skills' must be a non-empty array")
@@ -354,17 +363,30 @@ def check_skill_entry(root: Path, path: Path, plugin: str, entry, report: Report
     return parts[2]
 
 
-def check_version(path: Path, value, expected: str, label: str, report: Report) -> None:
+def check_renames(path: Path, renames, plugins: set[str], report: Report) -> None:
+    """Validate the optional `renames` map: former names to a current name, a later former name, or null."""
+    if renames is None:
+        return
+    if not isinstance(renames, dict):
+        report.error(path, "'renames' must be an object mapping former plugin names to a name or null")
+        return
+    for former, current in renames.items():
+        if former in plugins:
+            report.error(path, f"renames: {former!r} is still a plugin in 'plugins'")
+        if current is not None and (not isinstance(current, str) or (current not in plugins and current not in renames)):
+            report.error(path, f"renames: {former!r} must map to a plugin in 'plugins', another former name, or null")
+
+
+def check_version(path: Path, value, expected: str, label: str, source: str, report: Report) -> None:
     if not isinstance(value, str):
         report.error(path, f"{label} must be a string")
     elif value != expected:
-        report.error(path, f"{label} is {value!r}, expected {expected!r} from CHANGELOG.md")
+        report.error(path, f"{label} is {value!r}, expected {expected!r} from {source}")
 
 
-def check_changelog(root: Path, report: Report) -> str | None:
-    """Validate CHANGELOG.md and return the newest released version, if there is one."""
-    path = root / "CHANGELOG.md"
-    text = read_required(path, report, "CHANGELOG.md")
+def check_changelog(path: Path, prefix: str, report: Report) -> str | None:
+    """Validate one changelog whose tags are `<prefix>X.Y.Z` and return its newest released version, if any."""
+    text = read_required(path, report, "changelog")
     if text is None:
         return None
     headings: list[tuple[str, int]] = []
@@ -388,31 +410,48 @@ def check_changelog(root: Path, report: Report) -> str | None:
             references[reference.group(1)] = (reference.group(2), number)
     if not unreleased:
         report.error(path, "no '## [Unreleased]' heading")
-    check_versions(path, headings, references, report)
-    check_unreleased_link(path, references, report)
-    return headings[0][0] if headings else None
+    check_versions(path, headings, references, prefix, report)
+    newest = headings[0][0] if headings else None
+    check_unreleased_link(path, references, prefix, newest, report)
+    return newest
 
 
-def check_versions(path: Path, headings: list, references: dict, report: Report) -> None:
+def check_versions(path: Path, headings: list, references: dict, prefix: str, report: Report) -> None:
     seen: set[str] = set()
-    for version, number in headings:
+    for index, (version, number) in enumerate(headings):
         if version in seen:
             report.error(path, f"version {version} appears more than once", line=number)
         seen.add(version)
-        if version not in references:
-            report.error(path, f"version {version} has no '[{version}]: <url>' link reference", line=number)
+        older = headings[index + 1][0] if index + 1 < len(headings) else None
+        check_version_link(path, references, version, older, prefix, number, report)
     for (newer, _), (older, number) in zip(headings, headings[1:]):
         if semver_key(newer) <= semver_key(older):
             report.error(path, f"version {older} must sort below {newer} above it; releases go newest first", line=number)
 
 
-def check_unreleased_link(path: Path, references: dict, report: Report) -> None:
+def check_version_link(path: Path, references: dict, version: str, older: str | None, prefix: str,
+                       number: int, report: Report) -> None:
+    """The first release links to its tag's release page; every later one compares against the release below."""
+    if version not in references:
+        report.error(path, f"version {version} has no '[{version}]: <url>' link reference", line=number)
+        return
+    url, line = references[version]
+    tag = prefix + version
+    expected = f"/compare/{prefix}{older}...{tag}" if older else f"/releases/tag/{tag}"
+    if not url.endswith(expected):
+        report.error(path, f"the [{version}] link must end with '{expected}'", line=line)
+
+
+def check_unreleased_link(path: Path, references: dict, prefix: str, newest: str | None, report: Report) -> None:
     if "Unreleased" not in references:
         report.error(path, "no '[Unreleased]: <url>' link reference definition")
         return
     url, number = references["Unreleased"]
-    if "commits/" not in url and not ("compare/" in url and url.endswith("HEAD")):
-        report.warn(path, "the [Unreleased] link is neither a 'compare/...HEAD' nor a 'commits/' URL", line=number)
+    if newest is None:
+        if "/commits/" not in url:
+            report.error(path, "before the first release, the [Unreleased] link must be a 'commits/' URL", line=number)
+    elif not url.endswith(f"/compare/{prefix}{newest}...HEAD"):
+        report.error(path, f"the [Unreleased] link must end with '/compare/{prefix}{newest}...HEAD'", line=number)
 
 
 def semver_key(version: str) -> tuple:
@@ -522,8 +561,10 @@ def main(argv: list[str] | None = None) -> int:
     for category in sorted(categories):
         for skill in sorted(categories[category]):
             check_skill(categories[category][skill], report, seen)
-    newest = check_changelog(root, report)
-    check_marketplace(root, categories, newest or "0.0.0", report)
+    newest = check_changelog(root / "CHANGELOG.md", "v", report)
+    plugin_versions = {category: check_changelog(root / "skills" / category / "CHANGELOG.md", f"{category}--v", report)
+                       for category in sorted(categories)}
+    check_marketplace(root, categories, newest, plugin_versions, report)
     check_decisions(root, report)
     check_agents(root, report)
     check_readme(root, categories, report)
