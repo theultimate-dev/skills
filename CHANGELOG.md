@@ -19,6 +19,10 @@ Marketplace releases are tagged `vX.Y.Z`.
 - Product-engineering evaluation guide with lifecycle diagrams, a runnable fixture and grader, and behavioral scenarios for interviews, real app verification, per-lens review recall, PR categorization, merge safety, and stacked PRs.
 - Decision log in `decisions/` recording why the repository and its release process are shaped the way they are.
 - `scripts/validate.py` and a CI workflow that enforce the repository rules on every push and pull request, including a changelog per plugin whose newest release matches the plugin's version.
-- Release workflow: a `v*` tag on `main` publishes a GitHub Release with the changelog section as notes, one archive per skill, and checksums.
+- Release workflow for tags on `main`:
+  - A `vX.Y.Z` tag publishes a marketplace release, with that version's section of this changelog as notes. It is marked Latest.
+  - A `<plugin>--vX.Y.Z` tag publishes that plugin's release: the section from its changelog, one archive per skill in the plugin, and checksums.
+  - Either tag is refused unless `marketplace.json` declares the tag's version.
+  - A tag that GitHub did not act on can be released by hand from the Actions tab.
 
 [Unreleased]: https://github.com/theultimate-dev/skills/commits/main

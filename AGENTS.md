@@ -12,7 +12,7 @@ This repository holds agent skills in the open [Agent Skills](https://agentskill
 | [`decisions/README.md`](decisions/README.md) | Index of decision records. Read it before changing structure or conventions |
 | [`CHANGELOG.md`](CHANGELOG.md) | The marketplace and repository changelog: plugins added, renamed or removed, install routes, release assets, tooling |
 | `scripts/validate.py` | Enforces every rule below. Run it before you finish |
-| `.github/workflows/` | `validate.yml` on push and pull request, `release.yml` on `v*` tags |
+| `.github/workflows/` | `validate.yml` on push and pull request, `release.yml` on `vX.Y.Z` and `<plugin>--vX.Y.Z` tags or run by hand with a tag |
 
 ## Rules
 
