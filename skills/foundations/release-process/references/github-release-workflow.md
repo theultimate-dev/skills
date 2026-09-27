@@ -2,6 +2,8 @@
 
 `templates/release.yml` is a GitHub Actions workflow that turns a pushed `vX.Y.Z` tag into a GitHub Release whose notes are that version's section of `CHANGELOG.md`. It uses only `actions/checkout` and the `gh` CLI preinstalled on GitHub runners, so there is no third-party action to audit or keep updated.
 
+`templates/release-components.yml` does the same for a repository whose components are versioned independently. It releases both root `vX.Y.Z` tags and component `name--vX.Y.Z` tags from the matching changelog. It adds a tag-parsing step, a checkout of the tag, a manual run with a `tag` input, and a Latest policy. `independent-versions.md` explains it. The steps below apply to both.
+
 ## What it does, in order
 
 1. **Checks the tag shape.** `vMAJOR.MINOR.PATCH` with an optional `-prerelease` suffix. Anything else fails fast; `v1.2` or `release-1` never becomes a release.
@@ -26,6 +28,9 @@ Projects that ship files add a packaging step between 4 and 5 and pass the files
 | `Tag 'vX' is not vMAJOR.MINOR.PATCH` | Tag name shape | Delete the local tag and create it correctly. If it was pushed, leave it and create the right one |
 | `Tag vX.Y.Z points at <sha>, which is not on main` | Tagged a branch commit, or pushed the tag before `main` | Push `main`, re-run the job. If the commit is not meant for `main`, that tag must not become a release; cut the release from `main` under the next version |
 | `CHANGELOG.md has no entries under '## [X.Y.Z]'` | Changelog not released, or the heading does not match the tag (`v` prefix in the heading, wrong number) | Fix `CHANGELOG.md` on `main` and release the next patch version. Released tags are not moved |
+| No run appears after a tag push | The push carried more than three tags, and GitHub created no event | Components template: `gh workflow run release.yml -f tag=TAG`. Push at most three tags at a time |
+| `... does not exist at TAG. Is 'NAME' a component of this repository?` | The tag names an unknown component, or `COMPONENT_CHANGELOG` does not match the layout | Fix the path template on `main` and start the run by hand. A misnamed tag stays unreleased; tag the right component under its next version |
+| `Tag '...' is neither vMAJOR.MINOR.PATCH nor NAME--vMAJOR.MINOR.PATCH` | Tag shape, components template | As for the tag shape above |
 | `Resource not accessible by integration` | Token lacks `contents: write` | Repository or organisation Actions settings |
 | `release not found` followed by upload errors | A re-run raced a partially created release | Re-run once more |
 

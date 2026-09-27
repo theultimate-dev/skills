@@ -2,6 +2,8 @@
 
 Every step is a shell command or a file edit. Show the plan to the user before the first command that changes anything, and stop for explicit confirmation before creating the tag and again before pushing it.
 
+In a repository whose components are versioned independently, read `independent-versions.md` first. It changes the tag, the changelog, and the version files in each step below.
+
 ## 1. Preflight
 
 ```bash
@@ -9,7 +11,7 @@ git switch main
 git status --porcelain              # must print nothing
 git fetch origin --tags
 git status -sb | head -1            # "## main...origin/main" with no ahead or behind
-git describe --tags --abbrev=0      # the previous tag, if any
+git describe --tags --match 'v[0-9]*' --abbrev=0   # the previous vX.Y.Z tag, if any
 ```
 
 Then check three more things: CI is green on the head commit (`gh run list --branch main --limit 1`, or the Actions page); `## [Unreleased]` in `CHANGELOG.md` has at least one entry; the version you intend has no tag yet (`git tag -l vX.Y.Z` and `git ls-remote --tags origin vX.Y.Z` both print nothing).
@@ -21,8 +23,9 @@ If anything fails here, fix it first. Do not release from a branch, from a dirty
 List the commits since the previous tag and scan the types:
 
 ```bash
-git log "$(git describe --tags --abbrev=0)..HEAD" --pretty='%s' 
-git log "$(git describe --tags --abbrev=0)..HEAD" --pretty='%b' | grep -n 'BREAKING CHANGE' || true
+prev="$(git describe --tags --match 'v[0-9]*' --abbrev=0)"
+git log "$prev..HEAD" --pretty='%s'
+git log "$prev..HEAD" --pretty='%b' | grep -n 'BREAKING CHANGE' || true
 ```
 
 - Any `!` after the type or any `BREAKING CHANGE:` footer: major.
@@ -77,4 +80,5 @@ Push `main` before the tag. The workflow checks that the tagged commit is on `ma
 
 - **Before pushing:** `git tag -d vX.Y.Z`, then `git reset --soft HEAD~1` to undo the release commit. Fix, redo.
 - **Tag pushed, release wrong:** do not delete or move the tag. Mark the version `[YANKED]` in the changelog with a one-line reason, fix the problem, release `X.Y.Z+1`. Mark the bad GitHub Release as a pre-release or say "yanked" in its title so nobody picks it as latest.
+- **No workflow run appeared:** the push carried more than three tags, so GitHub created no event. With `templates/release-components.yml`, start the run by hand: `gh workflow run release.yml -f tag=vX.Y.Z`. With `templates/release.yml`, add the same `workflow_dispatch` input first.
 - **Workflow failed:** read the job log. The usual causes are the tag not being on `main`, no matching `## [X.Y.Z]` section, or a token without `contents: write`. Fix the cause and re-run the job from the Actions page on the same tag; creating the release is idempotent.

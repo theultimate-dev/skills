@@ -44,7 +44,7 @@ Add a skill: create `skills/<category>/<name>/SKILL.md`, add its path to the cat
 
 Add a category: new directory under `skills/` with a `CHANGELOG.md` whose `[Unreleased]` links `https://github.com/theultimate-dev/skills/commits/main/skills/<category>`, new plugin entry in `marketplace.json` with the same name and `"version": "0.0.0"`, README row, an entry in both the new and the root changelog, and a decision record when the split changes how users install.
 
-Record a decision: use the `decision-records` skill in `skills/foundations/decision-records/`. Cut a release: use the `release-process` skill in `skills/foundations/release-process/`.
+Record a decision: use the `decision-records` skill in `skills/foundations/decision-records/`. Cut a release: use the `release-process` skill in `skills/foundations/release-process/`, in its independent-versions mode. The components are the plugins, with changelogs at `skills/{component}/CHANGELOG.md`, and the root is the marketplace.
 
 Dogfood: `npx skills add . -g -a claude-code` symlinks this working tree into your Claude Code skills directory, so edits are live without reinstalling.
 

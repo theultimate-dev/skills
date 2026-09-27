@@ -1,0 +1,119 @@
+# Turns a pushed tag on main into a GitHub Release, for a repository whose components are versioned independently.
+# vX.Y.Z releases the repository itself from ROOT_CHANGELOG. NAME--vX.Y.Z releases component NAME from COMPONENT_CHANGELOG.
+# Notes come from that version's section of the matching changelog. Uses only actions/checkout and the gh CLI on the runner.
+# Install at .github/workflows/release.yml and set the two changelog paths below. If the default branch is not main, replace main in the ancestry check.
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+      - "*--v*.*.*"
+  # GitHub starts no run when one push carries more than three tags. Start those by hand with the tag name.
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing tag to release, such as v1.4.0 or api--v2.0.1"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ inputs.tag || github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      TAG: ${{ inputs.tag || github.ref_name }}
+      ROOT_CHANGELOG: CHANGELOG.md
+      COMPONENT_CHANGELOG: "packages/{component}/CHANGELOG.md"
+    steps:
+      - name: Parse the tag
+        run: |
+          semver='^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-[0-9A-Za-z.-]+)?$'
+          if [[ "$TAG" == *--v* ]]; then
+            component="${TAG%%--v*}"
+            version="${TAG#*--v}"
+            if [[ ! "$component" =~ ^[a-z0-9]+(-[a-z0-9]+)*$ ]]; then
+              echo "::error::Tag '$TAG' names component '$component', which is not kebab-case"; exit 1
+            fi
+            changelog="${COMPONENT_CHANGELOG//"{component}"/$component}"
+          elif [[ "$TAG" == v* ]]; then
+            component=""
+            version="${TAG#v}"
+            changelog="$ROOT_CHANGELOG"
+          else
+            echo "::error::Tag '$TAG' is neither vMAJOR.MINOR.PATCH nor NAME--vMAJOR.MINOR.PATCH"; exit 1
+          fi
+          if [[ ! "$version" =~ $semver ]]; then
+            echo "::error::Tag '$TAG' carries version '$version', which is not MAJOR.MINOR.PATCH[-prerelease]"; exit 1
+          fi
+          {
+            echo "COMPONENT=$component"
+            echo "VERSION=$version"
+            echo "CHANGELOG=$changelog"
+          } >> "$GITHUB_ENV"
+
+      - uses: actions/checkout@v6
+        with:
+          ref: refs/tags/${{ env.TAG }}
+          fetch-depth: 0
+
+      - name: Verify the tagged commit is on main
+        run: |
+          git fetch --no-tags origin +refs/heads/main:refs/remotes/origin/main
+          SHA="$(git rev-parse "${TAG}^{commit}")"
+          if ! git merge-base --is-ancestor "$SHA" origin/main; then
+            echo "::error::Tag $TAG points at $SHA, which is not on main. Releases come from main only."; exit 1
+          fi
+
+      - name: Extract release notes
+        run: |
+          if [ ! -f "$CHANGELOG" ]; then
+            echo "::error::$CHANGELOG does not exist at $TAG.${COMPONENT:+ Is '$COMPONENT' a component of this repository?}"; exit 1
+          fi
+          awk -v ver="$VERSION" '
+            BEGIN { head = "## [" ver "]"; n = length(head) }
+            /^[ \t]*(```|~~~)/ { fence = !fence; if (inside) print; next }
+            fence              { if (inside) print; next }
+            /^\[[^]]+\]: /     { if (inside) exit; next }
+            /^## /             { if (inside) exit; if (substr($0, 1, n) == head) inside = 1; next }
+            inside             { print }
+          ' "$CHANGELOG" > "$RUNNER_TEMP/notes.md"
+          if [ -z "$(tr -d '[:space:]' < "$RUNNER_TEMP/notes.md")" ]; then
+            echo "::error::$CHANGELOG has no entries under '## [$VERSION]'. Release the changelog before tagging."; exit 1
+          fi
+
+      # Project checks go here, for example that the version files at the tag declare $VERSION for $COMPONENT.
+      # Projects that ship files add a packaging step here that writes them to dist/; the next step attaches all of dist/.
+
+      - name: Create the GitHub Release
+        run: |
+          shopt -s nullglob
+          title="${COMPONENT:+$COMPONENT }v$VERSION"
+          # Root releases are Latest; component releases never are, so the latest-release link stays on the root.
+          flags=(--latest=false)
+          if [[ "$VERSION" == *-* ]]; then
+            flags+=(--prerelease)
+          elif [ -z "$COMPONENT" ]; then
+            flags=(--latest)
+          fi
+          assets=(dist/*)
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            if [ ${#assets[@]} -gt 0 ]; then
+              gh release upload "$TAG" "${assets[@]}" --clobber
+            else
+              echo "Release $TAG already exists; nothing to do."
+            fi
+          else
+            gh release create "$TAG" "${assets[@]}" \
+              --title "$title" \
+              --notes-file "$RUNNER_TEMP/notes.md" \
+              --verify-tag \
+              "${flags[@]}"
+          fi
