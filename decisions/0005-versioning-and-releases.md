@@ -1,7 +1,8 @@
 # 0005: One version, hand-written changelog, releases from tags on `main`
 
-- Status: accepted
+- Status: superseded
 - Date: 2026-09-03
+- Superseded by: 0010
 
 ## Context
 
