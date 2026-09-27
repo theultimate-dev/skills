@@ -13,6 +13,8 @@ A skill is a set of instructions your agent follows with your permissions. Read 
 | `product-engineering` | [`running-implementation-loops`](skills/product-engineering/running-implementation-loops/SKILL.md) · [`specifying-work-items`](skills/product-engineering/specifying-work-items/SKILL.md) · [`brainstorming-solutions`](skills/product-engineering/brainstorming-solutions/SKILL.md) · [`defining-verification`](skills/product-engineering/defining-verification/SKILL.md) · [`planning-implementation`](skills/product-engineering/planning-implementation/SKILL.md) · [`implementing-plans`](skills/product-engineering/implementing-plans/SKILL.md) · [`verifying-implementation`](skills/product-engineering/verifying-implementation/SKILL.md) · [`reviewing-code-changes`](skills/product-engineering/reviewing-code-changes/SKILL.md) · [`shipping-pull-requests`](skills/product-engineering/shipping-pull-requests/SKILL.md) | Specify by interview, brainstorm and pick an approach, agree how the agent verifies itself, approve the roadmap; then autonomous implementation, real verification in the running app, quick and five-lens review, and one PR per slice, merged by the agent when safe and authorized. |
 | `prompt-engineering` | [`improving-prompts`](skills/prompt-engineering/improving-prompts/SKILL.md) | A rough prompt to an engineered one: destination and gap diagnosis, a technique catalog with apply and reject criteria, dated model-family notes, and a copy-paste-ready result with the reasoning behind it. |
 
+Each category is a plugin with its own version and changelog: [`foundations`](skills/foundations/CHANGELOG.md) · [`product-design`](skills/product-design/CHANGELOG.md) · [`product-engineering`](skills/product-engineering/CHANGELOG.md) · [`prompt-engineering`](skills/prompt-engineering/CHANGELOG.md).
+
 ## From an idea to a design handoff
 
 Start with `guiding-product-discovery` for the whole workflow, or invoke any specialist with the context you already have. The coordinator works without subagents; the specialists work without the coordinator. Each skill includes its own references and templates.
@@ -156,9 +158,9 @@ You get flat skills invoked by name, `/decision-records` or `$decision-records` 
 
 ## Update
 
-Releases drive both routes. A release bumps the plugin version in the marketplace manifest and tags `main`, so route A sees a new plugin version and route B gets the new content on update.
+The two routes update on different signals.
 
-Route A:
+Route A updates a plugin when that plugin is released. Each release bumps the plugin's version in the marketplace manifest, and Claude Code and Copilot CLI fetch a new copy only when that version changes. A fresh install copies whatever is on `main` at that moment.
 
 ```bash
 claude plugin marketplace update theultimate-dev
@@ -169,7 +171,7 @@ Or turn it on once: `/plugin` → Marketplaces → `theultimate-dev` → Enable 
 
 Copilot CLI: `copilot plugin marketplace update theultimate-dev && copilot plugin update foundations`.
 
-Route B:
+Route B follows `main`, not releases. `npx skills update` reinstalls every skill whose folder changed on `main` since you installed it, released or not, and `npx skills check` does the same. To get released versions only, pin a release tag, as described below.
 
 ```bash
 npx skills update                      # everything this CLI installed
@@ -178,16 +180,18 @@ npx skills update decision-records -g  # one skill, user scope
 
 ## Pin a release
 
-Route A: add the marketplace at a tag. To move to a newer tag, remove the marketplace (this uninstalls its plugins) and add it again.
+Each plugin's releases are tagged `<category>--vX.Y.Z`, for example `foundations--v0.1.0`. The marketplace's own releases are tagged `vX.Y.Z`. The [releases page](https://github.com/theultimate-dev/skills/releases) lists them all with their notes.
+
+Route A: add the marketplace at a tag. This pins the whole catalog, every plugin included, at that tag's commit. To move to a newer tag, remove the marketplace (this uninstalls its plugins) and add it again.
 
 ```bash
 claude plugin marketplace add https://github.com/theultimate-dev/skills.git#v0.1.0
 ```
 
-Route B: a pinned install stays at its tag until you run `add` again with a new one.
+Route B: pin each category at its own tag. A pinned install stays at its tag until you run `add` again with a newer one.
 
 ```bash
-npx skills add theultimate-dev/skills/skills/foundations#v0.1.0
+npx skills add theultimate-dev/skills/skills/foundations#foundations--v0.1.0
 ```
 
 ## Remove
@@ -206,11 +210,13 @@ Documented by the tools, not yet run by me. Open an issue if one misbehaves.
 |---|---|---|
 | Pi | `pi install git:github.com/theultimate-dev/skills` (all categories; Pi reads nested folders) | `pi update git:github.com/theultimate-dev/skills` |
 | APM | `apm install theultimate-dev/skills/skills/foundations` | `apm update` |
-| Claude.ai, Claude Desktop, Cowork, ChatGPT | Download `<skill>-<version>.zip` from the [latest release](https://github.com/theultimate-dev/skills/releases/latest) and upload it in the client's skills settings | Upload the newer zip |
+| Claude.ai, Claude Desktop, Cowork, ChatGPT | On the [releases page](https://github.com/theultimate-dev/skills/releases), open the newest `<category>--vX.Y.Z` release, download `<skill>-<version>.zip`, and upload it in the client's skills settings | Upload the zip from the category's next release |
 
 ## Versioning
 
-One version for the whole repository, [SemVer](https://semver.org/spec/v2.0.0.html), released from `v*` tags on `main`. Renaming or removing a skill or a category is a breaking change. Every change is listed in [CHANGELOG.md](CHANGELOG.md). The decisions behind this shape are in [decisions/](decisions/README.md).
+Each category is a plugin with its own [SemVer](https://semver.org/spec/v2.0.0.html) version, changelog (`skills/<category>/CHANGELOG.md`), and releases, tagged `<category>--vX.Y.Z` on `main`. A plugin release carries that plugin's notes and one zip per skill. A new skill is a minor release of its plugin. Renaming or removing a skill is a breaking change, and until a plugin reaches 1.0.0 a breaking change bumps its minor version.
+
+The marketplace is versioned too. [CHANGELOG.md](CHANGELOG.md) and `vX.Y.Z` tags cover plugins added, renamed, or removed, install routes, and release assets. The decisions behind this shape are in [decisions/](decisions/README.md).
 
 ## License
 
