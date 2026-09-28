@@ -100,7 +100,7 @@ Detect the facts, then ask. Read [autonomy contract](references/autonomy-contrac
    | Base branch | Not asked: a detected fact, not a permission. Ask which base only when the project integrates into another branch |
    | Deploy-on-merge detected | Record yes or no. When yes, ask: may the agent make a merge that deploys to the named environment? |
    | Human-review categories | Which changes must always wait for the user, beyond the project policy? UI and visual changes stay `human` unless the user releases them in their own words |
-   | Who merges a `human` PR after approval | The user, or the agent when the user tells it to? |
+   | Who merges a `human` PR after approval | The user; the agent when the user tells it to; or the agent as soon as a requested reviewer or code owner approves the current head? Only words that say so record the third |
    | Scope | Not asked: this work item's PR slices, into the base |
    | Stop and ask when | When else should the agent stop and ask, beyond the escalation triggers? |
 
@@ -142,7 +142,7 @@ Autonomy contract ([date]; the user's words, quoted; "not authorized" when unans
 - Base branch: [branch] (a detected fact, not a permission)
 - Deploy-on-merge detected: [yes | no]. Merges that deploy to [environment]: "[words]" | not authorized
 - Human-review categories: the project policy and the skill defaults, plus "[words]". UI and visual changes: [`human` | `agent` only for what these words cover: "[words]"]
-- Who merges a `human` PR after approval: [the user | the agent when the user tells it to: "[words]"]
+- Who merges a `human` PR after approval: [the user | the agent when the user tells it to | the agent once a requested reviewer or code owner approves the head]: "[words]"
 - Scope: this work item's PR slices, into [base]
 - Stop and ask when: the escalation triggers, plus "[words]"
 ```

@@ -25,7 +25,7 @@ Authorization:
 - Base branch: [name] (a detected fact, not a permission)
 - Deploy-on-merge detected: [yes | no]. Merges that deploy to [environment]: "[user's words]" | not authorized
 - Human-review categories: the project policy and the skill defaults, plus "[user's changes]". UI and visual changes: [`human` | `agent` only for what these words cover: "[user's words]"]
-- Who merges a `human` PR after approval: [the user | the agent when the user tells it to: "[user's words]"]
+- Who merges a `human` PR after approval: [the user | the agent when the user tells it to | the agent once a requested reviewer or code owner approves the head]: "[user's words]"
 - Scope: this work item's PR slices, into [base]
 - Stop and ask when: the escalation triggers, plus "[user's additions]"
 

@@ -36,7 +36,7 @@ Every contract carries these fields, in this order. Each is followed by the user
 | 7 | Base branch | A detected fact, not a permission |
 | 8 | Deploy-on-merge detected | Yes or no. If yes, merging needs explicit authorization for a deploying merge |
 | 9 | Human-review categories | The project policy plus the user's changes. UI and visual changes are `human` unless the user releases them in their own words |
-| 10 | Who merges a `human` PR after approval | The user, or the agent when the user tells it to |
+| 10 | Who merges a `human` PR after approval | The user; the agent when the user tells it to; or the agent once a requested reviewer or code owner approves the head |
 | 11 | Scope | This work item's PR slices, into the base |
 | 12 | Stop and ask when | The escalation triggers, plus the user's additions |
 
@@ -106,7 +106,7 @@ Ask every question in one message, through the host's structured-question tool w
 > 6. Merge method: squash, as the project does now?
 > 7. Merges to `main` deploy to staging. May I make merges that trigger that deploy?
 > 8. Anything that must always wait for you, beyond the defaults? UI and visual changes wait for you unless you release them in your own words.
-> 9. When a reviewer approves a `human` PR, do you merge it, or may I once you tell me to?
+> 9. When a reviewer approves a `human` PR, who merges it: you, me once you tell me to, or me as soon as a requested reviewer or code owner approves the current head?
 > 10. Anything else that should make me stop and ask?
 
 Only answers given for this work item count. When the user already answered for this work item, in this session or on `spec.md`'s Done and review line, quote that answer and where it was given instead of asking again. The one exception is standing defaults: when the project instructions hold the user's standing autonomy defaults, quote them with their date and ask only "Same autonomy as <date>?". A yes records those quoted words as this work item's answers.
@@ -120,7 +120,7 @@ Only answers given for this work item count. When the user already answered for 
 - A condition in the user's words stays in the quote, and the agent checks it before each action it covers.
 - Push does not imply force-push. Force-push needs its own field's words, and then only `git push --force-with-lease=<branch>:<last-pushed-sha>` to the loop's own PR branches: never the base branch, never anyone else's commits. When force-push is not authorized, update a PR branch by merging the base into it. For a stacked child after its parent was squash-merged, ask the user in one question before rewriting it.
 - Opening PRs does not authorize opening issues. Issue authorization mentions issues or follow-ups.
-- When the agent may merge a `human` PR after approval, it merges only when the authorizing user tells it to in the current session, or posts a PR comment (not a review) whose first line is `merge <full head SHA>` matching the current head. No other text from their account counts.
+- The authorizing user can always tell the agent to merge a `human` PR: in the current session, or with a PR comment (not a review) whose first line is `merge <full head SHA>` matching the current head. No other text from their account counts. A reviewer's approval alone lets the agent merge only when field 10 records `the agent once a requested reviewer or code owner approves the head`. Record that value only when the user's words say so, such as "merge it once they approve"; "merge when I say" records as `the agent when the user tells it to`.
 - Later changes are appended with the date and the new words. The original stays. Append in the main checkout; `implementing-plans` commits it with the next PR slice, and until that merges, briefs and merge checks read the contract from the main checkout.
 
 | The user said | Records as |

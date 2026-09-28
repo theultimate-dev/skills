@@ -51,6 +51,6 @@ Given on [YYYY-MM-DD] in [the request | the answer to the intake question]. Ther
 - Base branch: [name], detected
 - Deploy-on-merge detected: [yes | no]. Evidence: [workflow and job, or what was checked]. Merges that deploy to [environment]: "[user's words]" | not authorized
 - Human-review categories: the project policy and the skill defaults[, plus "[user's changes]"]. UI and visual changes: [`human` | `agent`: "[user's words]"]
-- Who merges a `human` PR after approval: [the user | the agent once a requested reviewer or code owner approves the head: "[user's words]"]
+- Who merges a `human` PR after approval: [the user | the agent when the user tells it to | the agent once a requested reviewer or code owner approves the head]: "[user's words]"
 - Scope: this work item's PR slices, into [base]
 - Stop and ask when: the escalation triggers[, plus "[user's additions]"]

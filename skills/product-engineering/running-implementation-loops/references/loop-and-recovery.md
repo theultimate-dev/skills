@@ -37,7 +37,7 @@ The host wins on state: open, approved, changes requested, merged, closed. The f
 | Any | An open PR whose recomputed category is `agent`, with a counting `APPROVE` on the head | Run the merge gate, then merge |
 | Any | Changes requested by a human reviewer | Repair through `implementing-plans`, re-verify, delta review, request the review again; update and re-verify a stacked child |
 | Any | An open `human` PR awaiting review | Continue with independent plans |
-| Any | A `human` PR approved on the head by a requested reviewer or a code owner | Merge only when the contract's "Who merges a `human` PR after approval" field names the agent; otherwise report it as ready for your merge |
+| Any | A `human` PR approved on the head by a requested reviewer or a code owner | Merge only when the contract's "Who merges a `human` PR after approval" field records `the agent once a requested reviewer or code owner approves the head`; otherwise report it as ready for your merge |
 | Any | A `human` PR with a comment (not a review) from the authorizing account whose first line is `merge <full head SHA>` for the current head, unedited by any other account | Confirm required CI and deploy authorization on that head, then merge pinned to it. No other text from their account counts |
 | Any | Merged | Unblock its dependents; update its stacked children onto the base and retarget them |
 | `in progress` | The plan's last slice merged, and the base still shows `in progress` | Set `Status: done` in the next PR of this work item |
