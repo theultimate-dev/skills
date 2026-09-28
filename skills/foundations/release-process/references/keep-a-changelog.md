@@ -68,4 +68,4 @@ At release time, rename the heading to the version and date, add a fresh `## [Un
 
 ## Fixing a released section
 
-Do not. A typo may be fixed. A missing entry goes into the next version with a note ("shipped in 1.2.0, undocumented at the time"). A wrong release gets `[YANKED]` and a patch release. Consumers, tooling, and the GitHub Release already read the old text; rewriting it makes the record untrustworthy.
+Do not. A missing entry goes into the next version with a note ("shipped in 1.2.0, undocumented at the time"). A wrong release gets `[YANKED]` and a patch release. Consumers, tooling, and the GitHub Release already read the old text; rewriting it makes the record untrustworthy.

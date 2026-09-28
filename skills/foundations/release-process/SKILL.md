@@ -1,12 +1,12 @@
 ---
 name: release-process
-description: "Maintains a project's CHANGELOG.md in Keep a Changelog form and cuts releases: picks the SemVer bump from Conventional Commits, moves Unreleased into a dated version section, bumps declared version files, commits, tags vX.Y.Z on main, pushes, and relies on a GitHub Action to publish the GitHub Release. Also handles repositories whose components (packages, plugins) are versioned independently, each with its own changelog and tags such as api--v1.2.0. Use when the user asks to add a changelog entry or note what changed, asks to release, ship, tag, or bump a version of the project or of one component, asks what changed since the last release, or when a project has no CHANGELOG.md, release workflow, or version tags yet."
+description: "Maintains a project's CHANGELOG.md in Keep a Changelog form and cuts releases: picks the SemVer bump from Conventional Commits, moves Unreleased into a dated version section, bumps declared version files, commits, tags vX.Y.Z on main, pushes, and relies on a GitHub Action to publish the GitHub Release. Also handles repositories whose components (packages, plugins) are versioned independently, each with its own changelog and tags such as api--v1.2.0. Use when the user asks to add a changelog entry or note what changed, asks to release, tag, or bump a version of the project or of one component, asks what changed since the last release, or when a project has no CHANGELOG.md, release workflow, or version tags yet."
 license: MIT
 ---
 
 # Release process
 
-Two habits make releases boring, which is the goal. Every change lands with a line in `CHANGELOG.md` under `[Unreleased]`, written for the people who use the project. A release is one commit and one tag on `main`; a GitHub Action turns the tag into a GitHub Release with that version's changelog section as the notes. Nobody writes release notes at release time, and nobody creates releases by hand.
+Two habits make releases boring, which is the goal. Every change lands with a line in `CHANGELOG.md` under `[Unreleased]`, written for the people who use the project. A release is one commit on `main` with one tag per version it releases; a GitHub Action turns the tag into a GitHub Release with that version's changelog section as the notes. Nobody writes release notes at release time, and nobody creates releases by hand.
 
 This skill has three entry points. Most of the time you are in the first.
 
