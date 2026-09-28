@@ -78,8 +78,12 @@ class CandidateChecks(unittest.TestCase):
 
 
 if __name__ == "__main__":
+    usage = "Usage: python3 grade.py /absolute/path/to/candidate/app.py"
+    if len(sys.argv) == 2 and sys.argv[1] in ("-h", "--help"):
+        print(usage)
+        raise SystemExit(0)
     if len(sys.argv) != 2:
-        raise SystemExit("Usage: python3 grade.py /absolute/path/to/candidate/app.py")
+        raise SystemExit(usage)
     candidate_path = Path(sys.argv[1]).resolve()
     spec = importlib.util.spec_from_file_location("candidate", candidate_path)
     candidate = importlib.util.module_from_spec(spec)

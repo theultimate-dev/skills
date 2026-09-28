@@ -18,7 +18,7 @@ git init -q -b main && echo '__pycache__/' >> .git/info/exclude
 git add -A && git commit -qm "chore: fixture baseline"
 git switch -qc feat/records-overview
 patch -p1 -i "$EVAL/review-recall/seeded.patch"
-git add -A && git commit -qm "feat: added records overview"
+git add -A && git commit -qm "feat: add records overview"
 python3 -m unittest discover -p 'test_*.py'    # 5 tests pass
 git rev-parse HEAD                              # the head SHA for the PR description
 ```

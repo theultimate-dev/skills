@@ -20,7 +20,7 @@ when the report will be shown to an executing agent. Scenario numbers follow eva
 | Second account with write access | [login / none] | [`gh api repos/{owner}/{repo}/collaborators/<login>/permission`] |
 | Host hook before a command | [yes: how it was configured, outside the workspace / no] | [the hook file path and the event it matched] |
 | Allowed side effects | [local commits only; pushes to the disposable repository; …] | [the authorization given for this run, quoted] |
-| Skills installed | [how: `npx skills add . -g -a claude-code`, plugin marketplace] | [the installed paths or versions] |
+| Skills installed | [how: `npx skills add . -g -a claude-code -y`, plugin marketplace] | [the installed paths or versions] |
 
 ## Results
 

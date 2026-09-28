@@ -1,5 +1,7 @@
 # Independent candidate review
 
+> Historical: recorded during the 2026-09-06 trials of the superseded eight-skill loop. See [the archived results](../results.md).
+
 ## Scope and examined candidate
 
 - Requirements: R1 owner update persists across reload/restart; R2 Bob cannot read/update Alice's record and denial leaves state unchanged; R3 browser success/failure feedback and persisted title.
