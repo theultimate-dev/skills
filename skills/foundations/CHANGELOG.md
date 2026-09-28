@@ -8,6 +8,10 @@ Releases are tagged `foundations--vX.Y.Z`.
 
 ## [Unreleased]
 
+### Fixed
+
+- `release-process` explains why a component release shows as Latest before the first root release: GitHub falls back to the newest tag date until a release is marked Latest. It no longer blames a missing `--latest=false` for that.
+
 ## [0.1.0] - 2026-09-28
 
 ### Added
