@@ -8,8 +8,11 @@ Releases are tagged `product-design--vX.Y.Z`.
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-09-28
+
 ### Added
 
 - Six stack-neutral skills for guided discovery, product briefs, UX flows, visual direction exploration, offline HTML prototypes, and product/design handoffs. Includes copyable templates, fictional worked examples, typography and spacing guidance, and checkpoints for user decisions.
 
-[Unreleased]: https://github.com/theultimate-dev/skills/commits/main/skills/product-design
+[Unreleased]: https://github.com/theultimate-dev/skills/compare/product-design--v0.1.0...HEAD
+[0.1.0]: https://github.com/theultimate-dev/skills/releases/tag/product-design--v0.1.0

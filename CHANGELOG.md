@@ -13,6 +13,8 @@ Marketplace releases are tagged `vX.Y.Z`.
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-09-28
+
 ### Added
 
 - Plugin marketplace with four plugins, one per category: `foundations`, `product-design`, `product-engineering`, and `prompt-engineering`. Claude Code and Copilot CLI install a category as one plugin, and each plugin carries its own version and changelog.
@@ -30,4 +32,5 @@ Marketplace releases are tagged `vX.Y.Z`.
 - Published releases are immutable: their archives, `checksums.txt` and tag cannot change after publication.
 - The CI and release workflows run `actions/checkout` pinned to a full commit SHA, and Dependabot proposes updates to it weekly.
 
-[Unreleased]: https://github.com/theultimate-dev/skills/commits/main
+[Unreleased]: https://github.com/theultimate-dev/skills/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/theultimate-dev/skills/releases/tag/v0.1.0

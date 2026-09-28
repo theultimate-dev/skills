@@ -8,9 +8,12 @@ Releases are tagged `foundations--vX.Y.Z`.
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-09-28
+
 ### Added
 
 - Two skills: `decision-records` keeps a project's decision log, `release-process` keeps its changelog and cuts tagged releases.
 - `release-process` also handles repositories whose components, such as packages or plugins, are versioned independently. Each component gets its own changelog and `name--vX.Y.Z` tags, and one release commit can release several components. A second workflow template releases both root `vX.Y.Z` tags and component tags, and can be run by hand for a tag GitHub skipped.
 
-[Unreleased]: https://github.com/theultimate-dev/skills/commits/main/skills/foundations
+[Unreleased]: https://github.com/theultimate-dev/skills/compare/foundations--v0.1.0...HEAD
+[0.1.0]: https://github.com/theultimate-dev/skills/releases/tag/foundations--v0.1.0
