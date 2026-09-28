@@ -79,7 +79,7 @@ Compared with `templates/release.yml`, it:
 - checks out the tag itself, so a manual run behaves like a push;
 - fails when the component has no changelog at the tag;
 - titles releases `api v1.3.0`;
-- marks root releases Latest and component releases not, so the repository's latest-release link stays on the root rather than on whichever component released last. A repository without root releases can remove `--latest=false` and let GitHub choose;
+- marks root releases Latest and component releases not, so the repository's latest-release link stays on the root rather than on whichever component released last. Until the first root release is published, no release is marked Latest, and GitHub shows the release with the newest tag date, often a component; the first root release takes the link back. A repository without root releases can remove `--latest=false` and let GitHub choose;
 - accepts a manual run with a `tag` input, for pushes GitHub did not act on.
 
 Project checks go after the notes step. The most useful one checks that the version files at the tag declare `$VERSION` for `$COMPONENT`, because a forgotten bump can leave users without the update. Packaging writes into `dist/`, and the release step attaches everything there.
@@ -103,4 +103,5 @@ Project checks go after the notes step. The most useful one checks that the vers
 | Version chosen from the wrong commits | `git describe` without `--match`, or `git log` without the path | `--match 'api--v*'` and `-- packages/api` |
 | Empty release notes for a component | The section went into the root changelog, or the tag names the wrong component | Release the component's own changelog, and make the tag name match the path template |
 | Users never see a component release | Its version file was not bumped | Check the version files against the tag in the workflow |
-| The latest-release link shows a component | Component releases were marked Latest | Pass `--latest=false` on component releases, as the template does |
+| The latest-release link shows a component | No root release has been published yet, so GitHub falls back to the newest tag date | Publish the root release; it is marked Latest and later component releases leave it there |
+| The latest-release link moves to each new component release | Component releases were marked Latest | Pass `--latest=false` on component releases, as the template does |
