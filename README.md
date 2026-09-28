@@ -1,6 +1,6 @@
 # The Ultimate Dev · Skills
 
-The agent skills I use every day, in the open [Agent Skills](https://agentskills.io) format, grouped into categories you install with one command. They work in Claude Code, Codex, GitHub Copilot, Grok Build, Pi, Cursor, and any other harness that reads `SKILL.md`. I switch between several of those daily; this repository is how the same skill follows me across all of them.
+The agent skills I use every day, in the open [Agent Skills](https://agentskills.io) format, grouped into categories you install with one command. They are written for any harness that reads `SKILL.md`: Claude Code, Codex, GitHub Copilot, Grok Build, Pi, Cursor, and others. I switch between several of those daily; this repository is how the same skill follows me across all of them.
 
 A skill is a set of instructions your agent follows with your permissions. Read it before you install it.
 
@@ -59,7 +59,7 @@ Install the category with `claude plugin install product-design@theultimate-dev`
 | 6. Verify | `verifying-implementation` | agent | The app started and driven by browser, API or CLI; observed evidence for every acceptance criterion |
 | 7. Quick review | `reviewing-code-changes` | agent | A fresh-context check that the change does what the spec says, before the PR exists |
 | 8. Open the PR | `shipping-pull-requests` | agent | A PR with the verification report, marked `review:human` or `review:agent` |
-| 9. Full review | `reviewing-code-changes` | agent | Five parallel reviewers: architecture, security, conventions and idioms, efficiency, intent |
+| 9. Full review | `reviewing-code-changes` | agent | Up to five parallel reviewers, chosen by what the diff touches: architecture, security, conventions and idioms, efficiency, intent |
 | 10. Land | `shipping-pull-requests` | agent or you | Agent PRs merge once approved, green on the reviewed head, and authorized; human PRs wait for you while the agent continues with independent work |
 
 Not every work item needs every stage:
@@ -91,7 +91,7 @@ Use shipping-pull-requests to open this branch as a PR and merge it if
 it qualifies for agent review.
 ```
 
-The [evaluation guide](evaluations/product-engineering/README.md) describes the behavioral trials and what they have shown so far.
+The [evaluation guide](evaluations/product-engineering/README.md) describes the behavioral trials and what they have shown so far. Track classification and full-review recall have been trialed; merge safety, stacked PRs and most other scenarios have not yet run on a real host, so treat the merge rules above as what the skills instruct, not yet as observed behavior.
 
 ## From a rough prompt to an engineered one
 
@@ -141,7 +141,7 @@ You get skills namespaced by category, for example `/foundations:decision-record
 
 ### Route B: `npx skills`
 
-The [skills CLI](https://github.com/vercel-labs/skills) installs into 77 agents, Claude Code, Codex, Copilot, Grok Build, Pi and Cursor among them. It asks which agents to target and can symlink one copy into all of them.
+The [skills CLI](https://github.com/vercel-labs/skills) installs into dozens of agents, Claude Code, Codex, Copilot, Grok Build, Pi and Cursor among them. It asks which agents to target and can symlink one copy into all of them.
 
 ```bash
 # a whole category (the repository folder is skills/, hence skills/skills)
@@ -169,9 +169,9 @@ claude plugin update foundations@theultimate-dev
 
 Or turn it on once: `/plugin` → Marketplaces → `theultimate-dev` → Enable auto-update. Third-party marketplaces are off by default. With it on, Claude Code updates in the background after startup and prompts you to `/reload-plugins`.
 
-Copilot CLI: `copilot plugin marketplace update theultimate-dev && copilot plugin update foundations`.
+Copilot CLI: `copilot plugin marketplace update theultimate-dev && copilot plugin update foundations@theultimate-dev`.
 
-Route B follows `main`, not releases. `npx skills update` reinstalls every skill whose folder changed on `main` since you installed it, released or not, and `npx skills check` does the same. To get released versions only, pin a release tag, as described below.
+Route B follows `main`, not releases. `npx skills update` reinstalls every skill whose folder changed on `main` since you installed it, released or not. To get released versions only, pin a release tag, as described below.
 
 ```bash
 npx skills update                      # everything this CLI installed
@@ -182,7 +182,7 @@ npx skills update decision-records -g  # one skill, user scope
 
 Each plugin's releases are tagged `<category>--vX.Y.Z`, for example `foundations--v0.1.0`. The marketplace's own releases are tagged `vX.Y.Z`. The [releases page](https://github.com/theultimate-dev/skills/releases) lists them all with their notes.
 
-Route A: add the marketplace at a tag. This pins the whole catalog, every plugin included, at that tag's commit. To move to a newer tag, remove the marketplace (this uninstalls its plugins) and add it again.
+Route A: add the marketplace at a tag. This pins the whole catalog, every plugin included, at that tag's commit, including any plugin changes merged but not yet released at that commit. To move to a newer tag, remove the marketplace (this uninstalls its plugins) and add it again.
 
 ```bash
 claude plugin marketplace add https://github.com/theultimate-dev/skills.git#v0.1.0
