@@ -100,7 +100,7 @@ Use the strongest available model for the architecture, security and intent lens
 
 - Every file a slice changes has one owner. Shared files (schemas, migrations, lockfiles, generated code, shared fixtures, route tables) have one owning slice, named in the roadmap and in every brief.
 - Tell each worker it is not alone and must preserve everyone else's edits.
-- A worker building a whole plan owns its plan file. In a slice split across workers, the coordinator owns it. Nobody edits `roadmap.md` during implementation.
+- A worker building a whole plan owns its plan file. In a slice split across workers, the coordinator owns it. During implementation, only the coordinator edits `roadmap.md`, and only to append.
 - Never run two writers on the same file.
 - Isolated worktrees prevent file collisions, not semantic conflicts. After integration, check the API expectations between producer and consumer, the migration order, shared fixtures and state, and the journey that crosses the slices. Then run the combined checks: the targeted checks of every slice, the project-wide build and typecheck, and the tests of every shared module.
 

@@ -1,4 +1,4 @@
-<!-- Title: the resulting change, in the project's commit or PR title convention, for example "feat(search): added saved searches". Merge these sections into the repository's own PR template when it has one. Keep the body well under 65,536 characters: evidence as text, screenshots and traces by CI-artifact name or local path. Delete this comment. -->
+<!-- Title: the resulting change, in the project's commit or PR title convention, for example "feat(search): add saved searches". Merge these sections into the repository's own PR template when it has one. Keep the body well under 65,536 characters: evidence as text, screenshots and traces by CI-artifact name or local path. Delete this comment. -->
 
 ## Summary
 

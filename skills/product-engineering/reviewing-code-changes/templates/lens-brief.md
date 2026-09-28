@@ -4,7 +4,7 @@
 
 Review one aspect of a code change, the [lens] lens, and report only findings you can back with evidence.
 
-- Full mode: four other reviewers cover the other lenses in parallel, so stay inside yours.
+- Full mode: other reviewers cover the other lenses in parallel, so stay inside yours.
 - Quick mode: you are the only reviewer before the pull request opens. Stay with the intent lens, and also report any confirmed defect you happen to see outside it, labeled with the lens it belongs to.
 
 ## The change

@@ -90,12 +90,12 @@ Spec: R1 save a search, R2 list and rerun saved searches, R3 delete one; AC1 to 
 
 | Plan | Phases | PR slices | Predicted category | Depends on |
 |---|---|---|---|---|
-| `plans/01-storage-and-api.md` | p1 migration adding `saved_searches`; p2 repository, endpoints, tests | per phase | p1 `human`: migration; p2 `agent` | none |
+| `plans/01-storage-and-api.md` | p1 migration adding `saved_searches`; p2 repository, endpoints, tests | per phase | p1 `human`: migration; p2 `human`: authorization (owner checks on every endpoint) | none |
 | `plans/02-saved-searches-panel.md` | p1 panel behind `savedSearches`, off by default; p2 flag on | per phase | p1 `agent`: nothing user-visible; p2 `human`: UI | 01-p2 (the endpoint contract) |
 
 - AC1 to AC3 at the API level pass in 01-p2. The UI journeys AC4 and AC5 pass in 02-p1, verified with the flag on. 02-p2 re-runs them with the flag's default on.
 - 01-p1 opens first: small, `human`, and its review runs while 01-p2 is built. 01-p2 stacks on 01-p1 while it awaits review.
-- Critical path: 01-p1, 01-p2, 02-p1, 02-p2. The only `human` slices are the first and the last, and both are small.
+- Critical path: 01-p1, 01-p2, 02-p1, 02-p2. Three of the four slices are `human`: the migration, the owner checks, and the UI switch. Each is small, and each review runs while the next slice is built.
 
 ### Refactor: split a 2,000-line module
 

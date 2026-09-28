@@ -126,7 +126,7 @@ Present in one message: the contract table, the automated checks, the human-eye 
 
 | Track | G3 shape |
 |---|---|
-| Quick fix | No G3. The check goes in the PR body. Ask only when no profile exists: how to start the app and which environment is allowed |
+| Quick fix | No G3. The check goes in the PR body. When no profile exists, find the start command first, then ask only which environment is allowed, and the start command only when none was found |
 | Bugfix | The repro becomes the first row. It must fail on the base for the reported reason before any fix; its pass condition is the expected behavior |
 | Small change | The contract rows are part of the single G1 to G4 message |
 | Feature | The full procedure |

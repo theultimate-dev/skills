@@ -23,7 +23,7 @@ Artifacts live in `docs/product-engineering/<work-item-slug>/` unless the projec
 | 6 | Verify for real | `verifying-implementation` | agent | Observed evidence for each AC, tied to the commit SHA |
 | 7 | Quick review | `reviewing-code-changes`, quick mode | fresh-context agent | Findings `Q1`… fixed before the PR opens |
 | 8 | Open and categorize | `shipping-pull-requests` | agent | The PR with its `## Verification` report, labeled `review:human` or `review:agent` |
-| 9 | Full review | `reviewing-code-changes`, full mode | five parallel lens agents | A comment review with `APPROVE` or `REQUEST CHANGES`; findings `F1`… fixed, then delta reviews |
+| 9 | Full review | `reviewing-code-changes`, full mode | parallel lens agents: five, or two on a docs-only PR | A comment review with `APPROVE` or `REQUEST CHANGES`; findings `F1`… fixed, then delta reviews |
 | 10 | Land | `shipping-pull-requests` | agent or you | An `agent` PR merged through the merge gate; a `human` PR sent to its reviewers while independent plans continue |
 
 Stages 0 to 4 run once per work item. Stages 5 to 10 run once per PR slice.
