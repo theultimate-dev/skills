@@ -25,4 +25,9 @@ Marketplace releases are tagged `vX.Y.Z`.
   - Either tag is refused unless `marketplace.json` declares the tag's version.
   - A tag that GitHub did not act on can be released by hand from the Actions tab.
 
+### Security
+
+- Published releases are immutable: their archives, `checksums.txt` and tag cannot change after publication.
+- The CI and release workflows run `actions/checkout` pinned to a full commit SHA, and Dependabot proposes updates to it weekly.
+
 [Unreleased]: https://github.com/theultimate-dev/skills/commits/main

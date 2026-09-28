@@ -1,7 +1,7 @@
 # Turns a pushed tag on main into a GitHub Release.
 # vX.Y.Z releases the marketplace from CHANGELOG.md, notes only.
 # PLUGIN--vX.Y.Z releases one plugin from skills/PLUGIN/CHANGELOG.md, with one zip per skill in that plugin plus checksums.
-# Same workflow as skills/foundations/release-process/templates/release-components.yml, plus the "Check the manifest" and "Package the plugin" steps.
+# Same workflow as skills/foundations/release-process/templates/release-components.yml, plus the "Check the manifest" and "Package the plugin" steps, with actions pinned to commit SHAs.
 name: Release
 
 on:
@@ -59,7 +59,7 @@ jobs:
             echo "CHANGELOG=$changelog"
           } >> "$GITHUB_ENV"
 
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
           ref: refs/tags/${{ env.TAG }}
           fetch-depth: 0
