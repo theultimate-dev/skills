@@ -8,13 +8,13 @@
   },
   "metadata": {
     "description": "The Ultimate Dev skills catalog",
-    "version": "0.1.1"
+    "version": "0.1.2"
   },
   "plugins": [
     {
       "name": "foundations",
       "description": "What every project needs regardless of stack: decision records that people and agents can read, and releases with a changelog and a tag on main.",
-      "version": "0.1.1",
+      "version": "0.2.0",
       "source": "./",
       "strict": false,
       "license": "MIT",

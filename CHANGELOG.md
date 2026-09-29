@@ -13,9 +13,16 @@ Marketplace releases are tagged `vX.Y.Z`. Every plugin release is also a marketp
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-09-29
+
 ### Added
 
 - Evaluation scenarios for the `release-process` option that releases the root with every component release, with a script that builds a throwaway marketplace to run them in and a script that runs the release workflow's checks on a tag locally.
+
+### Changed
+
+- Plugins released with this version:
+  - `foundations` [0.2.0](https://github.com/theultimate-dev/skills/releases/tag/foundations--v0.2.0): `release-process` can release the root with every component release, so a marketplace's Latest release always names the newest plugin versions, and its components workflow template can enforce that.
 
 ## [0.1.1] - 2026-09-29
 
@@ -47,6 +54,7 @@ Marketplace releases are tagged `vX.Y.Z`. Every plugin release is also a marketp
 - Published releases are immutable: their archives, `checksums.txt` and tag cannot change after publication.
 - The CI and release workflows run `actions/checkout` pinned to a full commit SHA, and Dependabot proposes updates to it weekly.
 
-[Unreleased]: https://github.com/theultimate-dev/skills/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/theultimate-dev/skills/compare/v0.1.2...HEAD
+[0.1.2]: https://github.com/theultimate-dev/skills/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/theultimate-dev/skills/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/theultimate-dev/skills/releases/tag/v0.1.0

@@ -8,6 +8,8 @@ Releases are tagged `foundations--vX.Y.Z`.
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-09-29
+
 ### Added
 
 - `release-process` can release the root with every component release, so the Latest release of a plugin marketplace or another catalog always names the newest component versions and links to their releases. A new reference covers when the option fits, the root bump (at least a patch), the notes format, the order to push tags in, catching up releases that skipped the root, and a check to add to a project's own validator. Setting up independent versions now asks whether to adopt it.
@@ -26,6 +28,7 @@ Releases are tagged `foundations--vX.Y.Z`.
 - Two skills: `decision-records` keeps a project's decision log, `release-process` keeps its changelog and cuts tagged releases.
 - `release-process` also handles repositories whose components, such as packages or plugins, are versioned independently. Each component gets its own changelog and `name--vX.Y.Z` tags, and one release commit can release several components. A second workflow template releases both root `vX.Y.Z` tags and component tags, and can be run by hand for a tag GitHub skipped.
 
-[Unreleased]: https://github.com/theultimate-dev/skills/compare/foundations--v0.1.1...HEAD
+[Unreleased]: https://github.com/theultimate-dev/skills/compare/foundations--v0.2.0...HEAD
+[0.2.0]: https://github.com/theultimate-dev/skills/compare/foundations--v0.1.1...foundations--v0.2.0
 [0.1.1]: https://github.com/theultimate-dev/skills/compare/foundations--v0.1.0...foundations--v0.1.1
 [0.1.0]: https://github.com/theultimate-dev/skills/releases/tag/foundations--v0.1.0
