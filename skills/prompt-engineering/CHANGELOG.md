@@ -11,6 +11,7 @@ Releases are tagged `prompt-engineering--vX.Y.Z`.
 ### Added
 
 - `improving-prompts` has notes for Grok 4.7. xAI publishes no prompting guide for it, so the notes cover what its documentation states (always-on reasoning with an effort setting, parameters that return errors, parallel calls, schema guarantees, citations, cache-friendly ordering) and mark the rest as unconfirmed. The model notes and the source list now show a review date on each section or entry checked after the file's own date.
+- `improving-prompts` has notes for GPT-6 Sol: its effort levels and API constraints, and what OpenAI's GPT-6 guide changes from GPT-5.x, namely more clarifying questions and earlier stops, sensitivity to conflicting instruction files, heavier formatting, unprompted testing, and less delegation. The guide's prompts were written from GPT-6 Astra, so the notes present them as a starting point for Sol and list what stays unconfirmed.
 
 ## [0.1.0] - 2026-09-28
 
