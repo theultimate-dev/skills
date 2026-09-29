@@ -2,7 +2,8 @@
 # vX.Y.Z releases the marketplace from CHANGELOG.md, notes only.
 # PLUGIN--vX.Y.Z releases one plugin from skills/PLUGIN/CHANGELOG.md, with one zip per skill in that plugin plus checksums.
 # Every plugin release is also a marketplace release (decisions/0011), so a plugin tag needs the marketplace release at its commit to list it.
-# Same workflow as skills/foundations/release-process/templates/release-components.yml, plus the "Check the manifest", "Check the marketplace release" and "Package the plugin" steps, with actions pinned to commit SHAs.
+# Same workflow as skills/foundations/release-process/templates/release-components.yml, plus the "Check the manifest" and "Package the plugin" steps, with actions pinned to commit SHAs.
+# "Check the marketplace release lists the plugin" is the template's opt-in root release check, reading the root version from metadata.version.
 name: Release
 
 on:
