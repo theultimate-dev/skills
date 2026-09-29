@@ -18,6 +18,8 @@ If thinking fires too often, typically under a large system prompt, a trigger ru
 Thinking adds latency and is worth it only when it will improve the answer, typically for problems that need multistep reasoning. When in doubt, respond directly.
 ```
 
+Where the provider says lowering effort reduces thinking more reliably than prompt text, lower the effort under Outside the prompt before adding a trigger rule. Where it reports that removing "think carefully" lines from a chat system prompt made replies start sooner without a clear loss of quality, propose removing them rather than adding the general instruction above (see the model family notes).
+
 ## Manual chain of thought
 
 When internal thinking is unavailable and the reasoning must be separable from the answer, ask for both in tags:
@@ -26,7 +28,7 @@ When internal thinking is unavailable and the reasoning must be separable from t
 Reason through the problem in <thinking> tags, then give the final answer in <answer> tags.
 ```
 
-Reject for latency-bound chat, and for models known to leak internal tags into visible output (see the model family notes). Where thinking can be enabled at a low depth, that beats manual tags.
+Reject for latency-bound chat, for models known to leak internal tags into visible output, and for models that can decline a request to write their reasoning into the response; read their summarized thinking instead (see the model family notes). Where thinking can be enabled at a low depth, that beats manual tags.
 
 ## Self-check
 
