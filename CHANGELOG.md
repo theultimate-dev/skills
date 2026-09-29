@@ -13,6 +13,10 @@ Marketplace releases are tagged `vX.Y.Z`. Every plugin release is also a marketp
 
 ## [Unreleased]
 
+### Added
+
+- Evaluation scenarios for the `release-process` option that releases the root with every component release, with a script that builds a throwaway marketplace to run them in and a script that runs the release workflow's checks on a tag locally.
+
 ## [0.1.1] - 2026-09-29
 
 ### Changed
