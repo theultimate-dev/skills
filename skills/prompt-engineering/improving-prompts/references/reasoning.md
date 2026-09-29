@@ -10,7 +10,7 @@ Apply to multistep analysis, design trade-offs, debugging, and mathematics. Skip
 
 ## When the destination already thinks
 
-Many current models reason internally by default, and the depth is a runtime setting (an effort or reasoning level), not prompt text. Adding "think step by step" to such a model adds nothing and can add latency. Put the depth choice under Outside the prompt.
+Many current models reason internally by default, and the depth is a runtime setting (an effort or reasoning level), not prompt text. Adding "think step by step" to such a model adds nothing and can add latency. Put the depth choice under Outside the prompt. The exception is a case the provider has measured, such as a line asking a model that often skips thinking before JSON answers to multistep problems to think first, with adaptive thinking on (see the model family notes).
 
 If thinking fires too often, typically under a large system prompt, a trigger rule helps:
 
@@ -36,7 +36,7 @@ Reject for latency-bound chat, for models known to leak internal tags into visib
 Before you finish, verify your answer against [the criteria].
 ```
 
-Strongest for code and mathematics with checkable criteria. Reject on models that already verify their own work: the instruction compounds into over-verification, adding tokens and latency without improving the result.
+Strongest for code and mathematics with checkable criteria. Reject on models that already verify their own work: the instruction compounds into over-verification, adding tokens and latency without improving the result. Where the provider says this depends on effort, apply the check at the levels where checks get skipped and curb extra review rounds at the highest (see the model family notes).
 
 ## Commit to an approach
 
