@@ -8,7 +8,7 @@
   },
   "metadata": {
     "description": "The Ultimate Dev skills catalog",
-    "version": "0.1.2"
+    "version": "0.1.3"
   },
   "plugins": [
     {
@@ -67,7 +67,7 @@
     {
       "name": "prompt-engineering",
       "description": "From a rough prompt to an engineered one: destination and gap diagnosis, a catalog of prompt and context engineering techniques with apply and reject criteria, dated model-family notes, and a copy-paste-ready result with the reasoning behind it.",
-      "version": "0.2.0",
+      "version": "0.3.0",
       "source": "./",
       "strict": false,
       "license": "MIT",

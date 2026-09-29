@@ -8,6 +8,8 @@ Releases are tagged `prompt-engineering--vX.Y.Z`.
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-09-30
+
 ### Added
 
 - `improving-prompts` has notes for GPT-6 Astra. OpenAI's GPT-6 prompts were written from Astra's behaviour, so the notes apply them to Astra directly and add its API settings: no `none` effort, no sampling or log-probability parameters, and tool calling only through the Responses API. They also add OpenAI's advice on having the model name the skill instruction that made it pause, keeping skill descriptions short and AGENTS.md pointers tied to when each doc applies, and granting standing permission for workflows known to be safe. Where OpenAI's pages call Astra's clarifying questions a strength while its prompting guidance treats them as a cause of early stops, the notes say which page says what.
@@ -33,6 +35,7 @@ Releases are tagged `prompt-engineering--vX.Y.Z`.
 
 - `improving-prompts` skill: rewrites a rough prompt into an engineered one by classifying where it will run, diagnosing its gaps, and applying only the prompt and context engineering techniques that close them. Returns the techniques applied and rejected with reasons, placeholders for facts it could not infer, settings that belong outside the prompt, and the enhanced prompt in a copy-paste-ready tag. Ships a technique catalog split by group, dated model-family notes, worked examples, and templates.
 
-[Unreleased]: https://github.com/theultimate-dev/skills/compare/prompt-engineering--v0.2.0...HEAD
+[Unreleased]: https://github.com/theultimate-dev/skills/compare/prompt-engineering--v0.3.0...HEAD
+[0.3.0]: https://github.com/theultimate-dev/skills/compare/prompt-engineering--v0.2.0...prompt-engineering--v0.3.0
 [0.2.0]: https://github.com/theultimate-dev/skills/compare/prompt-engineering--v0.1.0...prompt-engineering--v0.2.0
 [0.1.0]: https://github.com/theultimate-dev/skills/releases/tag/prompt-engineering--v0.1.0

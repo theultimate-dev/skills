@@ -13,6 +13,13 @@ Marketplace releases are tagged `vX.Y.Z`. Every plugin release is also a marketp
 
 ## [Unreleased]
 
+## [0.1.3] - 2026-09-30
+
+### Changed
+
+- Plugins released with this version:
+  - `prompt-engineering` [0.3.0](https://github.com/theultimate-dev/skills/releases/tag/prompt-engineering--v0.3.0): `improving-prompts` has notes for GPT-6 Astra and GPT-6.1 Sol, and covers the whole GPT-6 family in one section.
+
 ## [0.1.2] - 2026-09-29
 
 ### Added
@@ -54,7 +61,8 @@ Marketplace releases are tagged `vX.Y.Z`. Every plugin release is also a marketp
 - Published releases are immutable: their archives, `checksums.txt` and tag cannot change after publication.
 - The CI and release workflows run `actions/checkout` pinned to a full commit SHA, and Dependabot proposes updates to it weekly.
 
-[Unreleased]: https://github.com/theultimate-dev/skills/compare/v0.1.2...HEAD
+[Unreleased]: https://github.com/theultimate-dev/skills/compare/v0.1.3...HEAD
+[0.1.3]: https://github.com/theultimate-dev/skills/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/theultimate-dev/skills/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/theultimate-dev/skills/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/theultimate-dev/skills/releases/tag/v0.1.0
