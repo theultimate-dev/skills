@@ -13,6 +13,8 @@ Marketplace releases are tagged `vX.Y.Z`. Every plugin release is also a marketp
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-09-29
+
 ### Changed
 
 - Plugins released with this version:
@@ -41,5 +43,6 @@ Marketplace releases are tagged `vX.Y.Z`. Every plugin release is also a marketp
 - Published releases are immutable: their archives, `checksums.txt` and tag cannot change after publication.
 - The CI and release workflows run `actions/checkout` pinned to a full commit SHA, and Dependabot proposes updates to it weekly.
 
-[Unreleased]: https://github.com/theultimate-dev/skills/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/theultimate-dev/skills/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/theultimate-dev/skills/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/theultimate-dev/skills/releases/tag/v0.1.0
