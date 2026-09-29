@@ -28,7 +28,10 @@ Changelogs: the root one (tags `vX.Y.Z`) and one per category (tags
   strictly descending order. The first version links to its tag's release page,
   every later one to a compare from the version below it, and `[Unreleased]` to
   a compare from the newest tag to `HEAD`, or to a `commits/` page before a
-  first release.
+  first release. Every plugin release also releases the marketplace, so the root
+  changelog links each plugin release dated after the root's first release
+  (`.../releases/tag/<category>--vX.Y.Z`), and every such link names a release
+  that the plugin's changelog has.
 Hygiene: `AGENTS.md` has no unbackticked `@path` import, `README.md` names every
   skill.
 """
@@ -48,6 +51,8 @@ INLINE_CODE_RE = re.compile(r"`[^`]*`")
 AT_IMPORT_RE = re.compile(r"@[A-Za-z0-9_./-]*\.md")
 HEADING_RE = re.compile(r"^## \[(\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?)\] - (\d{4}-\d{2}-\d{2})( \[YANKED\])?$")
 LINK_REF_RE = re.compile(r"^\[([^\]]+)\]:\s+(\S+)\s*$")
+PLUGIN_RELEASE_LINK_RE = re.compile(
+    r"\]\([^)\s]*/releases/tag/([a-z0-9]+(?:-[a-z0-9]+)*)--v(\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?)\)")
 DECISION_RE = re.compile(r"^(\d{4})-[a-z0-9]+(?:-[a-z0-9]+)*\.md$")
 STATUS_RE = re.compile(r"^- Status: (proposed|accepted|deprecated|superseded)\b")
 
@@ -384,12 +389,13 @@ def check_version(path: Path, value, expected: str, label: str, source: str, rep
         report.error(path, f"{label} is {value!r}, expected {expected!r} from {source}")
 
 
-def check_changelog(path: Path, prefix: str, report: Report) -> str | None:
-    """Validate one changelog whose tags are `<prefix>X.Y.Z` and return its newest released version, if any."""
+def check_changelog(path: Path, prefix: str, report: Report) -> list[tuple[str, str]]:
+    """Validate one changelog whose tags are `<prefix>X.Y.Z` and return its releases as (version, date), newest first."""
     text = read_required(path, report, "changelog")
     if text is None:
-        return None
+        return []
     headings: list[tuple[str, int]] = []
+    dates: dict[str, str] = {}
     references: dict[str, tuple[str, int]] = {}
     unreleased = False
     fenced = False
@@ -406,6 +412,7 @@ def check_changelog(path: Path, prefix: str, report: Report) -> str | None:
                 report.error(path, f"heading {line!r} is not '## [x.y.z] - YYYY-MM-DD'", line=number)
             else:
                 headings.append((match.group(1), number))
+                dates.setdefault(match.group(1), match.group(2))
         elif reference := LINK_REF_RE.match(line):
             references[reference.group(1)] = (reference.group(2), number)
     if not unreleased:
@@ -413,7 +420,7 @@ def check_changelog(path: Path, prefix: str, report: Report) -> str | None:
     check_versions(path, headings, references, prefix, report)
     newest = headings[0][0] if headings else None
     check_unreleased_link(path, references, prefix, newest, report)
-    return newest
+    return [(version, dates[version]) for version, _ in headings]
 
 
 def check_versions(path: Path, headings: list, references: dict, prefix: str, report: Report) -> None:
@@ -452,6 +459,41 @@ def check_unreleased_link(path: Path, references: dict, prefix: str, newest: str
             report.error(path, "before the first release, the [Unreleased] link must be a 'commits/' URL", line=number)
     elif not url.endswith(f"/compare/{prefix}{newest}...HEAD"):
         report.error(path, f"the [Unreleased] link must end with '/compare/{prefix}{newest}...HEAD'", line=number)
+
+
+def check_plugin_releases_listed(root: Path, releases: list[tuple[str, str]],
+                                 plugin_releases: dict[str, list[tuple[str, str]]], report: Report) -> None:
+    """Every plugin release also releases the marketplace, whose changelog links it.
+
+    The plugins' first releases shipped with the marketplace's first release, which introduced them,
+    so only plugin releases dated after it must be linked.
+    """
+    path = root / "CHANGELOG.md"
+    text = read_text(path)
+    if text is None:
+        return
+    listed: set[tuple[str, str]] = set()
+    fenced = False
+    for number, line in enumerate(text.splitlines(), 1):
+        if line.strip().startswith(("```", "~~~")):
+            fenced = not fenced
+            continue
+        if fenced:
+            continue
+        for match in PLUGIN_RELEASE_LINK_RE.finditer(line):
+            plugin, version = match.groups()
+            if version not in dict(plugin_releases.get(plugin, [])):
+                report.error(path, f"links {plugin}--v{version}, which skills/{plugin}/CHANGELOG.md has not released",
+                             line=number)
+            listed.add((plugin, version))
+    if not releases:
+        return
+    first = releases[-1][1]
+    for plugin in sorted(plugin_releases):
+        for version, date in plugin_releases[plugin]:
+            if date > first and (plugin, version) not in listed:
+                report.error(path, f"does not link the {plugin} {version} release of {date}; every plugin release"
+                                   " also releases the marketplace, whose section lists the plugin under Changed")
 
 
 def semver_key(version: str) -> tuple:
@@ -561,10 +603,13 @@ def main(argv: list[str] | None = None) -> int:
     for category in sorted(categories):
         for skill in sorted(categories[category]):
             check_skill(categories[category][skill], report, seen)
-    newest = check_changelog(root / "CHANGELOG.md", "v", report)
-    plugin_versions = {category: check_changelog(root / "skills" / category / "CHANGELOG.md", f"{category}--v", report)
+    releases = check_changelog(root / "CHANGELOG.md", "v", report)
+    plugin_releases = {category: check_changelog(root / "skills" / category / "CHANGELOG.md", f"{category}--v", report)
                        for category in sorted(categories)}
-    check_marketplace(root, categories, newest, plugin_versions, report)
+    check_marketplace(root, categories, releases[0][0] if releases else None,
+                      {category: versions[0][0] if versions else None for category, versions in plugin_releases.items()},
+                      report)
+    check_plugin_releases_listed(root, releases, plugin_releases, report)
     check_decisions(root, report)
     check_agents(root, report)
     check_readme(root, categories, report)
