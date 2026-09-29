@@ -25,7 +25,8 @@ If the repository already runs changesets or release-please in manifest mode, ke
 Nobody should have to guess. Under a "Release" heading in `AGENTS.md` or `CONTRIBUTING.md`, write down:
 - the components, and the changelog path as a template such as `packages/{component}/CHANGELOG.md`;
 - the version files of each component, for example `packages/api/package.json` or that component's entry in a plugin manifest, and those of the root;
-- the two tag forms.
+- the two tag forms;
+- whether every component release also releases the root (see `root-follows-components.md`).
 
 ## Logging a change
 
@@ -68,11 +69,16 @@ git push origin api--v1.3.0 web--v0.9.1 v2.1.0
 
 Do not use `git push --tags` or `--follow-tags` here. If a run is still missing, start it for that tag: `gh workflow run release.yml -f tag=api--v1.3.0`.
 
+## Root follows components (optional)
+
+In a catalog such as a plugin marketplace, the root release is the one visitors see, and it goes stale when only the components move. The project can decide that every component release is also a root release, at least a patch, whose notes list the components released. `root-follows-components.md` covers the rule, the bump, the notes, the tag order and the checks.
+
 ## The workflow
 
-`templates/release-components.yml` releases both tag forms. Install it at `.github/workflows/release.yml` and set two values:
+`templates/release-components.yml` releases both tag forms. Install it at `.github/workflows/release.yml` and set these values:
 - `ROOT_CHANGELOG`: the root changelog, `CHANGELOG.md` by default.
 - `COMPONENT_CHANGELOG`: the path template. `{component}` is replaced by the name in the tag.
+- `ROOT_FOLLOWS_COMPONENTS`: `"true"` when every component release also releases the root, which makes the workflow refuse a component tag the root release at that commit does not list. `"false"` by default.
 
 Compared with `templates/release.yml`, it:
 - parses the tag by the `--v` separator (a component) or a leading `v` (the root), validates the name and the version, and passes only the parsed values to later steps;

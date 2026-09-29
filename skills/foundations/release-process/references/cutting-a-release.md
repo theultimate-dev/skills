@@ -35,6 +35,8 @@ git log "$prev..HEAD" --pretty='%b' | grep -n 'BREAKING CHANGE' || true
 
 Cross-check with the `[Unreleased]` entries: `Removed` or a breaking `Changed` should mean major; only `Fixed` should mean patch. If the commits and the changelog disagree, an entry is probably missing. Fix that before releasing.
 
+If every component release also releases the root (`root-follows-components.md`), the root release that goes with component releases is at least a patch, raised by the root's own unreleased entries.
+
 Propose the version to the user with the reason in one line.
 
 ## 3. Release the changelog
@@ -46,6 +48,8 @@ Edit `CHANGELOG.md`:
 3. Update the link references at the bottom:
    - `[Unreleased]: https://github.com/OWNER/REPO/compare/vX.Y.Z...HEAD`
    - a new line `[X.Y.Z]: https://github.com/OWNER/REPO/compare/vPREV...vX.Y.Z`. For the first release there is no previous tag; use `https://github.com/OWNER/REPO/releases/tag/vX.Y.Z`.
+
+When the root is released with components, add the `Components released with this version:` bullet under `### Changed` in the root section now, one line per component, linking each component's release page.
 
 Read the released section once as a stranger. It becomes the GitHub Release notes verbatim.
 
@@ -74,7 +78,7 @@ gh run watch                    # or open the Actions page; the Release workflow
 gh release view vX.Y.Z          # notes match the changelog section; assets present if the project builds any
 ```
 
-Push `main` before the tag. The workflow checks that the tagged commit is on `main`; if the tag arrives first, that check fails, and you re-run the job after `main` lands. Report the release URL to the user.
+Push `main` before the tag. When one commit releases components and the root, push the component tags before the root tag, so the root notes never link to a release that does not exist yet. The workflow checks that the tagged commit is on `main`; if the tag arrives first, that check fails, and you re-run the job after `main` lands. Report the release URL to the user.
 
 ## Rollback
 

@@ -22,13 +22,13 @@ Commit messages follow Conventional Commits: `type(scope): description`. `feat` 
 
 ## Entry point 2: cut a release
 
-First decide which mode the project is in. Independent versions show as a changelog per component, tags such as `api--v1.2.0`, or a note in `AGENTS.md`. In that mode, read `references/independent-versions.md` before anything else: it changes which tag, changelog, and version files each step below uses, and a release commit may release several components at once.
+First decide which mode the project is in. Independent versions show as a changelog per component, tags such as `api--v1.2.0`, or a note in `AGENTS.md`. In that mode, read `references/independent-versions.md` before anything else: it changes which tag, changelog, and version files each step below uses, and a release commit may release several components at once. If the project releases the root with every component release, as a plugin marketplace often does, also read `references/root-follows-components.md`.
 
 Read `references/cutting-a-release.md` and follow it step by step. The short form:
 
 1. **Preflight.** On `main`, working tree clean, in sync with `origin/main`, CI green on the head commit, `[Unreleased]` has entries, the intended tag exists neither locally nor remotely.
-2. **Pick the version.** From the commits since the last tag: any breaking change means major, otherwise any `feat` means minor, otherwise patch. Confirm the version with the user; the changelog entries are the argument for it.
-3. **Release the changelog.** Rename `## [Unreleased]` to `## [X.Y.Z] - YYYY-MM-DD`, add a fresh empty `## [Unreleased]` above it, update the link references at the bottom.
+2. **Pick the version.** From the commits since the last tag: any breaking change means major, otherwise any `feat` means minor, otherwise patch. Confirm the version with the user; the changelog entries are the argument for it. A root that follows its components gets at least a patch.
+3. **Release the changelog.** Rename `## [Unreleased]` to `## [X.Y.Z] - YYYY-MM-DD`, add a fresh empty `## [Unreleased]` above it, update the link references at the bottom. A root that follows its components lists them in its new section, linking each one's release.
 4. **Bump version files.** Every file the project declares as carrying the version: `package.json`, `pyproject.toml`, `Cargo.toml`, a plugin manifest, `version.txt`. The list lives in `AGENTS.md` or `CONTRIBUTING.md`; if there is none, ask once and suggest recording it there.
 5. **Commit, tag, push.** One commit `chore(release): vX.Y.Z` containing exactly those files. Annotated tag `vX.Y.Z` on it. Push `main` first, then the tag. Watch the workflow run and confirm the GitHub Release appeared with the right notes.
 
@@ -60,6 +60,7 @@ In a chat client without a shell, or without the repository checked out, do the 
 | `references/github-release-workflow.md` | Understanding, installing, or debugging the release workflow |
 | `references/bootstrapping.md` | No changelog or workflow yet, or another release tool is in place |
 | `references/independent-versions.md` | Components versioned on their own: changelog per component, `name--vX.Y.Z` tags, several releases at once |
+| `references/root-follows-components.md` | Every component release also releases the root, so a catalog's Latest release stays current |
 | `templates/CHANGELOG.md` | Starting file for a new changelog |
 | `templates/release.yml` | The workflow to install at `.github/workflows/release.yml` |
 | `templates/release-components.yml` | The same workflow for root `vX.Y.Z` and component `name--vX.Y.Z` tags |

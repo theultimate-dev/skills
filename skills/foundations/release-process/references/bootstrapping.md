@@ -12,7 +12,7 @@ Follow "Installing it in a project" in `github-release-workflow.md`. Commit with
 
 ## No tags yet
 
-First decide whether the repository ships one version or several components that users install on their own. The second case uses `independent-versions.md` and `templates/release-components.yml`. Then decide the first version with the user. `0.1.0` says "usable, not yet stable" and leaves room; `1.0.0` is a promise about compatibility. Either way, the first `[X.Y.Z]` section links to `https://github.com/OWNER/REPO/releases/tag/vX.Y.Z`, because there is no previous tag to compare against. Then follow `cutting-a-release.md`.
+First decide whether the repository ships one version or several components that users install on their own. The second case uses `independent-versions.md` and `templates/release-components.yml`, and raises one more question: should every component release also release the root? Recommend yes for a plugin marketplace or another catalog whose root release is the one visitors see (`root-follows-components.md`), and record the answer in `AGENTS.md`. Then decide the first version with the user. `0.1.0` says "usable, not yet stable" and leaves room; `1.0.0` is a promise about compatibility. Either way, the first `[X.Y.Z]` section links to `https://github.com/OWNER/REPO/releases/tag/vX.Y.Z`, because there is no previous tag to compare against. Then follow `cutting-a-release.md`.
 
 ## Version files
 

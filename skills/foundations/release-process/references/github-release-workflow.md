@@ -2,7 +2,7 @@
 
 `templates/release.yml` is a GitHub Actions workflow that turns a pushed `vX.Y.Z` tag into a GitHub Release whose notes are that version's section of `CHANGELOG.md`. It uses only `actions/checkout` and the `gh` CLI preinstalled on GitHub runners, so there is no third-party action to audit or keep updated.
 
-`templates/release-components.yml` does the same for a repository whose components are versioned independently. It releases both root `vX.Y.Z` tags and component `name--vX.Y.Z` tags from the matching changelog. It adds a tag-parsing step, a checkout of the tag, a manual run with a `tag` input, and a Latest policy. `independent-versions.md` explains it. The steps below apply to both.
+`templates/release-components.yml` does the same for a repository whose components are versioned independently. It releases both root `vX.Y.Z` tags and component `name--vX.Y.Z` tags from the matching changelog. It adds a tag-parsing step, a checkout of the tag, a manual run with a `tag` input, a Latest policy, and an optional check, switched on with `ROOT_FOLLOWS_COMPONENTS`, that refuses a component tag the root release at the same commit does not list. `independent-versions.md` explains it, and `root-follows-components.md` the option. The steps below apply to both.
 
 ## What it does, in order
 
@@ -31,6 +31,7 @@ Projects that ship files add a packaging step between 4 and 5 and pass the files
 | No run appears after a tag push | The push carried more than three tags, and GitHub created no event | Components template: `gh workflow run release.yml -f tag=TAG`. Push at most three tags at a time |
 | `... does not exist at TAG. Is 'NAME' a component of this repository?` | The tag names an unknown component, or `COMPONENT_CHANGELOG` does not match the layout | Fix the path template on `main` and start the run by hand. A misnamed tag stays unreleased; tag the right component under its next version |
 | `Tag '...' is neither vMAJOR.MINOR.PATCH nor NAME--vMAJOR.MINOR.PATCH` | Tag shape, components template | As for the tag shape above |
+| `CHANGELOG.md section X.Y.Z does not link NAME--vX.Y.Z` | `ROOT_FOLLOWS_COMPONENTS` is on and the release commit did not release the root, or its section does not link the component with an inline link | A re-run reads the same commit and fails again. Leave the tag unreleased and release the component under its next version together with the root |
 | `Resource not accessible by integration` | Token lacks `contents: write` | Repository or organisation Actions settings |
 | `release not found` followed by upload errors | A re-run raced a partially created release | Re-run once more |
 

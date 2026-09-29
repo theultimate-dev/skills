@@ -1,7 +1,8 @@
 # Turns a pushed tag on main into a GitHub Release, for a repository whose components are versioned independently.
 # vX.Y.Z releases the repository itself from ROOT_CHANGELOG. NAME--vX.Y.Z releases component NAME from COMPONENT_CHANGELOG.
 # Notes come from that version's section of the matching changelog. Uses only actions/checkout and the gh CLI on the runner.
-# Install at .github/workflows/release.yml and set the two changelog paths below. If the default branch is not main, replace main in the ancestry check.
+# With ROOT_FOLLOWS_COMPONENTS set to "true", every component release is also a root release, and a component tag is refused unless the root release at its commit links it.
+# Install at .github/workflows/release.yml and set the values below. If the default branch is not main, replace main in the ancestry check.
 name: Release
 
 on:
@@ -32,6 +33,8 @@ jobs:
       TAG: ${{ inputs.tag || github.ref_name }}
       ROOT_CHANGELOG: CHANGELOG.md
       COMPONENT_CHANGELOG: "packages/{component}/CHANGELOG.md"
+      # "true" when every component release is also a root release, as in a plugin marketplace.
+      ROOT_FOLLOWS_COMPONENTS: "false"
     steps:
       - name: Parse the tag
         run: |
@@ -77,16 +80,42 @@ jobs:
           if [ ! -f "$CHANGELOG" ]; then
             echo "::error::$CHANGELOG does not exist at $TAG.${COMPONENT:+ Is '$COMPONENT' a component of this repository?}"; exit 1
           fi
-          awk -v ver="$VERSION" '
-            BEGIN { head = "## [" ver "]"; n = length(head) }
-            /^[ \t]*(```|~~~)/ { fence = !fence; if (inside) print; next }
-            fence              { if (inside) print; next }
-            /^\[[^]]+\]: /     { if (inside) exit; next }
-            /^## /             { if (inside) exit; if (substr($0, 1, n) == head) inside = 1; next }
-            inside             { print }
-          ' "$CHANGELOG" > "$RUNNER_TEMP/notes.md"
+          # Prints the body of the '## [ver]' section; the root release check reuses it.
+          cat > "$RUNNER_TEMP/section.awk" <<'AWK'
+          BEGIN { head = "## [" ver "]"; n = length(head) }
+          /^[ \t]*(```|~~~)/ { fence = !fence; if (inside) print; next }
+          fence              { if (inside) print; next }
+          /^\[[^]]+\]: /     { if (inside) exit; next }
+          /^## /             { if (inside) exit; if (substr($0, 1, n) == head) inside = 1; next }
+          inside             { print }
+          AWK
+          awk -v ver="$VERSION" -f "$RUNNER_TEMP/section.awk" "$CHANGELOG" > "$RUNNER_TEMP/notes.md"
           if [ -z "$(tr -d '[:space:]' < "$RUNNER_TEMP/notes.md")" ]; then
             echo "::error::$CHANGELOG has no entries under '## [$VERSION]'. Release the changelog before tagging."; exit 1
+          fi
+
+      # The release commit that releases a component also releases the root, whose newest section links the component's release.
+      # Pre-releases are exempt, so that betas stay off the Latest release.
+      - name: Check the root release lists the component
+        if: env.COMPONENT != '' && env.ROOT_FOLLOWS_COMPONENTS == 'true'
+        run: |
+          if [[ "$VERSION" == *-* ]]; then
+            echo "Pre-release $TAG needs no root release."; exit 0
+          fi
+          if [ ! -f "$ROOT_CHANGELOG" ]; then
+            echo "::error::$ROOT_CHANGELOG does not exist at $TAG, so no root release can list $TAG."; exit 1
+          fi
+          # The newest root release at this commit. A marketplace can read its manifest instead:
+          # root="$(jq -r '.metadata.version' .claude-plugin/marketplace.json)"
+          root="$(awk '
+            /^[ \t]*(```|~~~)/        { fence = !fence; next }
+            !fence && /^## \[[0-9]/   { sub(/^## \[/, ""); sub(/\].*/, ""); print; exit }
+          ' "$ROOT_CHANGELOG")"
+          # The section without its fenced code, where a link is an example, not a release.
+          awk -v ver="$root" -f "$RUNNER_TEMP/section.awk" "$ROOT_CHANGELOG" \
+            | awk '/^[ \t]*(```|~~~)/ { fence = !fence; next } !fence' > "$RUNNER_TEMP/root.md"
+          if [ -z "$root" ] || ! grep -qF "/releases/tag/$TAG)" "$RUNNER_TEMP/root.md"; then
+            echo "::error::$ROOT_CHANGELOG section ${root:-(none)} does not link $TAG. Release the root in the same commit, listing the component under Changed."; exit 1
           fi
 
       # Project checks go here, for example that the version files at the tag declare $VERSION for $COMPONENT.

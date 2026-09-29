@@ -8,6 +8,11 @@ Releases are tagged `foundations--vX.Y.Z`.
 
 ## [Unreleased]
 
+### Added
+
+- `release-process` can release the root with every component release, so the Latest release of a plugin marketplace or another catalog always names the newest component versions and links to their releases. A new reference covers when the option fits, the root bump (at least a patch), the notes format, the order to push tags in, catching up releases that skipped the root, and a check to add to a project's own validator. Setting up independent versions now asks whether to adopt it.
+- The components workflow template can refuse a component tag unless the root release in the same commit lists it. Set `ROOT_FOLLOWS_COMPONENTS` to `"true"` to turn the check on; it is off by default, and component pre-releases are exempt.
+
 ## [0.1.1] - 2026-09-29
 
 ### Fixed
