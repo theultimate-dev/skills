@@ -13,6 +13,10 @@ Marketplace releases are tagged `vX.Y.Z`.
 
 ## [Unreleased]
 
+### Changed
+
+- Every plugin release now also releases the marketplace, with at least a patch bump, so the Latest release on GitHub always names the newest plugin versions. Its notes list each plugin released with its new version and a link to that plugin's release. Decision 0011 records the rule.
+
 ## [0.1.0] - 2026-09-28
 
 ### Added

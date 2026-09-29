@@ -1,8 +1,9 @@
 # 0010: Version, log, and release each plugin on its own
 
-- Status: accepted
+- Status: superseded
 - Date: 2026-09-27
 - Supersedes: 0005
+- Superseded by: 0011
 
 ## Context
 
