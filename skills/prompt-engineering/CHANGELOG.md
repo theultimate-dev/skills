@@ -8,6 +8,15 @@ Releases are tagged `prompt-engineering--vX.Y.Z`.
 
 ## [Unreleased]
 
+### Added
+
+- `improving-prompts` has notes for GPT-6 Astra. OpenAI's GPT-6 prompts were written from Astra's behaviour, so the notes apply them to Astra directly and add its API settings: no `none` effort, no sampling or log-probability parameters, and tool calling only through the Responses API. They also add OpenAI's advice on having the model name the skill instruction that made it pause, keeping skill descriptions short and AGENTS.md pointers tied to when each doc applies, and granting standing permission for workflows known to be safe. Where OpenAI's pages call Astra's clarifying questions a strength while its prompting guidance treats them as a cause of early stops, the notes say which page says what.
+- `improving-prompts` has notes for GPT-6.1 Sol: effort from `low` to `max` with `medium` as the default and no `none` or `minimal`, tool calling only through the Responses API, and multi-agent delegation in beta. They add what its system card reports against GPT-6 Astra, such as pressing on past warnings more often, and say that no source shows whether a prompt changes it. OpenAI has published no prompting guidance specific to GPT-6.1 Sol, so the family's Astra-derived prompts are a starting point and the rest is listed as unconfirmed.
+
+### Changed
+
+- `improving-prompts` covers the GPT-6 family in one section. The GPT-6 Sol and Luna notes now list the log-probability parameters to remove when effort is above `none`, and describe Luna's intended use in the words OpenAI's pages now use: extraction, classification, transformation, and structured summaries.
+
 ## [0.2.0] - 2026-09-29
 
 ### Added
