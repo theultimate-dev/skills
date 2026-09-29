@@ -14,7 +14,7 @@
     {
       "name": "foundations",
       "description": "What every project needs regardless of stack: decision records that people and agents can read, and releases with a changelog and a tag on main.",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "source": "./",
       "strict": false,
       "license": "MIT",
@@ -67,7 +67,7 @@
     {
       "name": "prompt-engineering",
       "description": "From a rough prompt to an engineered one: destination and gap diagnosis, a catalog of prompt and context engineering techniques with apply and reject criteria, dated model-family notes, and a copy-paste-ready result with the reasoning behind it.",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "source": "./",
       "strict": false,
       "license": "MIT",
