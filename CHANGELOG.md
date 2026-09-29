@@ -20,6 +20,7 @@ Marketplace releases are tagged `vX.Y.Z`.
   - `prompt-engineering` [0.2.0](https://github.com/theultimate-dev/skills/releases/tag/prompt-engineering--v0.2.0): `improving-prompts` has notes for Grok 4.7, GPT-6 Sol and Luna, and Claude Opus 5.5 and Sonnet 5.5.
 - Every plugin release now also releases the marketplace, with at least a patch bump, so the Latest release on GitHub always names the newest plugin versions. Its notes list each plugin released with its new version and a link to that plugin's release. Decision 0011 records the rule.
 - `scripts/validate.py` requires this changelog to link every plugin release made after the first marketplace release, and refuses a link to a plugin release that does not exist.
+- The release workflow refuses a plugin tag unless the marketplace release at the same commit lists that plugin release.
 
 ## [0.1.0] - 2026-09-28
 

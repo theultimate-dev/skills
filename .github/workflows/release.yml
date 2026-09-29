@@ -1,7 +1,8 @@
 # Turns a pushed tag on main into a GitHub Release.
 # vX.Y.Z releases the marketplace from CHANGELOG.md, notes only.
 # PLUGIN--vX.Y.Z releases one plugin from skills/PLUGIN/CHANGELOG.md, with one zip per skill in that plugin plus checksums.
-# Same workflow as skills/foundations/release-process/templates/release-components.yml, plus the "Check the manifest" and "Package the plugin" steps, with actions pinned to commit SHAs.
+# Every plugin release is also a marketplace release (decisions/0011), so a plugin tag needs the marketplace release at its commit to list it.
+# Same workflow as skills/foundations/release-process/templates/release-components.yml, plus the "Check the manifest", "Check the marketplace release" and "Package the plugin" steps, with actions pinned to commit SHAs.
 name: Release
 
 on:
@@ -77,14 +78,16 @@ jobs:
           if [ ! -f "$CHANGELOG" ]; then
             echo "::error::$CHANGELOG does not exist at $TAG.${COMPONENT:+ Is '$COMPONENT' a component of this repository?}"; exit 1
           fi
-          awk -v ver="$VERSION" '
-            BEGIN { head = "## [" ver "]"; n = length(head) }
-            /^[ \t]*(```|~~~)/ { fence = !fence; if (inside) print; next }
-            fence              { if (inside) print; next }
-            /^\[[^]]+\]: /     { if (inside) exit; next }
-            /^## /             { if (inside) exit; if (substr($0, 1, n) == head) inside = 1; next }
-            inside             { print }
-          ' "$CHANGELOG" > "$RUNNER_TEMP/notes.md"
+          # Prints the body of the '## [ver]' section; the marketplace check reuses it.
+          cat > "$RUNNER_TEMP/section.awk" <<'AWK'
+          BEGIN { head = "## [" ver "]"; n = length(head) }
+          /^[ \t]*(```|~~~)/ { fence = !fence; if (inside) print; next }
+          fence              { if (inside) print; next }
+          /^\[[^]]+\]: /     { if (inside) exit; next }
+          /^## /             { if (inside) exit; if (substr($0, 1, n) == head) inside = 1; next }
+          inside             { print }
+          AWK
+          awk -v ver="$VERSION" -f "$RUNNER_TEMP/section.awk" "$CHANGELOG" > "$RUNNER_TEMP/notes.md"
           if [ -z "$(tr -d '[:space:]' < "$RUNNER_TEMP/notes.md")" ]; then
             echo "::error::$CHANGELOG has no entries under '## [$VERSION]'. Release the changelog before tagging."; exit 1
           fi
@@ -103,6 +106,17 @@ jobs:
           fi
           if [ "$declared" != "$VERSION" ]; then
             echo "::error::.claude-plugin/marketplace.json declares '${declared:-nothing}' in $where, not $VERSION. Bump it in the release commit."; exit 1
+          fi
+
+      # Every plugin release is also a marketplace release in the same commit, whose section links the plugin's release.
+      # The validator ties metadata.version to the newest section of the root changelog.
+      - name: Check the marketplace release lists the plugin
+        if: env.COMPONENT != ''
+        run: |
+          marketplace="$(jq -r '.metadata.version' .claude-plugin/marketplace.json)"
+          awk -v ver="$marketplace" -f "$RUNNER_TEMP/section.awk" "$ROOT_CHANGELOG" > "$RUNNER_TEMP/marketplace.md"
+          if ! grep -qF "/releases/tag/$TAG)" "$RUNNER_TEMP/marketplace.md"; then
+            echo "::error::$ROOT_CHANGELOG section $marketplace does not link $TAG. Release the marketplace in the same commit, listing the plugin under Changed."; exit 1
           fi
 
       - name: Package the plugin's skills
