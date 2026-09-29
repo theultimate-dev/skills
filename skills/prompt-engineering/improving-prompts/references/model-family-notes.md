@@ -8,7 +8,7 @@ Reviewed 2026-09-16, except sections that give their own review date. Model beha
 - Claude Opus 5
 - Claude Fable 5.1 and Mythos 5.1
 - Other current Claude models
-- GPT-6 Sol
+- GPT-6 Sol and GPT-6 Luna
 - GPT-5.x
 - Gemini 3.x
 - Grok 4.7
@@ -62,11 +62,13 @@ Observed at review on Claude Fable 5.1, Fable 5, Opus 5, Opus 4.8, Sonnet 5, Son
 - Opus 4.6: more upfront exploration; replace blanket defaults with targeted tool instructions; a commit-to-an-approach line curbs re-deliberation; damp subagent use explicitly.
 - Haiku 4.5: benefits from more guidance and examples than the larger models; test the prompt on it separately.
 
-## GPT-6 Sol
+## GPT-6 Sol and GPT-6 Luna
 
-Reviewed 2026-09-29. OpenAI's GPT-6 guide gives one set of prompts for the whole family, written from behaviour observed on GPT-6 Astra and offered as a starting point to evaluate on each model; OpenAI also notes that guidance that helps Sol may overconstrain Astra. Everything below except the API settings was observed on Astra, not Sol. These notes cover `gpt-6-sol`, not GPT-6.1 Sol (released 2026-09-29), whose API settings differ.
+Reviewed 2026-09-29. OpenAI's GPT-6 guide gives one set of prompts for the whole family, written from behaviour observed on GPT-6 Astra and offered as a starting point to evaluate on each model; OpenAI also notes that guidance that helps Sol or Luna may overconstrain Astra. Everything below except the API settings was observed on Astra, not on Sol or Luna. These notes cover `gpt-6-sol` and `gpt-6-luna`, not GPT-6.1 Sol (released 2026-09-29), whose API settings differ.
 
-What changes from GPT-5.x:
+Luna is the family's most efficient model, for focused, high-volume tasks such as summarization, extraction, and focused coding. It shares Sol's effort levels, default, and API constraints below. For ChatGPT Work and Codex, OpenAI suggests Luna at low effort for fine-grained edits, well-scoped problems, and simple data extraction. OpenAI publishes no Luna-specific prompting guidance.
+
+What changes from GPT-5.x, for both:
 
 - Effort levels are `none`, `low`, `medium` (the default), `high`, `xhigh`, and `max`; a request that used `minimal` starts at `low`. To change effort mid-conversation without losing the prompt cache, the harness sends a configuration update rather than changing the request-level effort. Both go under Outside the prompt.
 - Function calling in Chat Completions works only at effort `none`; tools with reasoning need the Responses API. With effort above `none`, remove `temperature`, `top_p`, and `top_logprobs`.
@@ -78,7 +80,7 @@ What changes from GPT-5.x:
 
 Still holds from GPT-5.x, per the GPT-6 sources: effort is a request parameter; instructions are followed closely, and conflicting ones now cost more.
 
-Unconfirmed for GPT-6 Sol: brief tool preambles, concrete length constraints, re-anchoring claims in long inputs, labelled assumptions, the JSON schema with `null` for missing values, citations and contradiction resolution, and identical prompts when resuming after compaction. Also unconfirmed: whether the verbosity setting applies, how to prompt for reasoning at effort `none`, and any behaviour observed on Sol itself.
+Unconfirmed for GPT-6 Sol and Luna: brief tool preambles, concrete length constraints, re-anchoring claims in long inputs, labelled assumptions, the JSON schema with `null` for missing values, citations and contradiction resolution, and identical prompts when resuming after compaction. Also unconfirmed: whether the verbosity setting applies, how to prompt for reasoning at effort `none`, and any behaviour observed on Sol or Luna themselves.
 
 ## GPT-5.x
 
