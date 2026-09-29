@@ -8,6 +8,10 @@ Releases are tagged `prompt-engineering--vX.Y.Z`.
 
 ## [Unreleased]
 
+### Added
+
+- `improving-prompts` has notes for Grok 4.7. xAI publishes no prompting guide for it, so the notes cover what its documentation states (always-on reasoning with an effort setting, parameters that return errors, parallel calls, schema guarantees, citations, cache-friendly ordering) and mark the rest as unconfirmed. The model notes and the source list now show a review date on each section or entry checked after the file's own date.
+
 ## [0.1.0] - 2026-09-28
 
 ### Added

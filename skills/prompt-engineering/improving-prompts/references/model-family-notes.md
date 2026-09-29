@@ -1,6 +1,6 @@
 # Model family notes
 
-Reviewed 2026-09-16. Model behaviour changes between releases; verify against the provider's current model page before relying on any line here. Apply these adjustments only when the user named the target model or family. Otherwise the enhanced prompt stays neutral and the report says so. Name the model in the report, never inside the prompt.
+Reviewed 2026-09-16, except sections that give their own review date. Model behaviour changes between releases; verify against the provider's current model page before relying on any line here. Apply these adjustments only when the user named the target model or family. Otherwise the enhanced prompt stays neutral and the report says so. Name the model in the report, never inside the prompt.
 
 ## Contents
 
@@ -10,6 +10,7 @@ Reviewed 2026-09-16. Model behaviour changes between releases; verify against th
 - Other current Claude models
 - GPT-5.x
 - Gemini 3.x
+- Grok 4.7
 - Unknown or other
 
 ## Claude, current generation
@@ -83,6 +84,21 @@ From the GPT-5, 5.1, and 5.2 prompting guides at review.
 - Keep formatting consistent across few-shot examples.
 - Use the grounding tools for current facts and code execution for calculation rather than asking the model to compute in text.
 - Request the output format explicitly (table, list, JSON).
+
+## Grok 4.7
+
+Reviewed 2026-09-29. xAI publishes no text-prompting guide for Grok 4.7 or any Grok 4.x model, so these lines record what its model page, API documentation, and launch post state. Apply the portable core and test on the model.
+
+- Reasoning is always on and cannot be disabled. Its depth is the `reasoning_effort` setting: `low`, `medium`, `high` (the default), or `xhigh`. List the depth under Outside the prompt. xAI does not say whether step-by-step wording in the prompt helps or hurts.
+- Stop sequences and presence and frequency penalties return an error on xAI's reasoning models, Grok 4.7 included. A draft that relies on a stop sequence needs output tags or a structured output instead.
+- xAI says it works longer on difficult tasks and checks its own work more carefully than Grok 4.6. Whether an explicit verification instruction still helps is unconfirmed.
+- Parallel function calling is on by default.
+- With structured outputs, a response is guaranteed to match the supported schema features, so the prompt can describe the task without restating the required fields.
+- Inline citations are on by default in the Responses API, but the model decides when to cite; they do not guarantee a citation on every answer.
+- For cache hits, keep system prompt, few-shot examples, and reference documents at the start as a stable prefix and only append to the history. The cache key, passing reasoning items back unchanged, and context compaction for long agent loops are harness settings for Outside the prompt.
+- For Grok Build rule files such as AGENTS.md (Grok 4.7 is Grok Build's default model), xAI says short, specific instructions are followed more reliably than long ones.
+
+Unconfirmed for Grok 4.7: response to instruction style and emphasis, verbosity and length (no verbosity setting is documented), formatting defaults, persistence and progress updates on agentic work, delegation, few-shot examples, prefill, question placement in long inputs, and changes needed when migrating prompts from Grok 4.6.
 
 ## Unknown or other
 
