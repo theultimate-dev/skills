@@ -216,7 +216,7 @@ Documented by the tools, not yet run by me. Open an issue if one misbehaves.
 
 Each category is a plugin with its own [SemVer](https://semver.org/spec/v2.0.0.html) version, changelog (`skills/<category>/CHANGELOG.md`), and releases, tagged `<category>--vX.Y.Z` on `main`. A plugin release carries that plugin's notes and one zip per skill. A new skill is a minor release of its plugin. Renaming or removing a skill is a breaking change, and until a plugin reaches 1.0.0 a breaking change bumps its minor version.
 
-The marketplace is versioned too. [CHANGELOG.md](CHANGELOG.md) and `vX.Y.Z` tags cover plugins added, renamed, or removed, install routes, and release assets. The decisions behind this shape are in [decisions/](decisions/README.md).
+The marketplace is versioned too. [CHANGELOG.md](CHANGELOG.md) and `vX.Y.Z` tags cover plugins added, renamed, or removed, install routes, and release assets. Every plugin release is also a marketplace release, at least a patch, whose notes list each plugin released with a link to its release, so the Latest release on the [releases page](https://github.com/theultimate-dev/skills/releases) always names the newest plugin versions. The decisions behind this shape are in [decisions/](decisions/README.md).
 
 ## License
 

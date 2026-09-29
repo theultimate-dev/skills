@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to the `theultimate-dev` marketplace and the repository around it are documented in this file: the plugin catalog, install routes, release assets, and repository tooling. Each plugin keeps its own changelog:
+All notable changes to the `theultimate-dev` marketplace and the repository around it are documented in this file: the plugin catalog, install routes, release assets, repository tooling, and every plugin release, with a link to its notes. Each plugin keeps its own changelog:
 
 - [`foundations`](skills/foundations/CHANGELOG.md)
 - [`product-design`](skills/product-design/CHANGELOG.md)
@@ -9,7 +9,7 @@ All notable changes to the `theultimate-dev` marketplace and the repository arou
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/2.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-Marketplace releases are tagged `vX.Y.Z`.
+Marketplace releases are tagged `vX.Y.Z`. Every plugin release is also a marketplace release, which lists the plugins released under Changed.
 
 ## [Unreleased]
 

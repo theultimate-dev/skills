@@ -10,7 +10,7 @@ This repository holds agent skills in the open [Agent Skills](https://agentskill
 | `skills/<category>/CHANGELOG.md` | The plugin's changelog, Keep a Changelog 2.0.0. Every user-visible change to the category gets an entry under `[Unreleased]` |
 | `.claude-plugin/marketplace.json` | One plugin per category, read by Claude Code and Copilot CLI. Carries each plugin's version and the marketplace version |
 | [`decisions/README.md`](decisions/README.md) | Index of decision records. Read it before changing structure or conventions |
-| [`CHANGELOG.md`](CHANGELOG.md) | The marketplace and repository changelog: plugins added, renamed or removed, install routes, release assets, tooling |
+| [`CHANGELOG.md`](CHANGELOG.md) | The marketplace and repository changelog: plugins added, renamed or removed, install routes, release assets, tooling, and a line for each plugin release |
 | `scripts/validate.py` | Enforces the mechanical rules below; it cannot judge commit messages, changelog wording, or whether an entry was added. Run it before you finish |
 | `.github/workflows/` | `validate.yml` on push and pull request, `release.yml` on `vX.Y.Z` and `<plugin>--vX.Y.Z` tags or run by hand with a tag |
 
@@ -30,7 +30,7 @@ Layout
 
 Commits and changelogs
 - Conventional Commits, description in the imperative mood, lowercase, no trailing period. Scope is the category or the skill: `feat(foundations): add …`, `fix(release-process): correct …`. A breaking change carries `!` and a `BREAKING CHANGE:` footer. Renaming or removing a skill, or moving it out of its category, is breaking for its plugin; renaming or removing a category is breaking for the marketplace: `feat(foundations)!: …`.
-- Add the changelog entry under `[Unreleased]` in the same change, written for users, not from the commit subject. Anything inside a category, and that plugin's own entry in `marketplace.json`, goes in `skills/<category>/CHANGELOG.md`. The plugin catalog (plugins added, renamed, removed), install routes, release assets and repository tooling (validator, CI, decisions, evaluations) go in the root `CHANGELOG.md`. A change that spans both gets an entry in each.
+- Add the changelog entry under `[Unreleased]` in the same change, written for users, not from the commit subject. Anything inside a category, and that plugin's own entry in `marketplace.json`, goes in `skills/<category>/CHANGELOG.md`. The plugin catalog (plugins added, renamed, removed), install routes, release assets and repository tooling (validator, CI, decisions, evaluations) go in the root `CHANGELOG.md`. A change that spans both gets an entry in each. The root changelog's lines for plugin releases are written in the release commit, see [Release](#release).
 
 Conduct
 - Never commit, push, tag, open a pull request, or publish without explicit confirmation in the current conversation.
@@ -38,7 +38,7 @@ Conduct
 
 ## Release
 
-Plugins and the marketplace are versioned independently ([0010](decisions/0010-independent-plugin-versions.md)). Cut a release with the `release-process` skill in `skills/foundations/release-process/`, in its independent-versions mode. The components are the plugins, with changelogs at `skills/{component}/CHANGELOG.md`, and the root is the marketplace.
+Plugins and the marketplace are versioned independently, and every plugin release is also a marketplace release ([0011](decisions/0011-marketplace-release-with-every-plugin-release.md)). Cut a release with the `release-process` skill in `skills/foundations/release-process/`, in its independent-versions mode. The components are the plugins, with changelogs at `skills/{component}/CHANGELOG.md`, and the root is the marketplace.
 
 | Stream | Changelog | Version file | Tag |
 |---|---|---|---|
@@ -47,8 +47,10 @@ Plugins and the marketplace are versioned independently ([0010](decisions/0010-i
 
 - Every version equals the newest release in its changelog: `0.0.0` until the first release, which is `0.1.0`. Before 1.0.0 a breaking change bumps the minor version.
 - Plugin bumps: patch for fixes and wording in its skills, minor for a new skill, reference or template, major for renaming, removing or moving out a skill.
-- Marketplace bumps: patch for catalog fixes, minor for a plugin added or a new install route or asset type, major for a plugin renamed or removed or a changed marketplace name or install path.
-- A release commit, `chore(release): …`, touches only the released changelogs and the matching versions. One commit may release several streams, with one annotated tag each. Push `main` first, then the tags by name, at most three per push; GitHub runs no workflow for larger tag pushes.
+- Marketplace bumps: patch for catalog fixes and for every plugin release, minor for a plugin added or a new install route or asset type, major for a plugin renamed or removed or a changed marketplace name or install path.
+- Every plugin release is also a marketplace release, in the same release commit. Releasing several plugins at once still makes one marketplace release. Its bump is the highest one its changes call for: patch for the plugin releases, raised to minor or major by unreleased marketplace entries that call for it, which ship with it.
+- The marketplace section lists the plugins under `### Changed`, as `- Plugins released with this version:` with one nested bullet each: `` `<category>` [X.Y.Z](https://github.com/theultimate-dev/skills/releases/tag/<category>--vX.Y.Z): `` and one line for users on what the release gives them. A plugin release cut without a marketplace release is listed under `[Unreleased]` and ships with the next one. The validator and the release workflow enforce this.
+- A release commit, `chore(release): …`, touches only the released changelogs and the matching versions, with one annotated tag per released stream. Push `main` first, then the plugin tags, then the marketplace tag, by name and at most three per push; GitHub runs no workflow for larger tag pushes.
 
 ## How to
 
