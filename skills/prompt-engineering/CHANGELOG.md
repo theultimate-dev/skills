@@ -8,6 +8,21 @@ Releases are tagged `prompt-engineering--vX.Y.Z`.
 
 ## [Unreleased]
 
+### Added
+
+- `improving-prompts` has notes for Claude Haiku 5.5, from Anthropic's Haiku 5.5 guide, migration guide, and system card. They cover:
+  - effort, new to Haiku, with `medium` as the default and thinking that can be turned off only up to `high`
+  - giving the model today's date and a tested nudge so it searches for facts that may have changed
+  - a system-prompt line that keeps JSON output from skipping a needed tool call when thinking is off
+  - early stops and skipped checks in long agent prompts at low effort
+  - mid-turn user messages that get ignored inside tool results
+  - a line that holds chatbots to their system prompt when users push back
+  - describing the sandbox to agents
+  - forced tool choice, which it accepts without thinking first
+  - refusals with no fallback model
+
+  The notes also say what Haiku 4.5 prompts relied on that has changed, such as prefill and context awareness, and list what no source confirms.
+
 ## [0.3.0] - 2026-09-30
 
 ### Added
