@@ -9,11 +9,12 @@ A skill is a set of instructions your agent follows with your permissions. Read 
 | Category | Skills | What it covers |
 |---|---|---|
 | `foundations` | [`decision-records`](skills/foundations/decision-records/SKILL.md) · [`release-process`](skills/foundations/release-process/SKILL.md) | What every project needs regardless of stack: a decision log that people and agents can read, and releases with a changelog and a tag on `main`. |
+| `harness-engineering` | [`marginal-gains`](skills/harness-engineering/marginal-gains/SKILL.md) | The harness your agents run on, improved one small verified change at a time: instruction files, skills, memory, hooks and permissions, repository checks, and your prompts, ranked by what actually happened in your sessions and by your goals. |
 | `product-design` | [`guiding-product-discovery`](skills/product-design/guiding-product-discovery/SKILL.md) · [`shaping-product-briefs`](skills/product-design/shaping-product-briefs/SKILL.md) · [`designing-ux-flows`](skills/product-design/designing-ux-flows/SKILL.md) · [`exploring-visual-directions`](skills/product-design/exploring-visual-directions/SKILL.md) · [`building-html-prototypes`](skills/product-design/building-html-prototypes/SKILL.md) · [`preparing-implementation-handoffs`](skills/product-design/preparing-implementation-handoffs/SKILL.md) | Rough ideas through product/design handoff: requirements, UX, contrasting visual sketches, and refined offline HTML prototypes, with user decisions at milestones. |
 | `product-engineering` | [`running-implementation-loops`](skills/product-engineering/running-implementation-loops/SKILL.md) · [`specifying-work-items`](skills/product-engineering/specifying-work-items/SKILL.md) · [`brainstorming-solutions`](skills/product-engineering/brainstorming-solutions/SKILL.md) · [`defining-verification`](skills/product-engineering/defining-verification/SKILL.md) · [`planning-implementation`](skills/product-engineering/planning-implementation/SKILL.md) · [`implementing-plans`](skills/product-engineering/implementing-plans/SKILL.md) · [`verifying-implementation`](skills/product-engineering/verifying-implementation/SKILL.md) · [`reviewing-code-changes`](skills/product-engineering/reviewing-code-changes/SKILL.md) · [`shipping-pull-requests`](skills/product-engineering/shipping-pull-requests/SKILL.md) | Specify by interview, brainstorm and pick an approach, agree how the agent verifies itself, approve the roadmap; then autonomous implementation, real verification in the running app, quick and five-lens review, and one PR per slice, merged by the agent when safe and authorized. |
 | `prompt-engineering` | [`improving-prompts`](skills/prompt-engineering/improving-prompts/SKILL.md) | A rough prompt to an engineered one: destination and gap diagnosis, a technique catalog with apply and reject criteria, dated model-family notes, and a copy-paste-ready result with the reasoning behind it. |
 
-Each category is a plugin with its own version and changelog: [`foundations`](skills/foundations/CHANGELOG.md) · [`product-design`](skills/product-design/CHANGELOG.md) · [`product-engineering`](skills/product-engineering/CHANGELOG.md) · [`prompt-engineering`](skills/prompt-engineering/CHANGELOG.md).
+Each category is a plugin with its own version and changelog: [`foundations`](skills/foundations/CHANGELOG.md) · [`harness-engineering`](skills/harness-engineering/CHANGELOG.md) · [`product-design`](skills/product-design/CHANGELOG.md) · [`product-engineering`](skills/product-engineering/CHANGELOG.md) · [`prompt-engineering`](skills/prompt-engineering/CHANGELOG.md).
 
 ## From an idea to a design handoff
 
@@ -110,6 +111,23 @@ coding agent with the test suite available.
 
 Use improving-prompts to turn this draft into a system prompt for a
 support assistant that reads customer emails. Target Claude Opus 5.
+```
+
+## From a finished session to a sharper harness
+
+Run `marginal-gains` at the end of a session with your agent. It reads what actually happened: your corrections, instructions you had to repeat, failures and retries, questions the repository could have answered, steps you did by hand, and what went well. It returns two or three suggestions for your harness, the most crucial first: an instruction file, a skill, memory, a hook or permission, a repository check, or the way you prompt. Each one quotes its evidence, gives the exact change, small enough to apply in minutes, and says what the next session should show if it worked. Nothing is applied until you pick it, and nothing is committed.
+
+It keeps a ledger in a file you choose, outside your repositories. Each run checks the changes you applied against the new session, brings back the ones that slipped with a firmer fix, leaves out what you declined, and ranks friction higher each time it recurs. Your goals, written at the top of the ledger, decide which improvements matter most.
+
+Install with `claude plugin install harness-engineering@theultimate-dev` after marketplace setup, or `npx skills add theultimate-dev/skills/skills/harness-engineering`.
+
+```text
+Use marginal-gains before we wrap up.
+
+Use marginal-gains on this session. My goals, in order: help my readers
+and clients, grow my open-source projects, grow the company.
+
+Use marginal-gains and also read my last five sessions in this project.
 ```
 
 ## Install

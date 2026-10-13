@@ -26,6 +26,19 @@
       ]
     },
     {
+      "name": "harness-engineering",
+      "description": "Improve the harness your agents run on, one small verified change at a time: instruction files, skills, memory, hooks and permissions, repository checks, and your own prompts, ranked by the evidence of real sessions and by your goals.",
+      "version": "0.0.0",
+      "source": "./",
+      "strict": false,
+      "license": "MIT",
+      "homepage": "https://github.com/theultimate-dev/skills",
+      "keywords": ["harness", "harness-engineering", "context-engineering", "agents", "agents-md", "retrospective", "continuous-improvement"],
+      "skills": [
+        "./skills/harness-engineering/marginal-gains"
+      ]
+    },
+    {
       "name": "product-design",
       "description": "From rough ideas to product/design handoffs: requirements, UX flows, visual directions, and independent offline HTML prototypes, with an optional discovery coordinator.",
       "version": "0.1.0",
