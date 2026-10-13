@@ -64,6 +64,6 @@ Rename or remove a category: breaking for the marketplace. Add a `renames` entry
 
 Record a decision: use the `decision-records` skill in `skills/foundations/decision-records/`. Cut a release: see [Release](#release).
 
-Dogfood: `npx skills add . -g -a '*' -y` installs this working tree's skills for every agent on this machine, as the README's Route B does for readers. Re-run it after each edit; the installed copy does not follow the working tree.
+Dogfood: Claude Code reads this checkout as the `theultimate-dev` marketplace, the README's Route A pointed at the working tree. Set it up once from the repository root with `claude plugin marketplace add "$PWD"` and `claude plugin install <plugin>@theultimate-dev` for each plugin. Edits then apply at the next session or `/reload-plugins`, and every Claude Code session on the machine follows the branch checked out here. To go back to the releases, remove `theultimate-dev` from `extraKnownMarketplaces` in `~/.claude/settings.json`, then run `claude plugin marketplace add theultimate-dev/skills`. Other agents get a copy through Route B: `npx skills add . -g -a codex pi -y` copies the skills into `~/.agents/skills`, which Codex and Pi read. Re-run it after each edit. Name only the agents you use, never `claude-code`, or Claude Code lists every skill twice.
 
 See also: [README.md](README.md) · [CONTRIBUTING.md](CONTRIBUTING.md) · [SECURITY.md](SECURITY.md)
