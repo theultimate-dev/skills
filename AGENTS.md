@@ -64,6 +64,6 @@ Rename or remove a category: breaking for the marketplace. Add a `renames` entry
 
 Record a decision: use the `decision-records` skill in `skills/foundations/decision-records/`. Cut a release: see [Release](#release).
 
-Dogfood: `npx skills add . -g -a claude-code -y` copies this working tree's skills into your Claude Code skills directory. Re-run it after each edit; the copy does not follow the working tree.
+Dogfood: `npx skills add . -g -a '*' -y` installs this working tree's skills for every agent on this machine, as the README's Route B does for readers. Re-run it after each edit; the installed copy does not follow the working tree.
 
 See also: [README.md](README.md) · [CONTRIBUTING.md](CONTRIBUTING.md) · [SECURITY.md](SECURITY.md)
