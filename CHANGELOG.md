@@ -3,6 +3,7 @@
 All notable changes to the `theultimate-dev` marketplace and the repository around it are documented in this file: the plugin catalog, install routes, release assets, repository tooling, and every plugin release, with a link to its notes. Each plugin keeps its own changelog:
 
 - [`foundations`](skills/foundations/CHANGELOG.md)
+- [`harness-engineering`](skills/harness-engineering/CHANGELOG.md)
 - [`product-design`](skills/product-design/CHANGELOG.md)
 - [`product-engineering`](skills/product-engineering/CHANGELOG.md)
 - [`prompt-engineering`](skills/prompt-engineering/CHANGELOG.md)
@@ -12,6 +13,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Marketplace releases are tagged `vX.Y.Z`. Every plugin release is also a marketplace release, which lists the plugins released under Changed.
 
 ## [Unreleased]
+
+### Added
+
+- `harness-engineering` plugin, for skills that improve the harness your agents run on: instruction files, skills, memory, hooks and permissions, repository checks, and your own prompts. It starts with `marginal-gains`. Decision 0012 records why the harness gets a category of its own rather than joining `prompt-engineering`.
 
 ## [0.1.3] - 2026-09-30
 

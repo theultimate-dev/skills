@@ -54,7 +54,7 @@ Plugins and the marketplace are versioned independently, and every plugin releas
 
 ## How to
 
-Add a skill: create `skills/<category>/<name>/SKILL.md`, add its path to the category's `skills[]` in `marketplace.json`, add it to the README categories table, add an entry to `skills/<category>/CHANGELOG.md`, run `python3 scripts/validate.py`.
+Add a skill: check the name is free outside this repository too, on skills.sh and in widely installed packs, because flat installers put skills side by side by name. Then create `skills/<category>/<name>/SKILL.md`, add its path to the category's `skills[]` in `marketplace.json`, add it to the README categories table, add an entry to `skills/<category>/CHANGELOG.md`, run `python3 scripts/validate.py`.
 
 Add a category: new directory under `skills/` with a `CHANGELOG.md` whose `[Unreleased]` links `https://github.com/theultimate-dev/skills/commits/main/skills/<category>`, new plugin entry in `marketplace.json` with the same name and `"version": "0.0.0"`, README row, an entry in both the new and the root changelog, and a decision record when the split changes how users install.
 
@@ -64,6 +64,6 @@ Rename or remove a category: breaking for the marketplace. Add a `renames` entry
 
 Record a decision: use the `decision-records` skill in `skills/foundations/decision-records/`. Cut a release: see [Release](#release).
 
-Dogfood: `npx skills add . -g -a claude-code -y` copies this working tree's skills into your Claude Code skills directory. Re-run it after each edit; the copy does not follow the working tree.
+Dogfood: Claude Code reads this checkout as the `theultimate-dev` marketplace, the README's Route A pointed at the working tree. Set it up once from the repository root with `claude plugin marketplace add "$PWD"` and `claude plugin install <plugin>@theultimate-dev` for each plugin. Edits then apply at the next session or `/reload-plugins`, and every Claude Code session on the machine follows the branch checked out here. To go back to the releases, remove `theultimate-dev` from `extraKnownMarketplaces` in `~/.claude/settings.json`, then run `claude plugin marketplace add theultimate-dev/skills`. Other agents get a copy through Route B: `npx skills add . -g -a codex pi -y` copies the skills into `~/.agents/skills`, which Codex and Pi read. Re-run it after each edit. Name only the agents you use, never `claude-code`, or Claude Code lists every skill twice.
 
 See also: [README.md](README.md) · [CONTRIBUTING.md](CONTRIBUTING.md) · [SECURITY.md](SECURITY.md)

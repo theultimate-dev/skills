@@ -18,7 +18,7 @@ WORK=$(mktemp -d)
 "$EVAL/release-process-fixture.sh" "$WORK" base   # or root-minor, catch-up, no-root
 ```
 
-To dogfood the working tree, run `npx skills add . -g -a claude-code -y` from the repository root first; it copies the skills, so run it again after every edit.
+To dogfood the working tree, install it first as the Dogfood line in [AGENTS.md](../../AGENTS.md) describes.
 
 ### Common checks
 

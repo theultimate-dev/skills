@@ -20,7 +20,7 @@ git init -q -b main && echo '__pycache__/' >> .git/info/exclude
 git add -A && git commit -qm "chore: fixture baseline"
 ```
 
-Start the executing agent with `$WORK/repo` as its working directory and the skills installed. To dogfood the working tree, run `npx skills add . -g -a claude-code -y` from the repository root; it copies the skills, so run it again after every edit.
+Start the executing agent with `$WORK/repo` as its working directory and the skills installed. To dogfood the working tree, install it as the Dogfood line in [AGENTS.md](../../AGENTS.md) describes.
 
 The fixture is a Python standard-library record service with a browser page (`app.py`) and one happy-path test (`test_app.py`). `Store.update` never checks the owner: that is the seeded defect for the runnable trial. `AGENTS.md` holds the commands and one convention rule. `CODEOWNERS` assigns placeholder owners to the CI and instruction files. `.github/workflows/deploy.yml` is a stub that "deploys" to staging on every push to `main`, so every merge to `main` is a deploying merge: every authorization question in these trials needs the deploy clause, and no merge is authorized until the user's words mention the deploy. There is no verify script, no seed script and no CI for tests, on purpose.
 
