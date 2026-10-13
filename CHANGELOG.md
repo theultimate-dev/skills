@@ -14,9 +14,17 @@ Marketplace releases are tagged `vX.Y.Z`. Every plugin release is also a marketp
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-10-14
+
 ### Added
 
 - `harness-engineering` plugin, for skills that improve the harness your agents run on: instruction files, skills, memory, hooks and permissions, repository checks, and your own prompts. It starts with `marginal-gains`. Decision 0012 records why the harness gets a category of its own rather than joining `prompt-engineering`.
+
+### Changed
+
+- Plugins released with this version:
+  - `harness-engineering` [0.1.0](https://github.com/theultimate-dev/skills/releases/tag/harness-engineering--v0.1.0): first release, with `marginal-gains`: at the end of a session, two or three small harness changes ranked by the session's evidence and your goals, followed up across sessions in a ledger.
+  - `prompt-engineering` [0.4.0](https://github.com/theultimate-dev/skills/releases/tag/prompt-engineering--v0.4.0): `improving-prompts` has notes for Claude Haiku 5.5, including effort and what changed from prompts written for Haiku 4.5.
 
 ## [0.1.3] - 2026-09-30
 
@@ -66,7 +74,8 @@ Marketplace releases are tagged `vX.Y.Z`. Every plugin release is also a marketp
 - Published releases are immutable: their archives, `checksums.txt` and tag cannot change after publication.
 - The CI and release workflows run `actions/checkout` pinned to a full commit SHA, and Dependabot proposes updates to it weekly.
 
-[Unreleased]: https://github.com/theultimate-dev/skills/compare/v0.1.3...HEAD
+[Unreleased]: https://github.com/theultimate-dev/skills/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/theultimate-dev/skills/compare/v0.1.3...v0.2.0
 [0.1.3]: https://github.com/theultimate-dev/skills/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/theultimate-dev/skills/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/theultimate-dev/skills/compare/v0.1.0...v0.1.1

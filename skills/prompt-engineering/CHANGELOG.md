@@ -8,6 +8,8 @@ Releases are tagged `prompt-engineering--vX.Y.Z`.
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-10-14
+
 ### Added
 
 - `improving-prompts` has notes for Claude Haiku 5.5, from Anthropic's Haiku 5.5 guide, migration guide, and system card. They cover:
@@ -50,7 +52,8 @@ Releases are tagged `prompt-engineering--vX.Y.Z`.
 
 - `improving-prompts` skill: rewrites a rough prompt into an engineered one by classifying where it will run, diagnosing its gaps, and applying only the prompt and context engineering techniques that close them. Returns the techniques applied and rejected with reasons, placeholders for facts it could not infer, settings that belong outside the prompt, and the enhanced prompt in a copy-paste-ready tag. Ships a technique catalog split by group, dated model-family notes, worked examples, and templates.
 
-[Unreleased]: https://github.com/theultimate-dev/skills/compare/prompt-engineering--v0.3.0...HEAD
+[Unreleased]: https://github.com/theultimate-dev/skills/compare/prompt-engineering--v0.4.0...HEAD
+[0.4.0]: https://github.com/theultimate-dev/skills/compare/prompt-engineering--v0.3.0...prompt-engineering--v0.4.0
 [0.3.0]: https://github.com/theultimate-dev/skills/compare/prompt-engineering--v0.2.0...prompt-engineering--v0.3.0
 [0.2.0]: https://github.com/theultimate-dev/skills/compare/prompt-engineering--v0.1.0...prompt-engineering--v0.2.0
 [0.1.0]: https://github.com/theultimate-dev/skills/releases/tag/prompt-engineering--v0.1.0
