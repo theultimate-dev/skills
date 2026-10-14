@@ -50,6 +50,7 @@
       "skills": [
         "./skills/product-context/structuring-product-context",
         "./skills/product-context/curating-product-requirements",
+        "./skills/product-context/designing-system-architecture",
         "./skills/product-context/shaping-bets"
       ]
     },

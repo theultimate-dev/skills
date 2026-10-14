@@ -11,7 +11,7 @@ Directories are sorted by how often their content changes. Slow layers never dep
 | Directory | Holds | Changes | Written by |
 |---|---|---|---|
 | `AGENTS.md`, `README.md` | The map for agents (reading order per task, house rules) and the introduction for people | When the structure changes | `structuring-product-context` |
-| `product/` | Why and what: overview, glossary, actors and use cases, the requirement catalogue, non-functional requirements; optionally platforms and business | Rarely; a new requirement, a retarget, a status after a bet closes | `curating-product-requirements` |
+| `product/` | Why and what: overview, glossary, actors and use cases, the requirement catalogue, non-functional requirements; optionally platforms and business | Rarely; a new requirement, a retarget, a status after a bet closes | `curating-product-requirements`; target versions by `planning-product-roadmaps`; `built` statuses by `reconciling-product-context` |
 | `architecture/` | How it is structured: C4 views, components, domain model, data, deployment, build and release, cross-cutting concepts, runtime scenarios, contracts, external dependencies | At the baseline, at each version boundary, when a contract is added, when a bet closes | `designing-system-architecture` |
 | `decisions/` | Product and architecture decision records, with an index | Append-only: one record per consequential choice | `decision-records`, called by the other skills |
 | `roadmap/` | When and in what order: versions, gates, version briefs, milestones, bets, the risk and open-question registers | Often: every shaping, handoff and close | `planning-product-roadmaps`, `shaping-bets` |
@@ -68,7 +68,7 @@ Omit what a product does not need: a single-container product has no `components
 ## House rules
 
 1. **One home per fact.** Every fact lives in exactly one file. Everywhere else links to it by path or ID.
-2. **Volatile links to stable, never the reverse.** A bet links to requirements, architecture and decisions; a requirement never links to a bet; architecture never links to the roadmap. The one exception is a derived index.
+2. **Volatile links to stable, never the reverse.** A bet links to requirements, architecture and decisions; a requirement never links to a bet; architecture never links to the roadmap. Two exceptions: a derived index, and a plain-text ID that records provenance in a notes cell or a history line, such as `OQ-06` or `settled in Bet 05`, which is never a link.
 3. **IDs are permanent.** Never reuse or renumber an ID. A requirement that no longer applies stays in its table with status `dropped` and a reason.
 4. **Indexes are derived.** Folder READMEs, the bet board, coverage tables and counts are rebuilt from the files they index, by the skill that changed those files or by `reconciling-product-context`. Never edit them by hand.
 5. **Decisions are superseded, never edited.** An accepted record's decision text never changes; a new record supersedes it.
@@ -86,19 +86,19 @@ Omit what a product does not need: a single-container product has no `components
 | Use case | `UC-NN` | `UC-02` | Actors are named, not numbered |
 | Risk | `RSK-NN` | `RSK-04` | In `roadmap/risks.md` |
 | Open question | `OQ-NN` | `OQ-11` | In `roadmap/open-questions.md`; a resolved question links to its decision |
-| Decision record | `NNNN` | `0007` | Four digits, per `decision-records` |
-| Bet | `NN`, numbered across all versions | `Bet 14` in `roadmap/v2/bets/14-shared-lists.md` | Never reused, even for a dropped bet |
+| Decision record | `NNNN` | `0007` | Four digits, per `decision-records`. A code repository's record is cited as `<repository>: decisions/NNNN-title.md` |
+| Bet | `NN`, numbered across all versions | `Bet 14` in `roadmap/v2/bets/14-shared-lists.md` | Never reused, even for a dropped bet; `Depends on: Bet 03` names the file `roadmap/v*/bets/03-*.md` |
 | Acceptance criterion | `ACn (<requirement ID>)` | `AC3 (PAN-03)` | Numbered within one bet |
 | Engineering criterion | `AC-En (<requirement ID>)` | `AC-E1 (PAN-03)` | Added by the code repository at its G1, inside the bet's boundaries; promoted at close when worth keeping |
-| Contract | file slug plus a version | `contracts/sync-protocol.md`, `Version: 2` | |
+| Contract | file slug plus a major.minor version | `contracts/sync-protocol.md`, `Version: 1.1 proposed · 1.0 accepted` | A compatible change raises the minor version, an incompatible one the major version; each live version shows its own status |
 
 ## Statuses
 
 | Thing | Statuses | Where |
 |---|---|---|
-| Requirement | `planned`, `built`, `deferred`, `dropped` | A Status column in the capability file, next to its target Version |
-| Architecture section | `Since: Vn · Status: planned` or `built` | One line under the section heading |
-| Contract | `proposed`, `accepted`, `superseded` | The contract's header; bets consume only `accepted` contracts |
+| Requirement | `planned`, `built`, `deferred`, `dropped` | A Status column in the capability file, next to its target Version: a version such as `V1` until a milestone is chosen, then a milestone such as `V1.2`; a `deferred` requirement has none |
+| Architecture section | `Since: Vn · Status: planned` or `built`; `Status: retired in Vn, replaced by …`; optionally `Changed in: Vn (…)` | One line under the section heading; an untagged section reads as unverified |
+| Contract | `proposed`, `accepted`, `superseded`, per version | The contract's header, newest version first; a bet consumes only a version that is `accepted` |
 | Decision record | `proposed`, `accepted`, `deprecated`, `superseded` | Per `decision-records` |
 | Version | `planned`, `in progress`, `shipped` | `roadmap/README.md` |
 | Milestone | `planned`, `in progress`, `exited` with the date and the user's words | The version brief |
