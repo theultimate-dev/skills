@@ -14,6 +14,10 @@ Marketplace releases are tagged `vX.Y.Z`. Every plugin release is also a marketp
 
 ## [Unreleased]
 
+### Added
+
+- A plugin can have a README of its own, the page GitHub shows at `skills/<category>/`, with its images and their HTML sources in `visuals/<category>/`. Decision 0015 records the layout, and the validator checks that every link and image in the README resolves.
+
 ## [0.2.0] - 2026-10-14
 
 ### Added

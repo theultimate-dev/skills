@@ -8,6 +8,8 @@ This repository holds agent skills in the open [Agent Skills](https://agentskill
 |---|---|
 | `skills/<category>/<skill>/` | One skill: `SKILL.md`, optional `references/` and `templates/` |
 | `skills/<category>/CHANGELOG.md` | The plugin's changelog, Keep a Changelog 2.0.0. Every user-visible change to the category gets an entry under `[Unreleased]` |
+| `skills/<category>/README.md` | Optional: the plugin's landing page, which GitHub shows at the category's directory |
+| `visuals/<category>/` | A category README's images: one HTML source per visual and its rendered `-dark.png` and `-light.png`. Regenerate with `uv run scripts/render_visuals.py <category>`, as `visuals/README.md` explains |
 | `.claude-plugin/marketplace.json` | One plugin per category, read by Claude Code and Copilot CLI. Carries each plugin's version and the marketplace version |
 | [`decisions/README.md`](decisions/README.md) | Index of decision records. Read it before changing structure or conventions |
 | [`CHANGELOG.md`](CHANGELOG.md) | The marketplace and repository changelog: plugins added, renamed or removed, install routes, release assets, tooling, and a line for each plugin release |
@@ -25,7 +27,7 @@ Skill format
 
 Layout
 - `SKILL.md` lives only at `skills/<category>/<skill>/SKILL.md`. One skill belongs to one category.
-- A category directory holds its skill directories and one `CHANGELOG.md`, nothing else.
+- A category directory holds its skill directories, one `CHANGELOG.md`, and optionally one `README.md`, nothing else. The README's images live in `visuals/<category>/`, never in the category.
 - Every category has a plugin entry in `marketplace.json` with the same name, listing all of its skills as `./skills/<category>/<skill>` paths.
 
 Commits and changelogs
