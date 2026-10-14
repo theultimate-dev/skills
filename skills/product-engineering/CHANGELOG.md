@@ -8,6 +8,11 @@ Releases are tagged `product-engineering--vX.Y.Z`.
 
 ## [Unreleased]
 
+### Changed
+
+- Task briefs name the decisions that bind the task, and carry requirement IDs exactly as `spec.md` writes them, including upstream IDs such as `ABC-01`. The intent reviewer accepts those IDs too.
+- Changing an acceptance criterion's text or its verification row in `spec.md`, for example when the spec is reopened, now invalidates that criterion's results on every open PR slice that claims it, so they are observed again before a merge.
+
 ## [0.1.0] - 2026-09-28
 
 ### Added

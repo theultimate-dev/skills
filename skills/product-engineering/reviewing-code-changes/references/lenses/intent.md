@@ -4,7 +4,7 @@ Judge whether the change solves the problem the spec describes. Every acceptance
 
 ## Read first
 
-1. The spec: Problem, Requirements (`R1`, `R2`, …), Acceptance criteria (`AC1`, `AC2`, …, each naming its R), Non-goals, Constraints, Approach, and the Verification section's agreed check for each AC.
+1. The spec: Problem, Requirements (`R1`, `R2`, …, or upstream IDs kept as imported, such as `ABC-01`), Acceptance criteria (`AC1`, `AC2`, …, each naming its requirement), Non-goals, Constraints, Approach, and the Verification section's agreed check for each AC.
 2. The plan file, for the ACs and the phase this PR slice covers. A slice can cover some ACs only; the others are out of scope for this review.
 3. The verification report: the SHA it ran on, and one row per AC with the result, what was done and what was observed.
 4. Outside the loop there is no spec. Take the stated intent from the linked issue, the problem the PR description states, and the commit messages. Write the intent you reviewed against in one or two sentences at the top of your output.
@@ -45,7 +45,7 @@ You are the only reviewer before the PR opens. Stay with this lens. Also report 
 
 ## Evidence bar
 
-- Tie each finding to an R or AC ID, or to the stated intent outside the loop.
+- Tie each finding to a requirement or AC ID, or to the stated intent outside the loop.
 - Give the concrete input or sequence, the result the spec expects, and what the code does instead.
 - Reproduce when the tests or the app can run: run the targeted test, add a scratch test, or drive the app locally as the verification profile describes. Use only local or disposable environments.
 - For a weak test, name the wrong implementation that would still pass it.
@@ -75,7 +75,7 @@ summary: <one sentence: what is wrong>
 trigger: <the input or sequence; what the spec expects versus what the code does>
 impact: <who is hurt, and how badly>
 evidence: <quoted code, a command and its output, or the reproduction>
-basis: <the R or AC ID, or the stated intent>
+basis: <the requirement or AC ID, or the stated intent>
 direction: <a suggested fix, without an unrelated refactor>
 ```
 

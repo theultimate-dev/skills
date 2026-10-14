@@ -69,7 +69,8 @@ Evidence belongs to the commit SHA it ran on. Committing before verifying makes 
 | After | Invalidated | Rerun |
 |---|---|---|
 | A repair or review-fix commit | The checks whose code path, dependencies, configuration or data the diff touches (`git diff --stat <old-sha>..<new-sha>`) | Those checks and AC rows, then the quick-review recheck before the PR opens, or a delta review after |
-| A commit touching only `docs/product-engineering/` | Nothing | Nothing; the report may name the ancestor SHA |
+| A commit touching only `docs/product-engineering/`, except the row below | Nothing | Nothing; the report may name the ancestor SHA |
+| A commit that changes an AC's text or its Verification row in `spec.md`, such as a reopened spec | That AC's results on every open slice that claims it | That AC's rows on each such slice's head, then a delta review |
 | A dependency, lockfile, build or CI configuration change | Every check | The full contract and CI |
 | A rebase onto a moved base, or a merge of the base | Every check | The full contract and CI; a delta review of the conflict resolutions, not of the base's changes |
 | A stacked child rebased after its parent merged | Every check on the child | CI after the retarget, the child's AC rows, the category, a delta review |

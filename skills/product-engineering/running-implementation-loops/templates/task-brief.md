@@ -17,7 +17,7 @@ A verifier or reviewer owns no files and stays read-only toward the branch and t
 ## Objective
 
 - Outcome: [what exists, or what is known, when this task is done]
-- Requirements and acceptance criteria: [R and AC IDs with their text; each AC names its R]
+- Requirements and acceptance criteria: [requirement and AC IDs exactly as spec.md writes them (`R1`, or an upstream ID such as `ABC-01`), with their text; each AC names its requirement]
 - Verification rows for these ACs: [check, layer, tool, steps, and pass condition, from spec.md]
 - Out of scope: [what must not be built or changed]
 
@@ -31,6 +31,7 @@ At stage 5, stop after the targeted checks and return. The coordinator runs veri
 - Verification profile: [path to docs/product-engineering/verification-profile.md, or none]
 - Start from: [files, tests, and one neighboring example of the same kind of change]
 - Settled contracts you must not change: [API shapes, schemas, event names, with their location]
+- Decisions that bind this task: [decision records by path, the Approach's contracts and consequences, and any decision spec.md's Constraints name; or none]
 - Assumptions not yet confirmed: [each assumption, or none]
 
 ## Ownership
