@@ -49,6 +49,7 @@
       "keywords": ["product-context", "requirements", "architecture", "c4", "adr", "roadmap", "shape-up", "bets", "agents"],
       "skills": [
         "./skills/product-context/structuring-product-context",
+        "./skills/product-context/curating-product-requirements",
         "./skills/product-context/shaping-bets"
       ]
     },

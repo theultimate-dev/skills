@@ -32,7 +32,8 @@ Directories are sorted by how often their content changes. Slow layers never dep
 │   └── requirements/
 │       ├── README.md             ID scheme, statuses, counts (derived)
 │       ├── <capability>.md       one file per capability, e.g. pantry.md for PAN-…
-│       └── non-functional.md     NFR-…
+│       ├── non-functional.md     NFR-…
+│       └── id-map.md             local IDs from briefs and handoffs mapped to catalogue IDs (append-only)
 ├── architecture/
 │   ├── README.md                 the arc42 checklist mapped to files, the status legend
 │   ├── context.md                C4 level 1
@@ -69,7 +70,7 @@ Omit what a product does not need: a single-container product has no `components
 1. **One home per fact.** Every fact lives in exactly one file. Everywhere else links to it by path or ID.
 2. **Volatile links to stable, never the reverse.** A bet links to requirements, architecture and decisions; a requirement never links to a bet; architecture never links to the roadmap. The one exception is a derived index.
 3. **IDs are permanent.** Never reuse or renumber an ID. A requirement that no longer applies stays in its table with status `dropped` and a reason.
-4. **Indexes are derived.** Folder READMEs, the bet board, coverage tables and counts are rebuilt from the files they index, by `reconciling-product-context`. Never edit them by hand.
+4. **Indexes are derived.** Folder READMEs, the bet board, coverage tables and counts are rebuilt from the files they index, by the skill that changed those files or by `reconciling-product-context`. Never edit them by hand.
 5. **Decisions are superseded, never edited.** An accepted record's decision text never changes; a new record supersedes it.
 6. **Research is evidence, not truth.** A research note records what was found on a date. A current fact belongs in its layer, citing the note.
 7. **Point at the code, never copy it.** Describe structure, contracts and rules; leave file layouts and code to the code repository.
