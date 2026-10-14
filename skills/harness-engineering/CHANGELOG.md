@@ -8,6 +8,14 @@ Releases are tagged `harness-engineering--vX.Y.Z`.
 
 ## [Unreleased]
 
+### Added
+
+- A README for the plugin, the page GitHub shows at `skills/harness-engineering/`: what the plugin is, how `marginal-gains` works from one session to the next, why small changes that hold compound, where the name comes from, and every install route.
+
+### Changed
+
+- The plugin's `homepage` in the marketplace manifest points at that page instead of the repository.
+
 ## [0.1.0] - 2026-10-14
 
 ### Added

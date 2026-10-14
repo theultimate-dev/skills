@@ -32,7 +32,7 @@
       "source": "./",
       "strict": false,
       "license": "MIT",
-      "homepage": "https://github.com/theultimate-dev/skills",
+      "homepage": "https://github.com/theultimate-dev/skills/tree/main/skills/harness-engineering",
       "keywords": ["harness", "harness-engineering", "context-engineering", "agents", "agents-md", "retrospective", "continuous-improvement"],
       "skills": [
         "./skills/harness-engineering/marginal-gains"
