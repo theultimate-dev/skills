@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Harness engineering: why small changes compound</title>
+<script>document.documentElement.dataset.theme = new URLSearchParams(location.search).get("theme") || "dark";</script>
+<link rel="stylesheet" href="../brand.css">
+<style>
+  .headline { margin-top: 20px; font-size: 48px; }
+  .grid { display: grid; grid-template-columns: 600px 1fr; gap: 64px; margin-top: 36px; align-items: start; }
+  .chart { display: block; width: 600px; height: 320px; overflow: visible; }
+  .chart .axis { stroke: var(--border); stroke-width: 1; }
+  .chart .flat { stroke: var(--text-secondary); stroke-width: 2; stroke-dasharray: 6 6; }
+  .chart .curve { fill: none; stroke: var(--accent); stroke-width: 3; }
+  .chart .dot { fill: var(--accent); }
+  .chart text { font-family: var(--mono); font-size: 22px; fill: var(--text-secondary); }
+  .chart .value { font-family: var(--sans); font-size: 26px; font-weight: 600; fill: var(--text); }
+  .note { margin: 20px 0 0; font-family: var(--mono); font-size: 22px; color: var(--text-secondary); }
+  .rules { margin: 0; padding: 0; list-style: none; }
+  .rules li { padding: 18px 0; border-top: 1px solid var(--border); }
+  .rules li:first-child { padding-top: 4px; border-top: 0; }
+  .rules b { display: block; font-size: 26px; font-weight: 600; }
+  .rules span { display: block; margin-top: 6px; font-size: 22px; line-height: 1.4; color: var(--text-secondary); }
+</style>
+</head>
+<body>
+<div class="canvas">
+  <p class="kicker">Why marginal gains</p>
+  <h1 class="headline">Small changes compound when they hold.</h1>
+  <div class="grid">
+    <div>
+      <svg class="chart" viewBox="0 0 600 320" role="img" aria-label="1.01 to the power of n over 100 sessions: 1.10 at 10, 1.64 at 50, 2.70 at 100">
+        <g id="plot"></g>
+      </svg>
+      <p class="note">1% per session, compounded over 100 sessions: 1.01ⁿ. Arithmetic, not a measurement.</p>
+    </div>
+    <ul class="rules">
+      <li><b>Small</b><span>Each change fits in fifteen minutes.</span></li>
+      <li><b>Checked</b><span>The next session grades it.</span></li>
+      <li><b>Kept</b><span>Only changes that hold settle. Slipped ones come back on a firmer mechanism.</span></li>
+    </ul>
+  </div>
+</div>
+<script>
+  // Plot 1.01^n for n = 0..100. Plot area: x 64..504, y 16..264 for values 1.0..2.8.
+  const svg = "http://www.w3.org/2000/svg";
+  const plot = document.getElementById("plot");
+  const x = n => 64 + n * 4.4;
+  const y = v => 264 - (v - 1) / 1.8 * 248;
+  const add = (tag, attrs, text) => {
+    const el = document.createElementNS(svg, tag);
+    for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
+    if (text) el.textContent = text;
+    plot.appendChild(el);
+  };
+  add("line", { class: "flat", x1: x(0), y1: y(1), x2: x(100), y2: y(1) });
+  let d = "";
+  for (let n = 0; n <= 100; n++) d += (n ? " L" : "M") + x(n).toFixed(1) + "," + y(1.01 ** n).toFixed(1);
+  add("path", { class: "curve", d });
+  for (const [n, dy] of [[10, -18], [50, -18], [100, -18]]) {
+    const v = 1.01 ** n;
+    add("circle", { class: "dot", cx: x(n), cy: y(v), r: 6 });
+    add("text", { class: "value", x: x(n) + (n === 100 ? 14 : -10), y: y(v) + dy, "text-anchor": n === 100 ? "start" : "end" }, v.toFixed(2) + "×");
+  }
+  for (const n of [0, 25, 50, 75, 100]) add("text", { x: x(n), y: 304, "text-anchor": "middle" }, String(n));
+  add("text", { x: x(100) + 14, y: y(1) + 8 }, "1.00×");
+</script>
+</body>
+</html>

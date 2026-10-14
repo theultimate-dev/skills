@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Harness engineering: what the plugin is</title>
+<script>document.documentElement.dataset.theme = new URLSearchParams(location.search).get("theme") || "dark";</script>
+<link rel="stylesheet" href="../brand.css">
+<style>
+  .grid { display: grid; grid-template-columns: 1fr 432px; gap: 56px; align-items: start; }
+  .top { display: flex; align-items: center; gap: 24px; }
+  .headline { margin-top: 32px; font-size: 48px; }
+  .skill { margin: 28px 0 0; font-family: var(--mono); font-size: 30px; font-weight: 500; color: var(--accent); }
+  .lede { margin: 8px 0 0; font-size: 24px; line-height: 1.45; color: var(--text-secondary); }
+  .caption { margin: 4px 0 16px; }
+  .layers { margin: 0; padding: 0; list-style: none; background: var(--bg-raised); border: 1px solid var(--border); border-radius: var(--radius); }
+  .layers li { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 11px 22px; border-top: 1px solid var(--border); }
+  .layers li:first-child { border-top: 0; }
+  .layers .name { font-size: 24px; font-weight: 600; }
+  .layers .eg { font-family: var(--mono); font-size: 22px; color: var(--text-secondary); white-space: nowrap; }
+</style>
+</head>
+<body>
+<div class="canvas">
+  <div class="grid">
+    <div>
+      <div class="top">
+        <svg class="mark" viewBox="0 0 304 166" role="img" aria-label="The Ultimate Dev">
+          <path class="u" d="M0,0 H38 V102 L64,128 H76 L102,102 V0 H140 V118 L92,166 H48 L0,118 Z"/>
+          <path class="d" d="M164,0 H256 L304,48 V118 L256,166 H164 Z M202,38 V128 H240 L266,102 V64 L240,38 Z"/>
+        </svg>
+        <p class="kicker">harness-engineering plugin</p>
+      </div>
+      <h1 class="headline">Your agent's harness, a&nbsp;little better after every&nbsp;session.</h1>
+      <p class="skill">marginal-gains</p>
+      <p class="lede">One skill today. It ends a session with the two or three smallest changes that pay off most.</p>
+    </div>
+    <div>
+      <p class="kicker caption">What it can change</p>
+      <ul class="layers">
+        <li><span class="name">Instruction files</span><span class="eg">AGENTS.md</span></li>
+        <li><span class="name">Skills</span><span class="eg">SKILL.md</span></li>
+        <li><span class="name">Memory</span><span class="eg">saved facts</span></li>
+        <li><span class="name">Controls</span><span class="eg">hooks, permissions</span></li>
+        <li><span class="name">Repository checks</span><span class="eg">tests, CI</span></li>
+        <li><span class="name">Prompts</span><span class="eg">how you ask</span></li>
+      </ul>
+    </div>
+  </div>
+</div>
+</body>
+</html>

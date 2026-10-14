@@ -119,7 +119,7 @@ Run `marginal-gains` at the end of a session with your agent. It reads what actu
 
 It keeps a ledger in a file you choose, outside your repositories. Each run checks the changes you applied against the new session, brings back the ones that slipped with a firmer fix, leaves out what you declined, and ranks friction higher each time it recurs. Your goals, written at the top of the ledger, decide which improvements matter most.
 
-Install with `claude plugin install harness-engineering@theultimate-dev` after marketplace setup, or `npx skills add theultimate-dev/skills/skills/harness-engineering`.
+Install with `claude plugin install harness-engineering@theultimate-dev` after marketplace setup, or `npx skills add theultimate-dev/skills/skills/harness-engineering`. The [plugin's own page](skills/harness-engineering/README.md) shows how it works from one session to the next.
 
 ```text
 Use marginal-gains before we wrap up.
