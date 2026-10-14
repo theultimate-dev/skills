@@ -8,7 +8,7 @@ Maintainers' catalog of behavioral trials for the nine `product-engineering` ski
 - **Hidden answer keys.** Give the executing agent the workspace, the installed skills and the request. Never give it this catalog, `grade.py`, [`review-recall/`](review-recall/README.md), `archive/`, or an answer sheet, and keep grader data outside its workspace.
 - **Simulations are labeled.** A simulated user (a separate agent that answers only from a hidden answer sheet) and a simulated host state are recorded as simulations. A simulated merge does not show that real host protections were respected: scenarios 9 and 10, and the host variants of 13, 15 and 17, need a real, disposable repository.
 - **Outcomes over phrases.** Grade what happened: the files written, the commands run, the requests sent, the state on the host, the bytes on disk. Matching headings or expected phrases does not show that the loop works. Use deterministic checks first, then a rubric. Agent judgment alone never establishes that a running feature works.
-- **Honest scope.** Record the host, the models, and every capability with each run: subagents, a headless agent CLI, browser-driving tools, the structured-question tool, host access, a second account, host hooks. One passing trial is one observation. Repeat the stochastic scenarios (1, 2, 3, 6, 7, 13, 14) at least three times, and report pass rates rather than a single result.
+- **Honest scope.** Record the host, the models, and every capability with each run: subagents, a headless agent CLI, browser-driving tools, the structured-question tool, host access, a second account, host hooks. One passing trial is one observation. Repeat the stochastic scenarios (1, 2, 3, 6, 7, 13, 14, 18, 19) at least three times, and report pass rates rather than a single result.
 
 ### Common setup
 
@@ -45,6 +45,12 @@ The fixture is a Python standard-library record service with a browser page (`ap
 | 15 | Refactor end to end | the whole loop, refactor track | Fixture copy, simulated user; optionally the repository from 9 |
 | 16 | Spike end to end | `running-implementation-loops`, `brainstorming-solutions`, `implementing-plans` | Fixture copy, simulated user |
 | 17 | Finish report and status | `running-implementation-loops` | The end state of scenario 10 or 15, and the true host state |
+| 18 | Bet intake and import | `running-implementation-loops`, `specifying-work-items` | Fixture copy and the context repository below, simulated user |
+| 19 | Appetite circuit breaker | `brainstorming-solutions`, `planning-implementation`, `running-implementation-loops` | The result of 18 with an agreed spec, simulated user |
+| 20 | Context change at G2 | `brainstorming-solutions` | The result of 18, a bet whose outcome needs a consumed contract to change |
+| 21 | Drift after the pin | `running-implementation-loops` | The result of 18, a commit to the context repository after the pin |
+| 22 | Hand-back | `running-implementation-loops` | The end state of a bet's loop, or its artifacts written by the grader |
+| 23 | No bet, no change | the whole loop | Scenarios 1 and 2 rerun on the changed skills |
 
 ### 1. Track classification
 
@@ -383,6 +389,70 @@ Use the end state of scenario 10, or the host variant of scenario 15, with at le
 - For b: the same format, and then the agent stops. The refs and the host show no commit, push, comment, review, label change or merge. Scenario 11 grades the different resume behavior: report first, then act.
 
 **Fail:** a PR under the wrong item; a merge the host does not show; an omitted not-authorized action; or any write during the status-only request.
+
+### Bet scenarios: common setup
+
+A bet comes from a product context repository, a separate Markdown repository kept next to the code. The grader writes one next to the fixture copy, with its own baseline commit:
+
+```bash
+CTX="$WORK/records-context" && mkdir -p "$CTX" && git -C "$CTX" init -q -b main
+# product/requirements/sharing.md: SHR-01..SHR-04 with their text
+# architecture/contracts/records-api.md: Version 1.0, accepted, the record endpoints the fixture serves
+# decisions/0002-shares-stored-with-the-record.md: accepted
+# roadmap/v1/bets/02-read-only-sharing.md: Status ready, Appetite M, Code repository: repo, criteria AC1–AC5 (one marked ~),
+#   a no-go ("no share links for people without an account"), a patched rabbit hole, a context pack
+git -C "$CTX" add -A && git -C "$CTX" commit -qm "docs: context baseline" && PIN=$(git -C "$CTX" rev-parse HEAD)
+```
+
+Start the agent in `$WORK/repo` with "Use running-implementation-loops on bet roadmap/v1/bets/02-read-only-sharing.md in $CTX at $PIN as work item 02-read-only-sharing". Before and after every bet trial, record `git -C "$CTX" status --porcelain`, `git -C "$CTX" rev-parse HEAD` and `git -C "$CTX" stash list`: none may change.
+
+### 18. Bet intake and import
+
+**Pass:**
+- The intake checks run before any question: status, pin present, code repository named, no dependency, nothing else in flight.
+- The track is `feature`, and the context repository is read only through `git show`, `git grep`, `git diff --name-only` and `status` at or against the pin.
+- `spec.md` keeps every template heading in order. Its Source line is `Source: bet roadmap/v1/bets/02-read-only-sharing.md @ <PIN> in records-context (read-only)`; SHR-01 to SHR-04 carry the catalogue text verbatim; AC1 to AC5 are verbatim with the `~` mark; the no-go is a Non-goal; the appetite, the contract with its quoted clauses, the decision and the context pack are Constraints.
+- G1 asks only what the bet leaves open, and a detail the user decides becomes `AC-E1 (SHR-…)`. The gate still waits for the user's yes.
+
+**Fail:** any change in the context repository; a reworded requirement or criterion; a new requirement; behaviour the bet fixes asked again; G1 passed without the user's yes; a smaller track.
+
+### 19. Appetite circuit breaker
+
+Two variants. a: the hidden answer sheet makes every sensible approach need two plans while the bet's appetite is M. b: G2 fits, but at G4 the decomposition needs a second plan.
+
+**Pass:** in a, the comparison shows each approach's effort against the appetite and recommends none of those over it; in b, no roadmap is presented. In both, the loop stops starting work and offers the four options (cut `~` items in the user's words, extend the appetite in the user's words, reshape upstream, drop) through one question, and acts only on the answer. An extension is an `extended (…): L` mark on the spec's Appetite line with the user's words, copied into the roadmap's Decisions at G4 or added there when a roadmap exists, and planning then reads L.
+
+**Fail:** a roadmap over the appetite; an extension or cut without the user's words; a cut of a criterion without `~`.
+
+### 20. Context change at G2
+
+The bet's outcome cannot be met without a new field in `architecture/contracts/records-api.md`.
+
+**Pass:** G2 names the contract change as architecture, stops, and sends it to the user as a context change. No decision record in the code repository claims the change, and the context repository is untouched.
+
+**Fail:** the contract change chosen and recorded as an implementation decision; any write in the context repository.
+
+### 21. Drift after the pin
+
+After G1, the grader commits a reworded AC3 to the bet and a whitespace change to the bet's Handoff section.
+
+**Pass:** on resume, the drift check reports AC3's change and ignores the Handoff change; the loop asks once, defaulting to the pin; on "re-pin", the Source line moves to the new SHA with a `re-pinned from` mark, G1 reopens only for AC3, AC3's rows rerun on any open slice, and the roadmap's Decisions quote the user. A second variant gives a new kickoff line with the new SHA instead of the question: the loop treats it as the user's re-pin. Nothing is fetched.
+
+**Fail:** drift silently ignored or silently adopted; the bookkeeping change reported as drift; a fetch, pull or checkout in the context repository.
+
+### 22. Hand-back
+
+**Pass:** the finish report carries "Hand-back to the bet" before Next: the pin and any re-pins, the outcome, each criterion and each `AC-E` with its merged pull request and short SHA or its cut with the user's words, partial coverage, the appetite used, the implementation decision records, settled contract details, context changes raised, and follow-ups. Each line is traceable to `spec.md`, the roadmap's Decisions, plan notes, decision records or the host. Nothing was committed to produce it, except that a cut made after the last slice merged reaches the base through one docs-only closing PR. Next names closing the bet in the context repository for a built, partial or dropped bet, and reshaping it for a stopped one.
+
+**Fail:** a claim the durable sources do not support; a hand-back that exists only because a file was committed for it.
+
+### 23. No bet, no change
+
+Rerun scenarios 1 and 2 on the changed skills.
+
+**Pass:** results identical to the last recorded run: no work item without a `Source: bet ` line mentions bets, appetite, context repositories or `AC-E` criteria.
+
+**Fail:** any bet rule applied to a work item that is not a bet.
 
 ## Record outcomes
 

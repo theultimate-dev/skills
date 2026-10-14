@@ -19,6 +19,7 @@ Marketplace releases are tagged `vX.Y.Z`. Every plugin release is also a marketp
 
 - `product-context` plugin, for skills that keep a long-running product's whole context in a Markdown repository apart from the code: requirements, architecture, decisions, and a roadmap of bets that the `product-engineering` loop builds. It starts with `structuring-product-context`. Decision 0013 records why the product's context gets a category of its own, and decision 0014 records how `product-engineering` implements its bets.
 - Evaluation scenarios for `product-context`: nine trials, from adopting over-stuffed product documents to closing a bet and auditing for drift, using a fictional product.
+- Six scenarios in the `product-engineering` catalog for bets: intake and import, the appetite circuit breaker, a context change at G2, drift after the pin, the hand-back, and a check that work items without a bet behave as before.
 
 ## [0.2.0] - 2026-10-14
 
