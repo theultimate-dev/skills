@@ -32,6 +32,7 @@ At stage 5, stop after the targeted checks and return. The coordinator runs veri
 - Start from: [files, tests, and one neighboring example of the same kind of change]
 - Settled contracts you must not change: [API shapes, schemas, event names, with their location]
 - Decisions that bind this task: [decision records by path, the Approach's contracts and consequences, and any decision spec.md's Constraints name; or none]
+- Upstream context (read-only): [on a bet: the bet's path and pinned commit, and the context contracts and decisions that bind this task, pasted when the agent cannot read the context repository; or none]
 - Assumptions not yet confirmed: [each assumption, or none]
 
 ## Ownership

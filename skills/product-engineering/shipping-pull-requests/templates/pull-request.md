@@ -6,6 +6,7 @@
 
 - Plan: `docs/product-engineering/[work-item-slug]/plans/[NN-slug].md`, [phase N | whole plan]
 - Stacked on: [#parent, which merges first | none]
+- Bet: [NN title, <path in the context repository> @ <short SHA> in <context repository name> | delete this line when the work item is not a bet]
 
 ## Requirements covered
 

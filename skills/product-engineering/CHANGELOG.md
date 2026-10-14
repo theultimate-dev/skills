@@ -15,7 +15,8 @@ Releases are tagged `product-engineering--vX.Y.Z`.
   - imports the bet's requirements and acceptance criteria word for word, and interviews you only about what the bet leaves open, adding engineering criteria as `AC-E1`, `AC-E2`;
   - follows the decisions and contracts the bet relies on, and stops for you when a choice would change them;
   - keeps the plans within the bet's appetite: one plan for M, two or three for L. When the work outgrows it, or would cross a no-go, it stops and offers you the options: cut the `~` scope, extend the appetite, reshape the bet, or drop it;
-  - ends with a hand-back in the finish report: which pull request delivered each criterion, what was cut, the decisions made, and anything the context repository should learn.
+  - checks every pull request against the context contracts and decisions the bet relies on, treats a deviation as a scope change that waits for you, and names the bet in the pull request;
+  - ends with a hand-back in the finish report: which pull request delivered each criterion, what was cut, the decisions made, and anything the context repository should learn. A decision made after the last pull request reaches the base branch first, through one docs-only pull request.
 
 ### Changed
 

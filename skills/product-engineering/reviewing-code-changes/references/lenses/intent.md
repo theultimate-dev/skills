@@ -4,7 +4,7 @@ Judge whether the change solves the problem the spec describes. Every acceptance
 
 ## Read first
 
-1. The spec: Problem, Requirements (`R1`, `R2`, …, or upstream IDs kept as imported, such as `ABC-01`), Acceptance criteria (`AC1`, `AC2`, …, each naming its requirement), Non-goals, Constraints, Approach, and the Verification section's agreed check for each AC.
+1. The spec: Problem, Requirements (`R1`, `R2`, …, or upstream IDs kept as imported, such as `ABC-01`), Acceptance criteria (`AC1`, `AC2`, …, each naming its requirement), Non-goals, Constraints, Approach, and the Verification section's agreed check for each AC. On a bet, also the upstream context pasted in the brief: the no-gos and criteria read as the bet states them.
 2. The plan file, for the ACs and the phase this PR slice covers. A slice can cover some ACs only; the others are out of scope for this review.
 3. The verification report: the SHA it ran on, and one row per AC with the result, what was done and what was observed.
 4. Outside the loop there is no spec. Take the stated intent from the linked issue, the problem the PR description states, and the commit messages. Write the intent you reviewed against in one or two sentences at the top of your output.

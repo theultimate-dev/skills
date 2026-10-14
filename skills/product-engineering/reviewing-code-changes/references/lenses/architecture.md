@@ -6,6 +6,7 @@ Judge whether the change fits the system it lands in: the approach the user chos
 
 1. The spec's Approach section: the chosen approach and the alternatives it rejected. Outside the loop there is no Approach; judge fit against the decision records and the existing code.
 2. The architecture notes in AGENTS.md, CLAUDE.md or the docs, and the decision records (`decisions/`, `docs/adr/` or the project's equivalent).
+   On a bet, also the context contracts and decisions the spec's Constraints name, pasted in the brief from the context repository at the pinned commit.
 3. The neighborhood of each changed file: its module, what it imports, and who calls it.
 4. The utilities, components and patterns near the change. Search by name and by behavior, meaning the calls such a helper would make, before you call anything a duplicate.
 
@@ -17,7 +18,7 @@ Judge whether the change fits the system it lands in: the approach the user chos
 4. **One source of truth.** A fact the system must agree on (a price, a permission list, an enum, a schema, a configuration value, derived state) is defined once. Every copy is derived from the owner or kept in sync by one mechanism. Client state that mirrors server state has an invalidation path.
 5. **Data flow and ownership.** One owner creates, changes and deletes each piece of data. Side effects happen in the layer where the project puts them. Every resource the change creates has a lifecycle: something closes, cleans up or expires it.
 6. **Coupling and altitude.** A new abstraction has two real callers or a stated reason. No speculative generality: an interface with one implementation and no second one planned, configuration for a value that never changes, a framework for a one-off. The opposite also counts: a third copy of a block the project already abstracts. Public surfaces export only what callers need.
-7. **Contracts and compatibility.** Changes to public APIs, events, file formats, schemas, CLI flags and stored data are backward compatible, versioned, or allowed by the spec. A migration survives old and new code running side by side during a deploy (expand, migrate, then contract) and has a rollback.
+7. **Contracts and compatibility.** Changes to public APIs, events, file formats, schemas, CLI flags and stored data are backward compatible, versioned, or allowed by the spec. On a bet, the change honors every consumed context contract and context decision exactly; when the brief could not include them, report adherence wherever the diff touches a surface they govern as an `unconfirmed` `should-fix` question that makes the PR `human`, never as `blocking`. A migration survives old and new code running side by side during a deploy (expand, migrate, then contract) and has a rollback.
 8. **Error boundaries.** Errors are translated where the project translates them, for example domain errors mapped to HTTP responses in the transport layer and not deep inside the domain.
 
 ## Leave to other lenses
@@ -38,7 +39,7 @@ Judge whether the change fits the system it lands in: the approach the user chos
 
 | Severity | Architecture examples |
 |---|---|
-| `blocking` | Implements a rejected or unapproved approach without explanation. Creates a second source of truth for data that must agree. Breaks a public contract the spec does not allow to break. Ships a migration that breaks the running version during a deploy. |
+| `blocking` | Implements a rejected or unapproved approach without explanation. Creates a second source of truth for data that must agree. Breaks a public contract the spec does not allow to break. Deviates from a context contract or decision a bet relies on. Ships a migration that breaks the running version during a deploy. |
 | `should-fix` | Duplicates an existing utility. Bypasses an established layer or pattern. Couples modules that were independent. Adds an abstraction with one caller and no reason. |
 | `nit` | A placement that works but differs from where neighboring code puts similar things. |
 
