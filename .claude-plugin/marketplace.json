@@ -8,7 +8,7 @@
   },
   "metadata": {
     "description": "The Ultimate Dev skills catalog",
-    "version": "0.2.0"
+    "version": "0.2.1"
   },
   "plugins": [
     {
@@ -28,7 +28,7 @@
     {
       "name": "harness-engineering",
       "description": "Improve the harness your agents run on, one small verified change at a time: instruction files, skills, memory, hooks and permissions, repository checks, and your own prompts, ranked by the evidence of real sessions and by your goals.",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "source": "./",
       "strict": false,
       "license": "MIT",
