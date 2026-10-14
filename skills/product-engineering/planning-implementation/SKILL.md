@@ -14,6 +14,7 @@ Turn an agreed `spec.md` into the plan the autonomous loop runs on, and get the 
 2. Read `docs/product-engineering/verification-profile.md`, the project instructions (AGENTS.md, CLAUDE.md, including any "Pull request policy" section), CODEOWNERS, the CI configuration, recent history, and the code the Approach touches.
 3. Confirm the track. A small change gets the inline plan below. A feature, new app or refactor gets a roadmap, and so does a bugfix that needs more than one PR slice. When a small change needs more than one PR slice, it is a feature: say so and plan it as one. Never downgrade a track silently.
 4. Never fill a consequential gap with a planning assumption. A missing behavior decision goes back to G1, a missing approach decision to G2.
+5. When the spec's Source line starts with `Source: bet `, the work item is a bet from a product context repository, and its plans must fit the appetite on its `Appetite (bet):` line, or in the latest `extended` mark on that line: M is one plan, L is two or three. Plan 0 does not count; a walking skeleton does. `~` items are cut only at G1, in the user's words. When the plans still exceed the appetite, never present the roadmap: stop for the bet's circuit breaker, which `running-implementation-loops` runs. Record the fit on the roadmap's header line, and copy every cut, extension and re-pin marked in `spec.md` into the roadmap's Decisions.
 
 Spikes are not planned here. They run on a timeboxed branch that is never merged. A quick fix and a bugfix with one PR slice are not planned here either. Their autonomy contract comes from the user's words in the request or their answer to the intake question. A bugfix records it in the `## Plan` section of its short `spec.md`, which holds only that contract. A quick fix has no spec: its contract lives in the PR body under `## Autonomy contract`, and it counts only while the body's edit history shows no editor other than the authorizing account.
 
@@ -80,7 +81,7 @@ Schedule `human` slices early, keep them small, and decouple them: a migration a
 
 ## 5. Map acceptance criteria to phases
 
-For every Verification row in `spec.md`, name the one phase whose PR makes that AC pass. Earlier phases that move it forward list it as "progress only". An AC with no phase is a planning gap: add a phase, or return to G1 when the AC itself is wrong. A phase with no AC states its enabling purpose: a harness, a contract, an invariant held. An AC behind a flag passes with the flag on in the verification environment.
+For every Verification row in `spec.md`, name the one phase whose PR makes that AC pass. Earlier phases that move it forward list it as "progress only". An AC with no phase is a planning gap: add a phase, or return to G1 when the AC itself is wrong. A cut AC, marked `cut (…)` in `spec.md`, needs no phase. A phase with no AC states its enabling purpose: a harness, a contract, an invariant held. An AC behind a flag passes with the flag on in the verification environment.
 
 ## 6. Draft the autonomy contract
 
@@ -153,6 +154,7 @@ The roadmap is fixed at G4. A plan changes after launch only this way:
 
 | What happened | Do |
 |---|---|
+| On a bet: a replan would exceed the appetite, cross a no-go, or change a consumed contract or decision | Stop for the bet's circuit breaker; the user decides |
 | A spec contradiction or scope growth | Stop and return to G1 for the affected part |
 | The chosen approach proves infeasible | Stop and return to G2 |
 | The verification contract cannot run | Stop and return to G3 |

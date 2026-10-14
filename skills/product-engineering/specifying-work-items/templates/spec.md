@@ -2,10 +2,11 @@
 
 Status: draft
 Track: [bugfix | small change | feature | new app | refactor]
-Source: [issue ID and link, product brief, or handoff path; "user request, YYYY-MM-DD" when there is none]
+Source: [issue ID and link, product brief, or handoff path; "user request, YYYY-MM-DD" when there is none; for a bet: "bet <path in the context repository> @ <full SHA> in <context repository name> (read-only)"]
 
 <!-- Keep every heading below, in this order. Status stays draft until the user explicitly confirms the spec; at G1 write: Status: agreed (G1, YYYY-MM-DD: "<user's words>").
-A bugfix whose repro reproduced skips G1: Status: agreed (G1 skipped: repro reproduced at <short-sha>). -->
+A bugfix whose repro reproduced skips G1: Status: agreed (G1 skipped: repro reproduced at <short-sha>).
+From a bet: fill every section by the import table in this skill's upstream-bets reference; imported lines stay verbatim. -->
 
 ## Problem
 

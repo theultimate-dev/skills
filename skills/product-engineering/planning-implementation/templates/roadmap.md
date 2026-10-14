@@ -1,6 +1,6 @@
 # Roadmap: [work item]
 
-Spec: `spec.md` · Track: [feature | new app | refactor | bugfix] · Approved at G4: [YYYY-MM-DD]
+Spec: `spec.md` · Track: [feature | new app | refactor | bugfix] · Approved at G4: [YYYY-MM-DD] [· Appetite (bet): M or L, N plans without Plan 0]
 
 <!-- Structural, written once at G4. Live PR state (open, awaiting a human, merged) is read from the host and never written here. Delete this comment. -->
 
@@ -54,3 +54,4 @@ Changes:
 
 - [YYYY-MM-DD] [A planning choice and why. Example: the saved-searches panel ships behind `savedSearches`, off by default, so the UI review is one small flip PR at the end.]
 - [YYYY-MM-DD] [After launch: what changed, why, and the user's words when a gate was reopened.]
+- [YYYY-MM-DD] [On a bet: a `~` cut, an appetite extension, a re-pin, or the outcome of a context change, with the user's words. Example: re-pinned to `4b9e0c1` after AC3 changed upstream: "re-pin and redo AC3".]

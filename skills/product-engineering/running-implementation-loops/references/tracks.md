@@ -31,6 +31,8 @@ Classify from the request and a short look at the code it names. A two-minute re
 
 When two tracks stay plausible, take the larger one. Its extra gate costs one question; a missed gate costs rework.
 
+A bet from a product context repository is a `feature`, or a `new app` when there is no codebase; never a quick fix, bugfix, small change, refactor or spike, even when it turns out smaller than its appetite. See [upstream bets](upstream-bets.md).
+
 ## Quick fix
 
 - **Signals:** a known location, no behavior decision, at most one AC. The request says what to change.
@@ -87,6 +89,7 @@ When two tracks stay plausible, take the larger one. Its extra gate costs one qu
 - **Artifacts:** `spec.md`, a decision record when G2 fixes something consequential, `roadmap.md` with the autonomy contract, and `plans/NN-slug.md`.
 - **Branch:** the plan file's `Branch:` line for each PR slice, default `<type>/<work-item-slug>-<NN>[-p<phase>]`.
 - **Path:** 0 → 1 → 2 → 3 → 4, then 5 to 10 for each PR slice in the roadmap's order.
+- **From a bet:** G1 imports the bet at its pinned commit and asks only what it leaves open. G2 cites the context decisions and contracts the bet relies on, and checks every approach's effort against the appetite. G3 never rewords an imported criterion. G4's plans fit the appetite. The finish report hands the results back. See [upstream bets](upstream-bets.md).
 
 **Example.** "Build saved searches with email alerts."
 
@@ -115,6 +118,7 @@ When two tracks stay plausible, take the larger one. Its extra gate costs one qu
 - **Artifacts:** as for a feature. Plan 1 is a walking skeleton: the smallest runnable app, CI that builds, lints and tests it, and the verify entry point. It is `human`: new dependencies and CI configuration.
 - **Repository:** a new repository has no base branch to open a PR against. Ask: "New app without a repository: may I create it (host, owner/name, visibility) and push an initial commit, or will you?" The walking skeleton then lands as the first PR.
 - **Path:** product-design when product or UX is unresolved → 1 → 2 → 3 → 4 → 5 to 10 for the skeleton, then for each capability plan.
+- **From a bet:** no product-design step: the bet is the product input. The stack comes from the context decisions the bet relies on when they settle it; otherwise G2 chooses it and starts this repository's decision log. The walking skeleton is a plan like any other and counts toward the bet's appetite, which is why the first bet in an empty repository is shaped L.
 
 **Example.** "Build an internal tool to track equipment loans; we have no code yet."
 
@@ -166,6 +170,7 @@ When two tracks stay plausible, take the larger one. Its extra gate costs one qu
 | The small change needs a migration and a UI slice | Feature | G4: a roadmap with two slices |
 | A refactor phase must rename a public export that an invariant protects | Refactor with a spec change | G1; an accepted rename becomes its own `human` phase |
 | Two ACs of a feature contradict each other | Feature | G1 for those ACs; the other slices continue |
+| On a bet: the work outgrows the appetite, would cross a no-go, or must change a consumed contract or decision | No upgrade: the bet's circuit breaker | Start no new slice; the user cuts `~` items, extends the appetite, reshapes the bet upstream, or drops it |
 
 - Say the upgrade in one line, with the evidence.
 - Work already done stays on its branch. Gates already agreed stay agreed unless the change touches them.

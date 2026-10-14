@@ -8,6 +8,15 @@ Releases are tagged `product-engineering--vX.Y.Z`.
 
 ## [Unreleased]
 
+### Added
+
+- The loop implements bets from a product context repository, such as those the `product-context` plugin shapes, and works the same for every other work item. Hand `running-implementation-loops` a bet, or the kickoff line that names it, and the loop:
+  - reads the context repository at the bet's pinned commit and never writes there;
+  - imports the bet's requirements and acceptance criteria word for word, and interviews you only about what the bet leaves open, adding engineering criteria as `AC-E1`, `AC-E2`;
+  - follows the decisions and contracts the bet relies on, and stops for you when a choice would change them;
+  - keeps the plans within the bet's appetite: one plan for M, two or three for L. When the work outgrows it, or would cross a no-go, it stops and offers you the options: cut the `~` scope, extend the appetite, reshape the bet, or drop it;
+  - ends with a hand-back in the finish report: which pull request delivered each criterion, what was cut, the decisions made, and anything the context repository should learn.
+
 ### Changed
 
 - Task briefs name the decisions that bind the task, and carry requirement IDs exactly as `spec.md` writes them, including upstream IDs such as `ABC-01`. The intent reviewer accepts those IDs too.

@@ -21,7 +21,7 @@ Two requests skip G1:
 
 An approach the request names ("move to date-fns") is recorded as `Chosen:` with the user's words. G2 only checks it against the ACs and writes the decision record (step 6).
 
-An approach answers the spec and never changes it. When an approach would drop or weaken an acceptance criterion, that is a scope change: take it back to G1 with the evidence.
+An approach answers the spec and never changes it. When an approach would drop or weaken an acceptance criterion, that is a scope change: take it back to G1 with the evidence. On a spec from a bet, dropping or weakening an imported criterion is a context change instead: stop and send it to the user.
 
 | Track | G2 |
 |---|---|
@@ -62,6 +62,15 @@ One sensible approach: move the refund-and-restock steps out of the staff cancel
 Processing cancellations in a background job would break AC9, which requires the customer
 to see a failed refund immediately. Reply "yes" to go ahead, or tell me what to reconsider.
 ```
+
+## A spec from a bet
+
+When the spec's Source line starts with `Source: bet `, the work comes from a product context repository, read-only at its pinned commit:
+
+- The context decisions and contracts named under Constraints settle their choices. Cite them under Evidence with path and short SHA; never re-argue them.
+- A choice is architecture when it changes an element, boundary or technology the context repository's architecture describes, one of its contracts, or one of its decisions. Architecture is a context change: stop and send it to the user, who reshapes the bet upstream. A choice inside one element that no other bet consumes is implementation; when it is consequential, record it in this repository's decision log and name the bet and its pin in the record's Context.
+- A contract the bet produces is fixed where the bet fixes it. Settle the details it leaves open under Contracts, so the hand-back can report them.
+- State each approach's effort as a plan count on the scale the `Appetite (bet):` line uses: M is one plan, L two or three. An approach over the appetite is shown, never recommended. When every approach exceeds it, stop: the bet's circuit breaker, which `running-implementation-loops` runs, and the user decides.
 
 ## Settle feasibility with a spike
 
