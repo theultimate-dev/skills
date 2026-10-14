@@ -4,6 +4,7 @@ dist/
 # tooling noise
 __pycache__/
 .DS_Store
+*.profraw
 
 # local installs of this repo's own skills; never commit them
 skills-lock.json
