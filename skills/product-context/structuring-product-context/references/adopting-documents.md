@@ -10,7 +10,7 @@ Read every source in full before mapping any of it. Then number its sections by 
 S1   larder-prd.md › Summary
 S2   larder-prd.md › Summary › Answers to the founders' questions
 S3   larder-prd.md › Assumptions
-S12  larder-prd.md › Requirements › Pantry           (table PAN-01 … PAN-09)
+S12  larder-prd.md › Requirements › Pantry           (table PAN-01 … PAN-06)
 S13  larder-prd.md › Requirements › Meal plans       (table MEA-01 … MEA-07)
 S21  larder-v1.md › Milestones › 1.1 Pantry
 ```
@@ -94,7 +94,7 @@ Three sources: `larder-prd.md` (the whole product, 40 sections), `larder-v1.md` 
 | S1 | PRD › Summary | `product/overview.md` | move | |
 | S2 | PRD › Answers to the founders' questions | `decisions/0002`–`0004`, `product/overview.md` | merge | The three answers are key decisions 1 to 3 of S9; Q&A framing dropped |
 | S9 | PRD › Key decisions (10) | `decisions/0002`–`0011` | convert | V1 plan's ADR list overlaps: see OQ-01 |
-| S12 | PRD › Requirements › Pantry | `product/requirements/pantry.md` | move | PAN-01–09, 9 rows |
+| S12 | PRD › Requirements › Pantry | `product/requirements/pantry.md` | move | PAN-01–06, 6 rows |
 | S18 | PRD › Domain model | `architecture/domain-model.md`, `product/glossary.md` | split, derive | Glossary terms derived from the entities |
 | S27 | PRD › Risks | `roadmap/risks.md` | convert | Merged with the rows of S48 (V1 risks) and S63 (V2 risks) |
 | S33 | PRD › Sources | split by citing section | split | Each source moves next to the claim it supports |

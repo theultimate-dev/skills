@@ -48,12 +48,12 @@ Shape it as L. The implementation loop treats a bet with no codebase as a new ap
 
 ## Worked slate
 
-Larder, milestone 1.1 Pantry. The milestone targets PAN-01 to PAN-07, SYN-01 (part: pantry items) and NFR-03. The code repository already holds the walking skeleton from milestone 1.0.
+Larder, milestone 1.1 Pantry. The milestone targets PAN-01 to PAN-04, PAN-06, PAN-07, SYN-01 (part: pantry items), NFR-02 and NFR-03; PAN-05 was dropped. The code repository already holds the walking skeleton from milestone 1.0.
 
 | Bet | Outcome | Requirements | Appetite | Depends on | Contracts |
 |---|---|---|---|---|---|
 | 04 Pantry items | A household member adds, edits and removes pantry items in the web app, and they survive a reload | PAN-01, PAN-02, PAN-03, NFR-03 | M | 03 | Consumes `sync-protocol` 1.0 |
-| 05 Expiry tracking | Items show their expiry, and items expiring within three days are listed first | PAN-04, PAN-05 | M | 04 | none |
-| 06 Pantry sync | Changes on one device appear on another signed into the same household | PAN-06, PAN-07, SYN-01 (part: pantry items) | L | 04 | Changes `sync-protocol` to 1.1: pantry item operations |
+| 05 Expiry tracking | Items show their expiry, and items expiring within three days are listed first | PAN-04, PAN-07 | M | 04 | none |
+| 06 Pantry sync | Changes on one device appear on another signed into the same household | PAN-06, SYN-01 (part: pantry items), NFR-02 | L | 04 | Changes `sync-protocol` to 1.1: pantry item operations |
 
-Coverage: PAN-01 to PAN-07 once each; SYN-01's pantry part once, its meal-plan part left to milestone 1.2; NFR-03 once. Before bet 06 can be ready, `sync-protocol` 1.1 must be accepted, through `designing-system-architecture` when it is installed.
+Coverage: PAN-01 to PAN-04, PAN-06 and PAN-07 once each; SYN-01's pantry part once, its meal-plan part left to milestone 1.2; NFR-02 and NFR-03 once. Before bet 06 can be ready, `sync-protocol` 1.1 must be accepted, through `designing-system-architecture` when it is installed.

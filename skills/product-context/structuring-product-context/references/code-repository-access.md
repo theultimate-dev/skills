@@ -19,9 +19,9 @@ A product may have several code repositories. Each bet names the one that builds
 A bet is handed over at a commit of the context repository, written on the bet's `Context pinned:` line. Agents in the code repository read the bet and its context pack at that commit, for example:
 
 ```bash
-git -C <context repository> show <sha>:roadmap/v1/bets/03-shared-lists.md
-git -C <context repository> grep -n -e 'PAN-04' <sha> -- product/
-git -C <context repository> diff --name-only <sha> HEAD -- roadmap/v1/bets/03-shared-lists.md
+git -C <context repository> show <sha>:roadmap/v1/bets/04-pantry-items.md
+git -C <context repository> grep -n -e 'PAN-02' <sha> -- product/
+git -C <context repository> diff --name-only <sha> HEAD -- roadmap/v1/bets/04-pantry-items.md
 ```
 
 The pin keeps the work stable while the context repository moves on. Agents read the bet's own fields at the pin: every header line except `Status:` and `Context pinned:`, and every section except Handoff and Outcome log. They read those four bookkeeping fields at the latest commit, because the context side writes them after the pin. A bet whose own fields changed after the pin is re-pinned only with the user's agreement. When the pinned commit is missing from a checkout, agents ask the user to update it; they never fetch.

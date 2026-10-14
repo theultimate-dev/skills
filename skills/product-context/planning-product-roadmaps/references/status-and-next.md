@@ -33,22 +33,22 @@ Live pull request state lives on the code host and never in the context reposito
 Roadmap status, [date]. Focus: [version], milestone [N.N Name] ([status])
 
 In delivery
-- Bet 04 Use-soon list → larder, work item 04-use-soon-list (handed off 2026-11-10)
+- Bet 05 Expiry tracking → larder, work item 05-expiry-tracking (handed off 2026-11-10)
 
 Built, awaiting reconciliation
-- Bet 03 Expiry dates: close it with reconciling-product-context
+- Bet 04 Pantry items: close it with reconciling-product-context
 
 Ready to hand off
-- Bet 05 Pantry search (depends on Bet 03: built, not yet done; may start)
+- Bet 06 Pantry sync (depends on Bet 04: built, not yet done; may start)
 
 Shaped, not ready
-- Bet 06 Meal plan sync: consumes sync-protocol 1.1, still proposed → designing-system-architecture, contract mode
+- Bet 07 Shared shopping lists: changes sync-protocol to 1.2, still proposed → designing-system-architecture, contract mode
 
 Needs shaping
-- 1.2 Meal plans: MEA-01 to MEA-04 and PAN-06 are covered by no bet
+- 1.2 Meal plans: MEA-01 to MEA-04, NFR-04 and SYN-01's meal-plan part are covered by no bet
 
 Blocked
-- OQ-07 Must meal plans work offline? Blocks Bet 06. Recommended: no in V1
+- OQ-07 Must meal plans work offline? Blocks 1.2 Meal plans. Recommended: no in V1
 - Prerequisite: privacy notice reviewed (gates 1.2)
 
 Milestones and versions
@@ -56,9 +56,9 @@ Milestones and versions
 - Gate to V2: in daily use by five households for a month (not yet)
 
 Board disagreements
-- bets/README.md shows Bet 03 as in delivery; the bet file says built
+- bets/README.md shows Bet 04 as in delivery; the bet file says built
 
-Next: close Bet 03 with reconciling-product-context.
+Next: close Bet 04 with reconciling-product-context.
 ```
 
 Leave out empty sections. Keep each line to one bet, milestone or item.

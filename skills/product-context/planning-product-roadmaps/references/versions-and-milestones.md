@@ -70,9 +70,9 @@ A requirement row's target Version names a milestone, such as `V1.2`, or only a 
 
 | Milestone | Functional | Non-functional |
 |---|---|---|
-| 1.0 Skeleton | SYN-01, SYN-02, ACC-01 | NFR-01, NFR-04 |
-| 1.1 Pantry | PAN-01 to PAN-05 | NFR-02 |
-| 1.2 Meal plans | MEA-01 to MEA-04, PAN-06 | |
+| 1.0 Skeleton | ACC-01 | NFR-01 |
+| 1.1 Pantry | PAN-01 to PAN-04, PAN-06, PAN-07, SYN-01 (part) | NFR-02, NFR-03 |
+| 1.2 Meal plans | MEA-01 to MEA-04, SHO-01 to SHO-04, SYN-01 (part), SYN-02 | NFR-04 |
 
 Flag, never fix by hand:
 

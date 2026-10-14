@@ -18,7 +18,7 @@ Example:
 
 | ID | Risk | Why it matters | Mitigation | Versions | Owner | Status |
 |---|---|---|---|---|---|---|
-| RSK-02 | Two devices edit the same list offline and one edit is lost | A household stops trusting the list | Last-writer-wins per item with an edit log (decision 0006); conflict test in CI | V1–V2 | Bet 02 | open |
+| RSK-02 | Two devices edit the same list offline and one edit is lost | A household stops trusting the list | Last-writer-wins per item with an edit log (decision 0006); conflict test in CI | V1–V2 | Bet 07 | open |
 | RSK-05 | The sync service's free hosting tier sleeps after inactivity | First sync of the day is slow | Keep-alive ping; revisit with paid tier | V1 | owner of the product | closed (2026-11-20: paid tier from 1.1) |
 
 Close a risk only when its mitigation is in place and observed, or when the thing it guards no longer exists. Never delete a closed row.
@@ -39,7 +39,7 @@ Example:
 | ID | Question | Blocks | Recommended answer | Owner | Status |
 |---|---|---|---|---|---|
 | OQ-03 | Does a list belong to a person or to a household? | V1 data model, contract `sync-protocol` | To a household from V1, so V2 needs no migration | the user | resolved (2026-10-30): `decisions/0005-lists-belong-to-households.md` |
-| OQ-07 | Must meal plans work offline? | Bet 05 | No in V1; the pantry list is enough offline | the user | open |
+| OQ-07 | Must meal plans work offline? | 1.2 Meal plans | No in V1; the pantry list is enough offline | the user | open |
 
 ## Rules
 

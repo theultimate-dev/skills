@@ -60,7 +60,7 @@ Version targets are set here only when the user states them while adding a requi
 - **One home per fact.** A row states what, never why. The why is a decision record or a line in the overview, and the row links to it in Notes.
 - **No implementation in requirements.** "The pantry list updates on every device within 5 seconds" is a requirement; "sync pushes changes over a WebSocket" is architecture.
 - **Targets are never invented.** A non-functional requirement without a number the user stated or accepted gets the target "to confirm" and an open question.
-- **No links to the roadmap.** Requirements never link to bets or milestones; the roadmap points at requirements. Version is a target, not a link. A plain-text ID in Notes, such as `OQ-06` or "rule from Bet 05, AC-E2", records provenance and is allowed; a link to a roadmap file never is.
+- **No links to the roadmap.** Requirements never link to bets or milestones; the roadmap points at requirements. Version is a target, not a link. A plain-text ID in Notes, such as `OQ-06` or "rule from Bet 07, AC-E2", records provenance and is allowed; a link to a roadmap file never is.
 - **Acceptance criteria live in bets.** Do not write criteria into the catalogue. A rule proven in a bet comes back only through promotion.
 
 Read the [catalogue reference](references/requirement-catalogue.md) for good and bad rows, EARS phrasing, priorities, non-functional areas and the consistency checks.
@@ -71,7 +71,7 @@ Ask only what changes the catalogue: whether two items are the same requirement,
 
 ```text
 The handoff's R2 ("show items about to expire") overlaps PAN-04 ("warn about items
-expiring within a set number of days"), status built in V1.
+expiring within a set number of days"), status planned for V1.1.
 Recommended: a, because R2 adds a sorted view, not a new warning.
   a) Keep PAN-04 as is; add PAN-07 "List pantry items by expiry date" (recommended)
   b) Map R2 to PAN-04 and drop the sorted view

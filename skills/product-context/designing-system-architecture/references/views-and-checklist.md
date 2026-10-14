@@ -42,7 +42,7 @@ Every section heading in `architecture/` carries one line directly under it:
 Since: V1 · Status: planned
 ```
 
-- `Since:` is the version in which the element first exists. An element that changes shape in a later version keeps its `Since:` and gains a line such as `Changed in: V2 (shared lists)`.
+- `Since:` is the version in which the element first exists. An element that changes shape in a later version keeps its `Since:` and gains a line such as `Changed in: V2 (shared households)`.
 - `Status:` is `planned` until a bet that builds it is `built`, then `built`, set in as-built mode from that bet's evidence. A retired element reads `Status: retired in V3, replaced by …`.
 - A file whose sections all share one tag may carry it once under its title.
 

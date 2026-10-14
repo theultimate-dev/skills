@@ -8,8 +8,8 @@ Each capability file holds one table:
 
 | ID | Requirement | Priority | Version | Status | Notes |
 |---|---|---|---|---|---|
-| PAN-03 | Add an item to the pantry by scanning its barcode | Must | V1 | built | |
-| PAN-07 | List pantry items by expiry date | Should | V1.2 | planned | Extends PAN-04 |
+| PAN-03 | Remove an item from the pantry | Must | V1.1 | built | |
+| PAN-07 | List pantry items by expiry date | Should | V1.1 | planned | Extends PAN-04 |
 | PAN-05 | Import a pantry from a spreadsheet | Could | | dropped | 2026-11-02: dropped, decision 0006 |
 
 - **ID**: the capability prefix and a two-digit number, the next after the highest ever used in the file.
@@ -17,7 +17,7 @@ Each capability file holds one table:
 - **Priority**: `Must`, `Should` or `Could` for the version it targets. "Won't" is not a priority: such a row is `deferred` or `dropped`.
 - **Version**: the target, in the roadmap's labels: a version (`V1`) before a milestone is chosen, then the milestone (`V1.2`). Empty until someone with authority states it, and empty on a `deferred` row, which has no target. Retargeting is a roadmap change, made through `planning-product-roadmaps`.
 - **Status**: `planned`, `built`, `deferred` or `dropped`. `built` is set when a bet that covers the requirement closes; a partially delivered requirement stays `planned` with a note on the part that shipped.
-- **Notes**: short facts only: "extends PAN-04", "part built in V1.1: single device", "dropped 2026-11-02: reason", a decision number. Register and bet IDs, such as `OQ-06` or "rule from Bet 05, AC-E2", appear as plain text for provenance, never as links. No rationale paragraphs.
+- **Notes**: short facts only: "extends PAN-04", "part built in V1.1: single device", "dropped 2026-11-02: reason", a decision number. Register and bet IDs, such as `OQ-06` or "rule from Bet 07, AC-E2", appear as plain text for provenance, never as links. No rationale paragraphs.
 
 ## Writing a good requirement
 
@@ -25,7 +25,7 @@ Each capability file holds one table:
 |---|---|---|
 | The app should handle expiry well | Not observable | Warn the household about items expiring within a number of days they choose |
 | Sync uses a change feed over WebSockets | Implementation, not behaviour | An item changed on one device appears on the household's other devices |
-| Scan barcodes and edit quantities and share the list | Three capabilities in one row | Three rows: PAN-03, PAN-06, SHO-04 |
+| Scan barcodes and edit quantities and share the list | Three capabilities in one row | Three rows, one capability each |
 | Fast search | Quality without a target | A non-functional row: "NFR-04 Pantry search returns results as the user types", target to confirm |
 | As a parent I want meal plans so that dinner is easy | A story, not a capability; the rationale belongs elsewhere | Plan meals for a week from the recipes the household saved |
 
@@ -56,7 +56,7 @@ EARS patterns help when behaviour depends on an event, a state or an unwanted si
 
 | ID | Area | Requirement | Target | Version | Status | Notes |
 |---|---|---|---|---|---|---|
-| NFR-02 | Performance | A change made on one device appears on the others quickly | p95 under 5 s on a normal connection | V1 | built | |
+| NFR-02 | Performance | A change made on one device appears on the others quickly | p95 under 5 s on a normal connection | V1.1 | built | |
 | NFR-04 | Performance | Pantry search returns results as the user types | to confirm | V1.2 | planned | OQ-06 |
 
 - Common areas: reliability, performance, capacity, footprint, security, privacy, accessibility, compatibility, maintainability, observability, operability, cost.

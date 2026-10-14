@@ -87,7 +87,7 @@ Omit what a product does not need: a single-container product has no `components
 | Risk | `RSK-NN` | `RSK-04` | In `roadmap/risks.md` |
 | Open question | `OQ-NN` | `OQ-11` | In `roadmap/open-questions.md`; a resolved question links to its decision |
 | Decision record | `NNNN` | `0007` | Four digits, per `decision-records`. A code repository's record is cited as `<repository>: decisions/NNNN-title.md` |
-| Bet | `NN`, numbered across all versions | `Bet 14` in `roadmap/v2/bets/14-shared-lists.md` | Never reused, even for a dropped bet; `Depends on: Bet 03` names the file `roadmap/v*/bets/03-*.md` |
+| Bet | `NN`, numbered across all versions | `Bet 14` in `roadmap/v2/bets/14-shared-households.md` | Never reused, even for a dropped bet; `Depends on: Bet 03` names the file `roadmap/v*/bets/03-*.md` |
 | Acceptance criterion | `ACn (<requirement ID>)` | `AC3 (PAN-03)` | Numbered within one bet |
 | Engineering criterion | `AC-En (<requirement ID>)` | `AC-E1 (PAN-03)` | Added by the code repository at its G1, inside the bet's boundaries; promoted at close when worth keeping |
 | Contract | file slug plus a major.minor version | `contracts/sync-protocol.md`, `Version: 1.1 proposed · 1.0 accepted` | A compatible change raises the minor version, an incompatible one the major version; each live version shows its own status |

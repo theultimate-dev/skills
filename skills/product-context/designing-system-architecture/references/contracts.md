@@ -71,7 +71,7 @@ A bet's Architecture section names what it consumes and what it produces or chan
 
 ```
 - Consumes: architecture/contracts/sync-protocol.md, version 1.0, accepted
-- Produces or changes: architecture/contracts/sync-protocol.md: adds the shared-list messages (version 1.1); field names are left to the implementation loop
+- Produces or changes: architecture/contracts/sync-protocol.md: adds the pantry item operations (version 1.1); field names are left to the implementation loop
 ```
 
 `shaping-bets` checks that the version each bet consumes is `accepted` before the bet is ready. The implementation loop in the code repository reads the contract at the bet's pinned commit, honours it exactly, and treats any needed change as a context change. Its architecture review checks the diff against it.
@@ -108,6 +108,6 @@ Decisions: decisions/0004-sync-over-https-with-change-log.md
 ## Examples
 ## Open details
 ## History
-- 1.1, 2026-04-10: proposed: adds the shared-list messages.
+- 1.1, 2026-04-10: proposed: adds the pantry item operations.
 - 1.0, 2026-03-02: accepted ("agreed, go with change-log sync").
 ```

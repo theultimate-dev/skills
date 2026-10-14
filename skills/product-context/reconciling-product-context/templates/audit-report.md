@@ -8,7 +8,7 @@ Scope: [whole repository | paths] · Checks run: [N] of 10 · Findings: [N] bloc
 
 | # | Severity | Check | Where | Evidence | Proposed fix |
 |---|---|---|---|---|---|
-| 1 | [blocking] | [Requirement ownership] | [`roadmap/v1/bets/04-meal-plans.md`, `roadmap/v1/bets/05-planner-sync.md`] | [Both cover MEA-02 in full] | [Bet 05 covers MEA-02 part: sync only; Bet 04 keeps the rest] |
+| 1 | [blocking] | [Requirement ownership] | [`roadmap/v1/bets/08-week-of-meals.md`, `roadmap/v1/bets/09-meal-plan-sync.md`] | [Both cover MEA-02 in full] | [Bet 09 covers MEA-02 part: sync only; Bet 08 keeps the rest] |
 
 ## Fixed in place
 

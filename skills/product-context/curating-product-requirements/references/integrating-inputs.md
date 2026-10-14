@@ -64,7 +64,7 @@ Look for duplicates by behaviour, not by words: search the capability files for 
 
 ## Worked example
 
-Larder's catalogue has PAN-01 to PAN-06; PAN-04, "Warn the household about items expiring within a number of days they choose", is `built` in V1. A handoff for an expiry view arrives with four local requirements:
+Larder's catalogue has PAN-01 to PAN-06; PAN-04, "Warn the household about items expiring within a number of days they choose", is `planned` for V1.1. A handoff for an expiry view arrives with four local requirements:
 
 - R1 "Show pantry items sorted by expiry date"
 - R2 "Warn before items expire"
@@ -98,6 +98,6 @@ Larder's catalogue has PAN-01 to PAN-06; PAN-04, "Warn the household about items
 
 `reconciling-product-context` sends rules from a closed bet that are worth keeping, such as `AC-E2 (SHO-02): adding an item already on the list increases its quantity instead of adding a second line`.
 
-- When the rule clarifies what the requirement already meant, fold it into the text and note "rule from Bet 05, AC-E2" in plain text, never as a link.
+- When the rule clarifies what the requirement already meant, fold it into the text and note "rule from Bet 07, AC-E2" in plain text, never as a link.
 - When it adds behaviour the requirement did not cover, add a row with status `built`, the version that shipped it, and the same note.
 - When it is a design or engineering detail with no product meaning, leave it out and say so; it lives in the code repository.

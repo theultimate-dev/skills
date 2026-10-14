@@ -1,6 +1,6 @@
 # Baseline, refresh and as-built
 
-How much architecture to write before a version's milestones are shaped, how contracts follow when bets are shaped, how to move the architecture across a version boundary, and how to bring it in line with what was built. The examples use Larder: V1 is the web app with a sync service; V2 adds shared shopping lists across households.
+How much architecture to write before a version's milestones are shaped, how contracts follow when bets are shaped, how to move the architecture across a version boundary, and how to bring it in line with what was built. The examples use Larder: V1 is the web app with a sync service; V2 adds shared households.
 
 ## Contents
 
@@ -56,7 +56,7 @@ Run when `planning-product-roadmaps` opens the next version.
 
 1. Read the next version's brief and the requirement IDs targeted at it.
 2. Never flip `planned` to `built` here: only as-built mode does, from a closed bet's evidence. A section of the shipped version still `planned` either did not ship, and is retargeted to the new version with an open question for the roadmap, or was built without a bet's evidence reaching it, and goes to the audit in `reconciling-product-context`.
-3. Add the new version's elements at level 2 as `planned`. For Larder V2: a list-sharing component in the sync service and an invitation flow.
+3. Add the new version's elements at level 2 as `planned`. For Larder V2: a household-membership component in the sync service and an invitation flow.
 4. Mark retired elements with what replaced them.
 5. Re-verify every dependency in `ecosystem.md`; update the version and the verified-on date, and raise a risk for any that went unmaintained or broke compatibility.
 6. Name the interfaces the new version's first milestone needs. Write their contracts in contract mode when its bets are shaped.
