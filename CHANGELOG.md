@@ -14,10 +14,17 @@ Marketplace releases are tagged `vX.Y.Z`. Every plugin release is also a marketp
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-10-14
+
 ### Added
 
 - A plugin can have a README of its own, the page GitHub shows at `skills/<category>/`, with its images and their HTML sources in `visuals/<category>/`. Decision 0015 records the layout, and the validator checks that every link and image in the README resolves.
 - `scripts/render_visuals.py` renders the visuals in `visuals/<category>/` from their HTML sources to PNG, in The Ultimate Dev's dark and light themes, so a plugin README's images can be regenerated when the plugin changes.
+
+### Changed
+
+- Plugins released with this version:
+  - `harness-engineering` [0.1.1](https://github.com/theultimate-dev/skills/releases/tag/harness-engineering--v0.1.1): a page of its own on GitHub, with how `marginal-gains` works from one session to the next and every install route, tested; the plugin's homepage now points there.
 
 ## [0.2.0] - 2026-10-14
 
@@ -79,7 +86,8 @@ Marketplace releases are tagged `vX.Y.Z`. Every plugin release is also a marketp
 - Published releases are immutable: their archives, `checksums.txt` and tag cannot change after publication.
 - The CI and release workflows run `actions/checkout` pinned to a full commit SHA, and Dependabot proposes updates to it weekly.
 
-[Unreleased]: https://github.com/theultimate-dev/skills/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/theultimate-dev/skills/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/theultimate-dev/skills/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/theultimate-dev/skills/compare/v0.1.3...v0.2.0
 [0.1.3]: https://github.com/theultimate-dev/skills/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/theultimate-dev/skills/compare/v0.1.1...v0.1.2
