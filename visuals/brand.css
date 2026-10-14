@@ -1,0 +1,77 @@
+/* The Ultimate Dev design tokens for README visuals.
+   Colours, type and spacing follow The Ultimate Dev Design System: dark is the default,
+   light is its inverse. One accent, teal, used once per visual as its single emphasis.
+   No gradients, glows, shadows or decorative icons. */
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=JetBrains+Mono:wght@400;500&display=block");
+
+:root {
+  --bg: #11151A;
+  --bg-raised: #181D23;
+  --border: #262C33;
+  --text: #E7EAEE;
+  --text-secondary: #9AA4AF;
+  --accent: #00E0E5;
+
+  --sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  --radius: 6px;
+}
+
+:root[data-theme="light"] {
+  --bg: #FAFAF9;
+  --bg-raised: #F1F1EF;
+  --border: #E2E2DF;
+  --text: #16191D;
+  --text-secondary: #5B636C;
+  --accent: #0E7C80;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: transparent;
+}
+
+body {
+  padding: 24px;
+  font-family: var(--sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* The rendered area: everything inside .canvas becomes the PNG. */
+.canvas {
+  box-sizing: border-box;
+  width: 1200px;
+  padding: 56px 64px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+}
+
+.kicker {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 22px;
+  font-weight: 400;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.headline {
+  margin: 0;
+  font-size: 56px;
+  font-weight: 600;
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+}
+
+.mono { font-family: var(--mono); }
+.secondary { color: var(--text-secondary); }
+.accent { color: var(--accent); }
+
+.mark { display: block; height: 32px; width: auto; }
+.mark .u { fill: var(--text); }
+.mark .d { fill: var(--accent); }

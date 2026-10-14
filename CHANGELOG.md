@@ -17,6 +17,7 @@ Marketplace releases are tagged `vX.Y.Z`. Every plugin release is also a marketp
 ### Added
 
 - A plugin can have a README of its own, the page GitHub shows at `skills/<category>/`, with its images and their HTML sources in `visuals/<category>/`. Decision 0015 records the layout, and the validator checks that every link and image in the README resolves.
+- `scripts/render_visuals.py` renders the visuals in `visuals/<category>/` from their HTML sources to PNG, in The Ultimate Dev's dark and light themes, so a plugin README's images can be regenerated when the plugin changes.
 
 ## [0.2.0] - 2026-10-14
 

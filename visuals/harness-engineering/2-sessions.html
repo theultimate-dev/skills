@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Harness engineering: from one session to the next</title>
+<script>document.documentElement.dataset.theme = new URLSearchParams(location.search).get("theme") || "dark";</script>
+<link rel="stylesheet" href="../brand.css">
+<style>
+  .headline { margin-top: 20px; font-size: 44px; }
+  .steps { display: grid; grid-template-columns: 1fr 40px 1fr 40px 1fr 40px 1fr; margin-top: 40px; }
+  .step { box-sizing: border-box; padding: 22px 22px 24px; background: var(--bg-raised); border: 1px solid var(--border); border-radius: var(--radius); }
+  .step .n { margin: 0; font-family: var(--mono); font-size: 22px; color: var(--text-secondary); }
+  .step h2 { margin: 8px 0 12px; font-size: 26px; font-weight: 600; line-height: 1.2; letter-spacing: -0.01em; }
+  .step ul { margin: 0; padding: 0; list-style: none; }
+  .step li { font-size: 22px; line-height: 1.4; color: var(--text-secondary); }
+  .step li + li { margin-top: 10px; }
+  .arrow { display: flex; align-items: center; justify-content: center; font-size: 28px; color: var(--text-secondary); }
+  .loop { display: block; width: 100%; height: 44px; overflow: visible; }
+  .loop path { fill: none; stroke: var(--accent); stroke-width: 2; }
+  .grading { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 14px; font-size: 24px; }
+  .grading .label { font-weight: 600; margin-right: 8px; }
+  .chip { padding: 5px 14px; font-family: var(--mono); font-size: 22px; border: 1px solid var(--border); border-radius: var(--radius); }
+  .chip.held { color: var(--accent); border-color: var(--accent); }
+  .chip.slipped { border: 1px dashed var(--text-secondary); }
+  .chip.unexercised { color: var(--text-secondary); }
+  .outcomes { margin: 16px 0 0; text-align: center; font-size: 22px; color: var(--text-secondary); }
+  .outcomes b { font-weight: 600; color: var(--text); }
+</style>
+</head>
+<body>
+<div class="canvas">
+  <p class="kicker">From one session to the next</p>
+  <h1 class="headline">Every session ends with two or three small changes. The next one checks whether they held.</h1>
+  <div class="steps">
+    <div class="step">
+      <p class="n">01</p>
+      <h2>Read the session</h2>
+      <ul><li>corrections</li><li>repeated instructions</li><li>failures, retries</li><li>rediscovery, wins</li></ul>
+    </div>
+    <div class="arrow">→</div>
+    <div class="step">
+      <p class="n">02</p>
+      <h2>Two or three cards</h2>
+      <ul><li>the evidence</li><li>the exact change</li><li>15 minutes or less</li><li>a check for next time</li></ul>
+    </div>
+    <div class="arrow">→</div>
+    <div class="step">
+      <p class="n">03</p>
+      <h2>You pick</h2>
+      <ul><li>apply, decline or defer</li><li>nothing is committed</li></ul>
+    </div>
+    <div class="arrow">→</div>
+    <div class="step">
+      <p class="n">04</p>
+      <h2>The ledger</h2>
+      <ul><li>your goals</li><li>every card and its outcome</li><li>friction that recurs</li></ul>
+    </div>
+  </div>
+  <!-- The loop runs from the ledger back to step 1: centres of the first and last step columns. -->
+  <svg class="loop" viewBox="0 0 1072 44" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M953,0 V30 Q953,40 943,40 H129 Q119,40 119,30 V8"/>
+    <path d="M110,18 L119,8 L128,18"/>
+  </svg>
+  <div class="grading">
+    <span class="label">Next session grades each applied change:</span>
+    <span class="chip held">held</span>
+    <span class="chip slipped">slipped</span>
+    <span class="chip unexercised">not exercised</span>
+  </div>
+  <p class="outcomes"><b>held twice</b> → settled &nbsp;·&nbsp; <b>slipped</b> → back on a firmer mechanism &nbsp;·&nbsp; <b>declined</b> → stays out</p>
+</div>
+</body>
+</html>
