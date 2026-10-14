@@ -39,6 +39,19 @@
       ]
     },
     {
+      "name": "product-context",
+      "description": "A long-running product's whole context in a Markdown repository kept apart from the code: requirements with permanent IDs, a living architecture with shared contracts, decisions, and a roadmap cut into appetite-bounded bets that the product-engineering loop builds, folded back into the documents after every bet.",
+      "version": "0.0.0",
+      "source": "./",
+      "strict": false,
+      "license": "MIT",
+      "homepage": "https://github.com/theultimate-dev/skills",
+      "keywords": ["product-context", "requirements", "architecture", "c4", "adr", "roadmap", "shape-up", "bets", "agents"],
+      "skills": [
+        "./skills/product-context/structuring-product-context"
+      ]
+    },
+    {
       "name": "product-design",
       "description": "From rough ideas to product/design handoffs: requirements, UX flows, visual directions, and independent offline HTML prototypes, with an optional discovery coordinator.",
       "version": "0.1.0",

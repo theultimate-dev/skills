@@ -4,6 +4,7 @@ All notable changes to the `theultimate-dev` marketplace and the repository arou
 
 - [`foundations`](skills/foundations/CHANGELOG.md)
 - [`harness-engineering`](skills/harness-engineering/CHANGELOG.md)
+- [`product-context`](skills/product-context/CHANGELOG.md)
 - [`product-design`](skills/product-design/CHANGELOG.md)
 - [`product-engineering`](skills/product-engineering/CHANGELOG.md)
 - [`prompt-engineering`](skills/prompt-engineering/CHANGELOG.md)
@@ -13,6 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Marketplace releases are tagged `vX.Y.Z`. Every plugin release is also a marketplace release, which lists the plugins released under Changed.
 
 ## [Unreleased]
+
+### Added
+
+- `product-context` plugin, for skills that keep a long-running product's whole context in a Markdown repository apart from the code: requirements, architecture, decisions, and a roadmap of bets that the `product-engineering` loop builds. It starts with `structuring-product-context`. Decision 0013 records why the product's context gets a category of its own, and decision 0014 records how `product-engineering` implements its bets.
 
 ## [0.2.0] - 2026-10-14
 
