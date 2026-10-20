@@ -50,8 +50,8 @@ Chosen: [name]. Agreed at G2, [YYYY-MM-DD]: "[the user's words]"
 
 - Touches: [modules and files]
 - Reuses: [utilities and patterns, with paths]
-- Contracts: [interfaces, data shapes, or events that later work depends on; "none" when nothing crosses a boundary]
-- Evidence: [code paths; spike findings with branch and commit; sources with URL, retrieval date, and version]
+- Contracts: [interfaces, data shapes, or events that later work depends on; "none" when nothing crosses a boundary; from a bet, mark each `consumed: <path> @ <short sha>`, `produced: <path>: <the details settled here>`, or `internal`]
+- Evidence: [code paths; spike findings with branch and commit; sources with URL, retrieval date, and version; from a bet, the context decisions relied on, with path and short SHA]
 
 Rejected alternatives:
 

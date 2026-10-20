@@ -10,11 +10,12 @@ A skill is a set of instructions your agent follows with your permissions. Read 
 |---|---|---|
 | `foundations` | [`decision-records`](skills/foundations/decision-records/SKILL.md) · [`release-process`](skills/foundations/release-process/SKILL.md) | What every project needs regardless of stack: a decision log that people and agents can read, and releases with a changelog and a tag on `main`. |
 | `harness-engineering` | [`marginal-gains`](skills/harness-engineering/marginal-gains/SKILL.md) | The harness your agents run on, improved one small verified change at a time: instruction files, skills, memory, hooks and permissions, repository checks, and your prompts, ranked by what actually happened in your sessions and by your goals. |
+| `product-context` | [`structuring-product-context`](skills/product-context/structuring-product-context/SKILL.md) · [`curating-product-requirements`](skills/product-context/curating-product-requirements/SKILL.md) · [`designing-system-architecture`](skills/product-context/designing-system-architecture/SKILL.md) · [`planning-product-roadmaps`](skills/product-context/planning-product-roadmaps/SKILL.md) · [`shaping-bets`](skills/product-context/shaping-bets/SKILL.md) · [`reconciling-product-context`](skills/product-context/reconciling-product-context/SKILL.md) | A long-running product's whole context in a Markdown repository apart from the code: requirements with permanent IDs, a living architecture with shared contracts, decisions, and a roadmap cut into appetite-bounded bets that the `product-engineering` loop builds, then folded back into the documents. |
 | `product-design` | [`guiding-product-discovery`](skills/product-design/guiding-product-discovery/SKILL.md) · [`shaping-product-briefs`](skills/product-design/shaping-product-briefs/SKILL.md) · [`designing-ux-flows`](skills/product-design/designing-ux-flows/SKILL.md) · [`exploring-visual-directions`](skills/product-design/exploring-visual-directions/SKILL.md) · [`building-html-prototypes`](skills/product-design/building-html-prototypes/SKILL.md) · [`preparing-implementation-handoffs`](skills/product-design/preparing-implementation-handoffs/SKILL.md) | Rough ideas through product/design handoff: requirements, UX, contrasting visual sketches, and refined offline HTML prototypes, with user decisions at milestones. |
 | `product-engineering` | [`running-implementation-loops`](skills/product-engineering/running-implementation-loops/SKILL.md) · [`specifying-work-items`](skills/product-engineering/specifying-work-items/SKILL.md) · [`brainstorming-solutions`](skills/product-engineering/brainstorming-solutions/SKILL.md) · [`defining-verification`](skills/product-engineering/defining-verification/SKILL.md) · [`planning-implementation`](skills/product-engineering/planning-implementation/SKILL.md) · [`implementing-plans`](skills/product-engineering/implementing-plans/SKILL.md) · [`verifying-implementation`](skills/product-engineering/verifying-implementation/SKILL.md) · [`reviewing-code-changes`](skills/product-engineering/reviewing-code-changes/SKILL.md) · [`shipping-pull-requests`](skills/product-engineering/shipping-pull-requests/SKILL.md) | Specify by interview, brainstorm and pick an approach, agree how the agent verifies itself, approve the roadmap; then autonomous implementation, real verification in the running app, quick and five-lens review, and one PR per slice, merged by the agent when safe and authorized. |
 | `prompt-engineering` | [`improving-prompts`](skills/prompt-engineering/improving-prompts/SKILL.md) | A rough prompt to an engineered one: destination and gap diagnosis, a technique catalog with apply and reject criteria, dated model-family notes, and a copy-paste-ready result with the reasoning behind it. |
 
-Each category is a plugin with its own version and changelog: [`foundations`](skills/foundations/CHANGELOG.md) · [`harness-engineering`](skills/harness-engineering/CHANGELOG.md) · [`product-design`](skills/product-design/CHANGELOG.md) · [`product-engineering`](skills/product-engineering/CHANGELOG.md) · [`prompt-engineering`](skills/prompt-engineering/CHANGELOG.md).
+Each category is a plugin with its own version and changelog: [`foundations`](skills/foundations/CHANGELOG.md) · [`harness-engineering`](skills/harness-engineering/CHANGELOG.md) · [`product-context`](skills/product-context/CHANGELOG.md) · [`product-design`](skills/product-design/CHANGELOG.md) · [`product-engineering`](skills/product-engineering/CHANGELOG.md) · [`prompt-engineering`](skills/prompt-engineering/CHANGELOG.md).
 
 ## From an idea to a design handoff
 
@@ -75,6 +76,8 @@ Not every work item needs every stage:
 | Refactor | Invariants in the spec, characterization checks before the first edit, small mechanical PRs |
 | Spike | A timeboxed branch that is never merged; its findings feed the approach |
 
+A bet from `product-context` enters the loop as a feature, or as a new app when there is no code yet. The loop reads the bet's context repository at its pinned commit and never writes there, takes the bet's requirements and acceptance criteria word for word, keeps the plans within the bet's appetite, and stops for you when the work outgrows it, would cross a no-go, or would change a contract the bet relies on. The finish report ends with a hand-back that the context repository folds in.
+
 By default, the agent leaves these to your review: changes to authentication or authorization, crypto, secrets, payments or personal data; schemas, migrations and backfills; breaking public APIs; new or major-bumped dependencies; CI, infrastructure and build configuration; instruction files such as AGENTS.md; and user-visible UI, which you can release to the agent when you approve the roadmap. Deleted or weakened tests, unobserved acceptance criteria, and reviews that ran without a fresh context always go to you. Your project's pull request policy can change the defaults. The agent merges only with your recorded permission, only the exact commit it reviewed, never bypasses branch protection, never approves its own PR on the host, and asks before a merge that would deploy. Browser checks use whatever the agent can drive: Playwright MCP, Chrome DevTools MCP, Claude in Chrome, the Playwright test runner, or plain HTTP and CLI calls. A check that cannot run is reported as blocked, never as passed, and stops that slice until you decide how to verify it.
 
 Install with `claude plugin install product-engineering@theultimate-dev` after marketplace setup, or `npx skills add theultimate-dev/skills/skills/product-engineering`. Start with the coordinator, or call any stage on its own:
@@ -90,6 +93,9 @@ Use reviewing-code-changes to run the full five-lens review on PR 42.
 
 Use shipping-pull-requests to open this branch as a PR and merge it if
 it qualifies for agent review.
+
+Use running-implementation-loops on bet roadmap/v1/bets/04-pantry-items.md
+in ../larder-context at 1f3c9a2 as work item 04-pantry-items.
 ```
 
 The [evaluation guide](evaluations/product-engineering/README.md) describes the behavioral trials and what they have shown so far. Track classification and full-review recall have been trialed; merge safety, stacked PRs and most other scenarios have not yet run on a real host, so treat the merge rules above as what the skills instruct, not yet as observed behavior.
@@ -128,6 +134,45 @@ Use marginal-gains on this session. My goals, in order: help my readers
 and clients, grow my open-source projects, grow the company.
 
 Use marginal-gains and also read my last five sessions in this project.
+```
+
+## From product documents to bets ready to build
+
+`product-context` keeps a long-running product's whole context in a Markdown repository of its own, next to the code: why and what the product is, how it is structured, why it is this way, and when and in what order it gets built. Agents building the product read it at a pinned commit and never write there. After each piece of work merges, the result is folded back in, so the documents stay true across versions.
+
+| Layer | Holds | Kept by |
+|---|---|---|
+| `product/` | Overview, glossary, actors and use cases, requirements with permanent IDs | `curating-product-requirements` |
+| `architecture/` | C4 views, runtime scenarios, data, deployment, cross-cutting rules, and the contracts several bets share, each tagged planned or built per version | `designing-system-architecture` |
+| `decisions/` | Product and architecture decision records | `decision-records` from `foundations` |
+| `roadmap/` | Versions and the gates between them, milestones, bets, risks and open questions | `planning-product-roadmaps`, `shaping-bets` |
+
+Work moves in bets: units sized for an agent, closer to epics than to tasks. The word comes from Shape Up. A bet is shaped before anyone builds it, its appetite (one plan, or two to three) is fixed before anyone estimates, it is handed over whole, and a circuit breaker stops it rather than letting it grow. Each bet has an outcome you can demo, the requirement IDs it covers, observable acceptance criteria, no-gos, rabbit holes, scope that may be cut, and an ordered list of what to read.
+
+| Step | Skill | What comes out |
+|---|---|---|
+| Set up or adopt | `structuring-product-context` | The repository, its `AGENTS.md` map and house rules; your existing documents moved in by a map you approve |
+| Requirements | `curating-product-requirements` | The catalogue, kept free of duplicates as briefs, handoffs and feedback arrive |
+| Architecture | `designing-system-architecture` | A baseline before the first bet, contracts before any bet consumes them, a refresh at each version |
+| Roadmap | `planning-product-roadmaps` | Version briefs, milestones with exit criteria, the registers, and what's next |
+| Bets | `shaping-bets` | Bets that cover each milestone exactly once, a readiness check, and the line that starts the `product-engineering` loop at a pinned commit |
+| Close | `reconciling-product-context` | The bet's outcome folded back into requirements, architecture, contracts and indexes; drift audits on request |
+
+`product-engineering` builds each bet in the code repository. It imports the bet's requirements and acceptance criteria word for word, interviews you only about what the bet leaves open, keeps the plans within the appetite, stops for you when the work outgrows it, and ends with a hand-back that `reconciling-product-context` folds in. `product-design` stays the place to work out one initiative's UX before its bets are shaped.
+
+Install with `claude plugin install product-context@theultimate-dev` after marketplace setup, or `npx skills add theultimate-dev/skills/skills/product-context`.
+
+```text
+Use structuring-product-context to adopt the three product documents in
+this folder into a product context repository. Show me the map first.
+
+Use designing-system-architecture to write the baseline before we shape
+the first bets.
+
+Use shaping-bets to shape milestone 1.0 and hand the first ready bet to
+the code repository next door.
+
+Use reconciling-product-context: bet 04 is merged.
 ```
 
 ## Install

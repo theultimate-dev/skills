@@ -4,6 +4,7 @@ All notable changes to the `theultimate-dev` marketplace and the repository arou
 
 - [`foundations`](skills/foundations/CHANGELOG.md)
 - [`harness-engineering`](skills/harness-engineering/CHANGELOG.md)
+- [`product-context`](skills/product-context/CHANGELOG.md)
 - [`product-design`](skills/product-design/CHANGELOG.md)
 - [`product-engineering`](skills/product-engineering/CHANGELOG.md)
 - [`prompt-engineering`](skills/prompt-engineering/CHANGELOG.md)
@@ -13,6 +14,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Marketplace releases are tagged `vX.Y.Z`. Every plugin release is also a marketplace release, which lists the plugins released under Changed.
 
 ## [Unreleased]
+
+## [0.3.0] - 2026-10-20
+
+### Added
+
+- `product-context` plugin, for skills that keep a long-running product's whole context in a Markdown repository apart from the code: requirements, architecture, decisions, and a roadmap of bets that the `product-engineering` loop builds. Its six skills set up the repository or adopt your documents, curate the requirements, design the architecture, plan versions and milestones, shape bets for the loop, and fold each merged bet back in. Decision 0013 records why the product's context gets a category of its own, and decision 0014 records how `product-engineering` implements its bets.
+- Evaluation scenarios for `product-context`: nine trials, from adopting over-stuffed product documents to closing a bet and auditing for drift, using a fictional product.
+- Six scenarios in the `product-engineering` catalog for bets: intake and import, the appetite circuit breaker, a context change at G2, drift after the pin, the hand-back, and a check that work items without a bet behave as before.
+
+### Changed
+
+- Plugins released with this version:
+  - `product-context` [0.1.0](https://github.com/theultimate-dev/skills/releases/tag/product-context--v0.1.0): its first release, six skills that keep a long-running product's context in a Markdown repository next to the code, from adopting your documents to shaping bets and folding each merged bet back in.
+  - `product-engineering` [0.2.0](https://github.com/theultimate-dev/skills/releases/tag/product-engineering--v0.2.0): the loop builds a bet from a product context repository, read at its pinned commit and kept within its appetite, and hands the result back.
 
 ## [0.2.1] - 2026-10-14
 
@@ -86,7 +101,8 @@ Marketplace releases are tagged `vX.Y.Z`. Every plugin release is also a marketp
 - Published releases are immutable: their archives, `checksums.txt` and tag cannot change after publication.
 - The CI and release workflows run `actions/checkout` pinned to a full commit SHA, and Dependabot proposes updates to it weekly.
 
-[Unreleased]: https://github.com/theultimate-dev/skills/compare/v0.2.1...HEAD
+[Unreleased]: https://github.com/theultimate-dev/skills/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/theultimate-dev/skills/compare/v0.2.1...v0.3.0
 [0.2.1]: https://github.com/theultimate-dev/skills/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/theultimate-dev/skills/compare/v0.1.3...v0.2.0
 [0.1.3]: https://github.com/theultimate-dev/skills/compare/v0.1.2...v0.1.3

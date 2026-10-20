@@ -8,6 +8,23 @@ Releases are tagged `product-engineering--vX.Y.Z`.
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-10-20
+
+### Added
+
+- The loop implements bets from a product context repository, such as those the `product-context` plugin shapes, and works the same for every other work item. Hand `running-implementation-loops` a bet, or the kickoff line that names it, and the loop:
+  - reads the context repository at the bet's pinned commit and never writes there;
+  - imports the bet's requirements and acceptance criteria word for word, and interviews you only about what the bet leaves open, adding engineering criteria as `AC-E1`, `AC-E2`;
+  - follows the decisions and contracts the bet relies on, and stops for you when a choice would change them;
+  - keeps the plans within the bet's appetite: one plan for M, two or three for L. When the work outgrows it, or would cross a no-go, it stops and offers you the options: cut the `~` scope, extend the appetite, reshape the bet, or drop it;
+  - checks every pull request against the context contracts and decisions the bet relies on, treats a deviation as a scope change that waits for you, and names the bet in the pull request;
+  - ends with a hand-back in the finish report: which pull request delivered each criterion, what was cut, the decisions made, and anything the context repository should learn. A decision made after the last pull request reaches the base branch first, through one docs-only pull request.
+
+### Changed
+
+- Task briefs name the decisions that bind the task, and carry requirement IDs exactly as `spec.md` writes them, including upstream IDs such as `ABC-01`. The intent reviewer accepts those IDs too.
+- Changing an acceptance criterion's text or its verification row in `spec.md`, for example when the spec is reopened, now invalidates that criterion's results on every open PR slice that claims it, so they are observed again before a merge.
+
 ## [0.1.0] - 2026-09-28
 
 ### Added
@@ -24,5 +41,6 @@ Releases are tagged `product-engineering--vX.Y.Z`.
   - `reviewing-code-changes` runs a quick intent review before the PR and a five-lens review (architecture, security, conventions and idioms, efficiency, intent) on it.
   - `shipping-pull-requests` opens one PR per slice, marks it for human or agent review, and merges agent-reviewed PRs only when checks pass on the reviewed head and you authorized it.
 
-[Unreleased]: https://github.com/theultimate-dev/skills/compare/product-engineering--v0.1.0...HEAD
+[Unreleased]: https://github.com/theultimate-dev/skills/compare/product-engineering--v0.2.0...HEAD
+[0.2.0]: https://github.com/theultimate-dev/skills/compare/product-engineering--v0.1.0...product-engineering--v0.2.0
 [0.1.0]: https://github.com/theultimate-dev/skills/releases/tag/product-engineering--v0.1.0

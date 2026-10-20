@@ -22,6 +22,7 @@ Review one aspect of a code change, the [lens] lens, and report only findings yo
 - Spec: [path to spec.md]. Read Problem, Requirements, Acceptance criteria, Non-goals, Constraints, Approach and Verification.
 - Plan: [path to plans/NN-slug.md]. This PR slice covers [ACs and phase].
 - [Outside the loop, instead of a spec: the stated intent from the linked issue, the problem the PR description states, and the commit messages.]
+- [On a bet: upstream context, read-only, at the pinned commit `[short SHA]` of [context repository]. The contracts and decisions this change must honor, pasted: [contracts and decisions]. When they could not be read, say so: adherence to them is unconfirmed.]
 
 ## Project rules
 

@@ -68,7 +68,7 @@ Write the rows into the `## Verification` section of `spec.md` using the [contra
 
 List the automated checks that must pass on the candidate (lint, typecheck, test suites) under the table.
 
-An AC that cannot be observed ("the code is clean", "the flow is intuitive") cannot get a row. Propose an observable rewording, or a human-eye row, and have the user confirm it at G3.
+An AC that cannot be observed ("the code is clean", "the flow is intuitive") cannot get a row. Propose an observable rewording, or a human-eye row, and have the user confirm it at G3. An AC imported from a bet, on a spec whose Source line starts with `Source: bet `, is never reworded: give it an interpreting pass condition or a human-eye row, confirmed at G3, or send it to the user as a context change. A cut AC gets no row.
 
 ### 4. Find harness gaps and propose Plan 0
 
