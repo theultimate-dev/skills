@@ -8,7 +8,7 @@
   },
   "metadata": {
     "description": "The Ultimate Dev skills catalog",
-    "version": "0.2.1"
+    "version": "0.3.0"
   },
   "plugins": [
     {
@@ -41,7 +41,7 @@
     {
       "name": "product-context",
       "description": "A long-running product's whole context in a Markdown repository kept apart from the code: requirements with permanent IDs, a living architecture with shared contracts, decisions, and a roadmap cut into appetite-bounded bets that the product-engineering loop builds, folded back into the documents after every bet.",
-      "version": "0.0.0",
+      "version": "0.1.0",
       "source": "./",
       "strict": false,
       "license": "MIT",
@@ -77,7 +77,7 @@
     {
       "name": "product-engineering",
       "description": "One implementation loop from a work item to merged pull requests: you are interviewed, pick an approach, agree the verification method and approve the roadmap; the agent then implements, verifies in the running app, reviews with five parallel lenses, and merges the PRs it may merge.",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "source": "./",
       "strict": false,
       "license": "MIT",

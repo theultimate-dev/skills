@@ -8,6 +8,8 @@ Releases are tagged `product-engineering--vX.Y.Z`.
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-10-20
+
 ### Added
 
 - The loop implements bets from a product context repository, such as those the `product-context` plugin shapes, and works the same for every other work item. Hand `running-implementation-loops` a bet, or the kickoff line that names it, and the loop:
@@ -39,5 +41,6 @@ Releases are tagged `product-engineering--vX.Y.Z`.
   - `reviewing-code-changes` runs a quick intent review before the PR and a five-lens review (architecture, security, conventions and idioms, efficiency, intent) on it.
   - `shipping-pull-requests` opens one PR per slice, marks it for human or agent review, and merges agent-reviewed PRs only when checks pass on the reviewed head and you authorized it.
 
-[Unreleased]: https://github.com/theultimate-dev/skills/compare/product-engineering--v0.1.0...HEAD
+[Unreleased]: https://github.com/theultimate-dev/skills/compare/product-engineering--v0.2.0...HEAD
+[0.2.0]: https://github.com/theultimate-dev/skills/compare/product-engineering--v0.1.0...product-engineering--v0.2.0
 [0.1.0]: https://github.com/theultimate-dev/skills/releases/tag/product-engineering--v0.1.0
