@@ -6,7 +6,9 @@ Run `python3 scripts/validate.py [repo-root]`. Violations print as
 
 Layout: `SKILL.md` only at `skills/<category>/<skill>/SKILL.md`, kebab-case
   directory names of at most 64 characters, every category holding at least one
-  skill directory, its `CHANGELOG.md`, and nothing else.
+  skill directory, its `CHANGELOG.md`, an optional `README.md`, and nothing else.
+Category READMEs: every relative Markdown link, `href`, `src` and `srcset`
+  resolves to a file inside the repository.
 Frontmatter: `---` at byte 0, a closing `---`, and between them plain
   `key: value` lines carrying exactly name, description and license; `name`
   matches the directory and is unique repository-wide, `description` is
@@ -47,6 +49,7 @@ from pathlib import Path
 KEBAB_RE = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
 FIELD_RE = re.compile(r"^([a-z][a-z0-9-]*): (.+)$")
 LINK_RE = re.compile(r"\]\(([^)\s]+)")
+HTML_REF_RE = re.compile(r'\b(href|src|srcset)="([^"]*)"')
 INLINE_CODE_RE = re.compile(r"`[^`]*`")
 AT_IMPORT_RE = re.compile(r"@[A-Za-z0-9_./-]*\.md")
 HEADING_RE = re.compile(r"^## \[(\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?)\] - (\d{4}-\d{2}-\d{2})( \[YANKED\])?$")
@@ -57,6 +60,7 @@ DECISION_RE = re.compile(r"^(\d{4})-[a-z0-9]+(?:-[a-z0-9]+)*\.md$")
 STATUS_RE = re.compile(r"^- Status: (proposed|accepted|deprecated|superseded)\b")
 
 REQUIRED_KEYS = {"name", "description", "license"}
+CATEGORY_FILES = ("CHANGELOG.md", "README.md")
 EXTERNAL = ("http://", "https://", "mailto:")
 BANNED = ("../", "~/.claude", ".claude/skills", "${CLAUDE_SKILL_DIR}", "CLAUDE_PLUGIN_ROOT")
 MAX_NAME, MAX_DESCRIPTION, MAX_LINES, WARN_LINES = 64, 1024, 500, 250
@@ -146,8 +150,8 @@ def check_layout(root: Path, report: Report) -> dict[str, dict[str, Path]]:
         skills: dict[str, Path] = {}
         for entry in sorted(category_dir.iterdir()):
             if not entry.is_dir():
-                if entry.name != "CHANGELOG.md":
-                    report.error(entry, "a category directory holds only skill directories and CHANGELOG.md")
+                if entry.name not in CATEGORY_FILES:
+                    report.error(entry, "a category directory holds only skill directories, CHANGELOG.md and README.md")
                 continue
             check_name(entry, "skill", report)
             if not (entry / "SKILL.md").is_file():
@@ -276,6 +280,41 @@ def check_links(path: Path, skill_root: Path, line: str, number: int, report: Re
             report.error(path, f"link target {target!r} points outside the skill directory", line=number)
         elif not destination.exists():
             report.error(path, f"link target {target!r} does not exist", line=number)
+
+
+def check_category_readme(root: Path, category_dir: Path, report: Report) -> None:
+    """Every relative link, href, src and srcset in a category's README resolves inside the repository."""
+    path = category_dir / "README.md"
+    if not path.is_file():
+        return
+    text = read_text(path)
+    if text is None:
+        report.error(path, "is not valid UTF-8")
+        return
+    fenced = False
+    for number, line in enumerate(text.splitlines(), 1):
+        if line.strip().startswith(("```", "~~~")):
+            fenced = not fenced
+            continue
+        if fenced:
+            continue
+        targets = LINK_RE.findall(INLINE_CODE_RE.sub(" ", line))
+        for attribute, value in HTML_REF_RE.findall(line):
+            if attribute == "srcset":
+                targets += [candidate.split()[0] for candidate in value.split(",") if candidate.strip()]
+            else:
+                targets.append(value)
+        for target in targets:
+            if target.startswith(EXTERNAL) or target.startswith("#"):
+                continue
+            cleaned = target.split("#", 1)[0]
+            if not cleaned:
+                continue
+            destination = (path.parent / cleaned).resolve()
+            if not destination.is_relative_to(root):
+                report.error(path, f"link target {target!r} points outside the repository", line=number)
+            elif not destination.exists():
+                report.error(path, f"link target {target!r} does not exist", line=number)
 
 
 def check_marketplace(root: Path, categories: dict[str, dict[str, Path]], version: str | None,
@@ -601,6 +640,7 @@ def main(argv: list[str] | None = None) -> int:
     categories = check_layout(root, report)
     seen: dict[str, str] = {}
     for category in sorted(categories):
+        check_category_readme(root, root / "skills" / category, report)
         for skill in sorted(categories[category]):
             check_skill(categories[category][skill], report, seen)
     releases = check_changelog(root / "CHANGELOG.md", "v", report)
