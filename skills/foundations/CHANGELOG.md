@@ -8,6 +8,10 @@ Releases are tagged `foundations--vX.Y.Z`.
 
 ## [Unreleased]
 
+### Fixed
+
+- `release-process` now covers a `main` that accepts changes only through pull requests, such as one behind a ruleset: the release commit goes in a pull request merged with a merge commit, and the tags go on the commit that reaches `main`. Its preflight no longer rules that branch out.
+
 ## [0.2.0] - 2026-09-29
 
 ### Added

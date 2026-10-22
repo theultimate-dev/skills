@@ -16,7 +16,7 @@ git describe --tags --match 'v[0-9]*' --abbrev=0   # the previous vX.Y.Z tag, if
 
 Then check three more things: CI is green on the head commit (`gh run list --branch main --limit 1`, or the Actions page); `## [Unreleased]` in `CHANGELOG.md` has at least one entry; the version you intend has no tag yet (`git tag -l vX.Y.Z` and `git ls-remote --tags origin vX.Y.Z` both print nothing).
 
-If anything fails here, fix it first. Do not release from a branch, from a dirty tree, or over a red build.
+If anything fails here, fix it first. Do not release from a dirty tree or over a red build, and release from a branch only on the pull request path below.
 
 ## 2. Choose the version
 
@@ -79,6 +79,14 @@ gh release view vX.Y.Z          # notes match the changelog section; assets pres
 ```
 
 Push `main` before the tag. When one commit releases components and the root, push the component tags before the root tag, so the root notes never link to a release that does not exist yet. The workflow checks that the tagged commit is on `main`; if the tag arrives first, that check fails, and you re-run the job after `main` lands. Report the release URL to the user.
+
+## When `main` takes changes only through pull requests
+
+When branch protection or a ruleset refuses a direct push to `main`, the release commit travels in a pull request:
+
+1. Run the preflight on `main`, create a branch such as `release/vX.Y.Z`, and make the release commit there (steps 3 to 5, without the tag).
+2. Merge the pull request with a merge commit, so the release commit itself lands on `main`. After a squash or rebase merge, tag the commit on `main` that holds the release instead.
+3. Pull `main`, check with `git show --stat <commit>` that it is the release commit, then create the tags on it and push them as in step 6, without the `git push origin main` line.
 
 ## Rollback
 
