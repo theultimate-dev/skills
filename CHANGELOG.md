@@ -15,6 +15,13 @@ Marketplace releases are tagged `vX.Y.Z`. Every plugin release is also a marketp
 
 ## [Unreleased]
 
+## [0.3.1] - 2026-10-23
+
+### Changed
+
+- Plugins released with this version:
+  - `foundations` [0.2.1](https://github.com/theultimate-dev/skills/releases/tag/foundations--v0.2.1): `release-process` cuts a release on a `main` that takes changes only through pull requests, with the release commit in a pull request merged with a merge commit and the tags on that commit once it reaches `main`.
+
 ## [0.3.0] - 2026-10-20
 
 ### Added
@@ -101,7 +108,8 @@ Marketplace releases are tagged `vX.Y.Z`. Every plugin release is also a marketp
 - Published releases are immutable: their archives, `checksums.txt` and tag cannot change after publication.
 - The CI and release workflows run `actions/checkout` pinned to a full commit SHA, and Dependabot proposes updates to it weekly.
 
-[Unreleased]: https://github.com/theultimate-dev/skills/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/theultimate-dev/skills/compare/v0.3.1...HEAD
+[0.3.1]: https://github.com/theultimate-dev/skills/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/theultimate-dev/skills/compare/v0.2.1...v0.3.0
 [0.2.1]: https://github.com/theultimate-dev/skills/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/theultimate-dev/skills/compare/v0.1.3...v0.2.0
