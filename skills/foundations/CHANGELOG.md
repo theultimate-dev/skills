@@ -8,6 +8,12 @@ Releases are tagged `foundations--vX.Y.Z`.
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-10-23
+
+### Fixed
+
+- `release-process` now covers a `main` that accepts changes only through pull requests, such as one behind a ruleset: the release commit goes in a pull request merged with a merge commit, and the tags go on the commit that reaches `main`. Its preflight no longer rules that branch out.
+
 ## [0.2.0] - 2026-09-29
 
 ### Added
@@ -28,7 +34,8 @@ Releases are tagged `foundations--vX.Y.Z`.
 - Two skills: `decision-records` keeps a project's decision log, `release-process` keeps its changelog and cuts tagged releases.
 - `release-process` also handles repositories whose components, such as packages or plugins, are versioned independently. Each component gets its own changelog and `name--vX.Y.Z` tags, and one release commit can release several components. A second workflow template releases both root `vX.Y.Z` tags and component tags, and can be run by hand for a tag GitHub skipped.
 
-[Unreleased]: https://github.com/theultimate-dev/skills/compare/foundations--v0.2.0...HEAD
+[Unreleased]: https://github.com/theultimate-dev/skills/compare/foundations--v0.2.1...HEAD
+[0.2.1]: https://github.com/theultimate-dev/skills/compare/foundations--v0.2.0...foundations--v0.2.1
 [0.2.0]: https://github.com/theultimate-dev/skills/compare/foundations--v0.1.1...foundations--v0.2.0
 [0.1.1]: https://github.com/theultimate-dev/skills/compare/foundations--v0.1.0...foundations--v0.1.1
 [0.1.0]: https://github.com/theultimate-dev/skills/releases/tag/foundations--v0.1.0
