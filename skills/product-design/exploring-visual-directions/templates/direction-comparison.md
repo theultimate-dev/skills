@@ -36,7 +36,7 @@ Status: proposals / selected / needs review
 
 ### Platform frame (native surface)
 
-<!-- One frame for all directions. Directions refer to it and don't repeat its values, the scale mapping included. -->
+<!-- One frame for all directions. Directions refer to it and don't repeat its values, the scale mapping included. Give each geometry token one length and a row of its own. -->
 
 - Placements, each drawn at real scale:
 - Scale mapping, for example 1 CSS px = 1 pt:
