@@ -29,15 +29,15 @@
     let idle;
     function restartIdle() {
       clearTimeout(idle);
-      idle = setTimeout(close, 2000);
+      idle = setTimeout(closePanel, 2000);
     }
-    function open() {
+    function openPanel() {
       panel.hidden = false;
       button.setAttribute('aria-expanded', 'true');
       panel.querySelector('input').focus();
       restartIdle();
     }
-    function close() {
+    function closePanel() {
       if (panel.hidden) return;
       clearTimeout(idle);
       const hadFocus = panel.contains(document.activeElement);
@@ -45,13 +45,13 @@
       button.setAttribute('aria-expanded', 'false');
       if (hadFocus) button.focus();
     }
-    button.addEventListener('click', () => (panel.hidden ? open() : close()));
+    button.addEventListener('click', () => (panel.hidden ? openPanel() : closePanel()));
     panel.addEventListener('input', restartIdle);
     document.addEventListener('keydown', event => {
-      if (event.key === 'Escape') close();
+      if (event.key === 'Escape') closePanel();
     });
     document.addEventListener('click', event => {
-      if (!panel.contains(event.target)) close();
+      if (!panel.contains(event.target)) closePanel();
     });
   </script>
 </body>
