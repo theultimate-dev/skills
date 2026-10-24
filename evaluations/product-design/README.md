@@ -16,6 +16,7 @@ Fixtures and rerun commands for the checks that `building-html-prototypes` ships
 | `fixtures/long-page/` | AC12 | A page 4,000 CSS px tall, in four bands labeled 0, 1000, 2000 and 3000 |
 | `checks/panel-checks.js` | AC9 | The six harness checks for the panel, loaded with `?checks=panel-checks.js` |
 | `checks/visibility-checks.js` | AC9 | The three harness checks for `fixtures/visibility/`, loaded with `?checks=visibility-checks.js` |
+| `checks/scope-checks.js` | AC9 | One check for `fixtures/panel-fixed/` in a file that declares names the harness uses internally, such as `frame` and `report` |
 
 ## Stage and serve
 
@@ -60,6 +61,8 @@ Stage `panel-bug` with `interaction-harness.html`, copy its checks to the stagin
 - Pass: `FAIL panel stays open after one click`, while `PASS panel opens on click` shows the panel did open inside the click.
 - Repeat with `panel-fixed`. Pass: six `PASS` lines, named as in `checks/panel-checks.js`, and `DONE 6/6`.
 - Repeat with `visibility`, copying its checks instead, `cp evaluations/product-design/checks/visibility-checks.js "$run/"`, and dumping `interaction-harness.html?checks=visibility-checks.js`. Pass: three `PASS` lines and `DONE 3/3`. A `visible()` that trusts the `hidden` attribute over the page's CSS fails the first check.
+- Repeat with `panel-fixed` and `scope-checks.js` copied in, dumping `interaction-harness.html?checks=scope-checks.js`. Pass: `PASS a checks file may reuse the harness names` and `DONE 1/1`. A harness whose internal names share the checks file's global scope gives `FAIL checks defined: write at least one check` instead.
+- On the same stage, dump `?checks=https://cdn.example.com/checks.js`, `?checks=panel-checks.js&page=javascript:void(0)` and `?checks=panel-checks.js&timeout=0`. Pass, in order: `FAIL checks load: https://cdn.example.com/checks.js is not on the staging server` and `DONE 0/1`; six `FAIL` lines that end `javascript:void(0) is not on the staging server` and `DONE 0/6`; `FAIL settings: width, height and timeout must be positive numbers` and `DONE 0/1`.
 
 ## Page slices (AC12)
 

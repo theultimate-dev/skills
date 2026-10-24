@@ -19,224 +19,258 @@
     /* Put this page at the staging root, with the prototype copied untouched to a/b/, and open it over HTTP.
        Set the page and the frame size below or in the URL (?page=a/b/views/panel.html&width=320&height=640),
        then write one check per stateful interaction in the checks block at the end, or in a classic script
-       at the staging root named in the URL (?checks=panel-checks.js). Every check starts from a fresh load. */
-    const config = {
-      page: 'a/b/index.html',
-      width: 1024,
-      height: 768,
-      timeout: 5000
-    };
-
-    const params = new URLSearchParams(location.search);
-    if (params.has('page')) config.page = params.get('page');
-    for (const key of ['width', 'height', 'timeout']) {
-      if (params.has(key)) config[key] = Number(params.get(key));
-    }
-
-    const output = document.querySelector('#results');
-    const lines = [];
-    let passed = 0;
-    function report(ok, name, detail) {
-      if (ok) passed += 1;
-      lines.push(ok ? `PASS ${name}` : `FAIL ${name}: ${detail}`);
-      output.textContent = lines.join('\n');
-    }
-    function finish() {
-      const total = lines.length;
-      lines.push(`DONE ${passed}/${total}`);
-      output.textContent = lines.join('\n');
-    }
-
-    const frame = document.querySelector('#frame');
-    frame.style.width = `${config.width}px`;
-    frame.style.height = `${config.height}px`;
-    let pageErrors = [];
-
-    // The page in the frame: its window and document, read fresh after every navigation.
-    function page() {
-      const win = frame.contentWindow;
-      let doc = null;
-      try { doc = win.document; } catch (error) { doc = null; }
-      if (!doc) throw new Error('the page is not same-origin; serve it from the same server as the harness');
-      return { window: win, document: doc };
-    }
-
-    // Resolves when the frame finishes its next navigation.
-    function loaded() {
-      return new Promise((resolve, reject) => {
-        const timer = setTimeout(() => reject(new Error(`the page did not load within ${config.timeout} ms`)), config.timeout);
-        frame.addEventListener('load', () => {
-          clearTimeout(timer);
-          const { window: win } = page();
-          win.addEventListener('error', event => pageErrors.push(event.message));
-          win.addEventListener('unhandledrejection', event => pageErrors.push(String(event.reason)));
-          resolve();
-        }, { once: true });
-      });
-    }
-
-    async function load(path = config.page) {
-      const next = loaded();
-      frame.src = new URL(path, location.href).href;
-      await next;
-      await page().document.fonts.ready;
-    }
-
-    function $(selector) {
-      if (typeof selector !== 'string') return selector;
-      const element = page().document.querySelector(selector);
-      if (!element) throw new Error(`no element matches ${selector}`);
-      return element;
-    }
-    function $$(selector) {
-      return [...page().document.querySelectorAll(selector)];
-    }
-
-    const focusable = 'a[href], area[href], button, input, select, textarea, summary, iframe, [tabindex], [contenteditable]';
-
-    // A primary-button click as a pointer produces it: pointer and mouse down, focus, up, then click.
-    // Synthetic events reach the page's handlers; a click also runs activation, such as following a link.
-    function click(target) {
-      const element = $(target);
-      const { window: win } = page();
-      const options = { bubbles: true, cancelable: true, composed: true, view: win, button: 0 };
-      const pointer = { ...options, pointerId: 1, pointerType: 'mouse', isPrimary: true };
-      element.dispatchEvent(new win.PointerEvent('pointerdown', { ...pointer, buttons: 1 }));
-      const down = element.dispatchEvent(new win.MouseEvent('mousedown', { ...options, buttons: 1 }));
-      const focusTarget = element.closest(focusable);
-      if (down && focusTarget && !focusTarget.disabled) focusTarget.focus();
-      element.dispatchEvent(new win.PointerEvent('pointerup', pointer));
-      element.dispatchEvent(new win.MouseEvent('mouseup', options));
-      element.dispatchEvent(new win.MouseEvent('click', { ...options, detail: 1 }));
-    }
-
-    // Key down and up on the target, or on the focused element. Synthetic keys run no browser default
-    // action: Enter does not activate a button and Tab does not move focus.
-    function press(key, target) {
-      const { window: win, document: doc } = page();
-      const element = target ? $(target) : doc.activeElement ?? doc.body;
-      const options = { key, bubbles: true, cancelable: true, composed: true, view: win };
-      element.dispatchEvent(new win.KeyboardEvent('keydown', options));
-      element.dispatchEvent(new win.KeyboardEvent('keyup', options));
-    }
-
-    // Lets timers in the page run for this long.
-    function wait(ms) {
-      return new Promise(resolve => setTimeout(resolve, ms));
-    }
-
-    // Resolves once the condition holds, or fails after the timeout.
-    async function until(condition, detail, timeout = config.timeout) {
-      const start = performance.now();
-      while (!condition()) {
-        if (performance.now() - start > timeout) throw new Error(detail ?? `the condition did not hold within ${timeout} ms`);
-        await wait(50);
-      }
-    }
-
-    function assert(condition, detail) {
-      if (!condition) throw new Error(detail);
-    }
-
-    function focused() {
-      return page().document.activeElement;
-    }
-
-    // Reads what the page renders, not the hidden attribute, which the page's own CSS can override.
-    // An element inside a hidden one has no box. Opacity is not considered.
-    function visible(target) {
-      const element = $(target);
-      const style = page().window.getComputedStyle(element);
-      if (style.display === 'none' || style.visibility === 'hidden') return false;
-      const box = element.getBoundingClientRect();
-      return box.width > 0 && box.height > 0;
-    }
-
-    function attr(target, name) {
-      return $(target).getAttribute(name);
-    }
-
-    function style(target, property) {
-      return page().window.getComputedStyle($(target)).getPropertyValue(property).trim();
-    }
-
-    // Records every value an attribute takes, including values that last only inside one event.
-    function record(target, name) {
-      const element = $(target);
-      const seen = [];
-      const observer = new (page().window.MutationObserver)(records => seen.push(...records.map(entry => entry.oldValue)));
-      observer.observe(element, { attributes: true, attributeFilter: [name], attributeOldValue: true });
-      return {
-        values() {
-          seen.push(...observer.takeRecords().map(entry => entry.oldValue));
-          return [...seen, element.getAttribute(name)];
-        }
+       at the staging root named in the URL (?checks=panel-checks.js). Every check starts from a fresh load.
+       Only check() is global, so a checks file can declare any names of its own. */
+    (() => {
+      const config = {
+        page: 'a/b/index.html',
+        width: 1024,
+        height: 768,
+        timeout: 5000
       };
-    }
 
-    const checks = [];
-    function check(name, run) {
-      checks.push({ name, run });
-    }
-    const api = { page, load, loaded, $, $$, click, press, wait, until, assert, focused, visible, attr, style, record };
-
-    async function run() {
-      if (!/^https?:$/.test(location.protocol)) {
-        report(false, 'served over HTTP', 'serve the staging folder with a local static server; a file:// frame is an opaque origin');
-        return finish();
+      const params = new URLSearchParams(location.search);
+      if (params.has('page')) config.page = params.get('page');
+      for (const key of ['width', 'height', 'timeout']) {
+        if (params.has(key)) config[key] = Number(params.get(key));
       }
-      if (params.has('checks')) {
-        const script = document.createElement('script');
-        script.src = params.get('checks');
-        const ready = new Promise((resolve, reject) => {
-          script.onload = resolve;
-          script.onerror = () => reject(new Error(`could not load ${params.get('checks')}`));
-        });
-        document.head.append(script);
+
+      const output = document.querySelector('#results');
+      const lines = [];
+      let passed = 0;
+      function report(ok, name, detail) {
+        if (ok) passed += 1;
+        lines.push(ok ? `PASS ${name}` : `FAIL ${name}: ${detail}`);
+        output.textContent = lines.join('\n');
+      }
+      function finish() {
+        const total = lines.length;
+        lines.push(`DONE ${passed}/${total}`);
+        output.textContent = lines.join('\n');
+      }
+
+      const frame = document.querySelector('#frame');
+      frame.style.width = `${config.width}px`;
+      frame.style.height = `${config.height}px`;
+      let pageErrors = [];
+
+      // Resolves a path from the URL or a check, or returns null when it is not on the staging server.
+      function onStagingServer(path) {
         try {
-          await ready;
+          const url = new URL(path, location.href);
+          return url.origin === location.origin ? url : null;
         } catch (error) {
-          report(false, 'checks load', error.message);
+          return null;
+        }
+      }
+
+      // The page in the frame: its window and document, read fresh after every navigation.
+      function page() {
+        const win = frame.contentWindow;
+        let doc = null;
+        try { doc = win.document; } catch (error) { doc = null; }
+        if (!doc) throw new Error('the page is not same-origin; serve it from the same server as the harness');
+        return { window: win, document: doc };
+      }
+
+      // Resolves when the frame finishes its next navigation.
+      function loaded() {
+        return new Promise((resolve, reject) => {
+          const timer = setTimeout(() => reject(new Error(`the page did not load within ${config.timeout} ms`)), config.timeout);
+          frame.addEventListener('load', () => {
+            clearTimeout(timer);
+            const { window: win } = page();
+            win.addEventListener('error', event => pageErrors.push(event.message));
+            win.addEventListener('unhandledrejection', event => pageErrors.push(String(event.reason)));
+            resolve();
+          }, { once: true });
+        });
+      }
+
+      async function load(path = config.page) {
+        const url = onStagingServer(path);
+        if (!url) throw new Error(`${path} is not on the staging server`);
+        const next = loaded();
+        frame.src = url.href;
+        await next;
+        await page().document.fonts.ready;
+      }
+
+      function $(selector) {
+        if (typeof selector !== 'string') return selector;
+        const element = page().document.querySelector(selector);
+        if (!element) throw new Error(`no element matches ${selector}`);
+        return element;
+      }
+      function $$(selector) {
+        return [...page().document.querySelectorAll(selector)];
+      }
+
+      const focusable = 'a[href], area[href], button, input, select, textarea, summary, iframe, [tabindex], [contenteditable]';
+
+      // A primary-button click as a pointer produces it: pointer and mouse down, focus, up, then click.
+      // Synthetic events reach the page's handlers; a click also runs activation, such as following a link.
+      function click(target) {
+        const element = $(target);
+        const { window: win } = page();
+        const options = { bubbles: true, cancelable: true, composed: true, view: win, button: 0 };
+        const pointer = { ...options, pointerId: 1, pointerType: 'mouse', isPrimary: true };
+        element.dispatchEvent(new win.PointerEvent('pointerdown', { ...pointer, buttons: 1 }));
+        const down = element.dispatchEvent(new win.MouseEvent('mousedown', { ...options, buttons: 1 }));
+        const focusTarget = element.closest(focusable);
+        if (down && focusTarget && !focusTarget.disabled) focusTarget.focus();
+        element.dispatchEvent(new win.PointerEvent('pointerup', pointer));
+        element.dispatchEvent(new win.MouseEvent('mouseup', options));
+        element.dispatchEvent(new win.MouseEvent('click', { ...options, detail: 1 }));
+      }
+
+      // Key down and up on the target, or on the focused element. Synthetic keys run no browser default
+      // action: Enter does not activate a button and Tab does not move focus.
+      function press(key, target) {
+        const { window: win, document: doc } = page();
+        const element = target ? $(target) : doc.activeElement ?? doc.body;
+        const options = { key, bubbles: true, cancelable: true, composed: true, view: win };
+        element.dispatchEvent(new win.KeyboardEvent('keydown', options));
+        element.dispatchEvent(new win.KeyboardEvent('keyup', options));
+      }
+
+      // Lets timers in the page run for this long.
+      function wait(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+      }
+
+      // Resolves once the condition holds, or fails after the timeout.
+      async function until(condition, detail, timeout = config.timeout) {
+        const start = performance.now();
+        while (!condition()) {
+          if (performance.now() - start > timeout) throw new Error(detail ?? `the condition did not hold within ${timeout} ms`);
+          await wait(50);
+        }
+      }
+
+      function assert(condition, detail) {
+        if (!condition) throw new Error(detail);
+      }
+
+      function focused() {
+        return page().document.activeElement;
+      }
+
+      // Reads what the page renders, not the hidden attribute, which the page's own CSS can override.
+      // Visible means rendered with a box: an element inside a hidden one, or an empty one, has none.
+      // Opacity is not considered.
+      function visible(target) {
+        const element = $(target);
+        const style = page().window.getComputedStyle(element);
+        if (style.display === 'none' || style.visibility === 'hidden') return false;
+        const box = element.getBoundingClientRect();
+        return box.width > 0 && box.height > 0;
+      }
+
+      function attr(target, name) {
+        return $(target).getAttribute(name);
+      }
+
+      function style(target, property) {
+        return page().window.getComputedStyle($(target)).getPropertyValue(property).trim();
+      }
+
+      // Records every value an attribute takes, including values that last only inside one event.
+      function record(target, name) {
+        const element = $(target);
+        const seen = [];
+        const observer = new (page().window.MutationObserver)(records => seen.push(...records.map(entry => entry.oldValue)));
+        observer.observe(element, { attributes: true, attributeFilter: [name], attributeOldValue: true });
+        return {
+          values() {
+            seen.push(...observer.takeRecords().map(entry => entry.oldValue));
+            return [...seen, element.getAttribute(name)];
+          }
+        };
+      }
+
+      const checks = [];
+      function check(name, run) {
+        checks.push({ name, run });
+      }
+      window.check = check;
+      const api = { page, load, loaded, $, $$, click, press, wait, until, assert, focused, visible, attr, style, record };
+
+      async function run() {
+        if (!/^https?:$/.test(location.protocol)) {
+          report(false, 'served over HTTP', 'serve the staging folder with a local static server; a file:// frame is an opaque origin');
           return finish();
         }
-      }
-      if (!checks.length) report(false, 'checks defined', 'write at least one check');
-      for (const { name, run: steps } of checks) {
-        pageErrors = [];
-        try {
-          await load();
-          await steps(api);
-          assert(!pageErrors.length, `the page threw: ${pageErrors.join('; ')}`);
-          report(true, name);
-        } catch (error) {
-          report(false, name, error.message);
+        if (![config.width, config.height, config.timeout].every(value => Number.isFinite(value) && value > 0)) {
+          report(false, 'settings', 'width, height and timeout must be positive numbers');
+          return finish();
         }
-      }
-      finish();
-    }
-
-    /* Checks. Name each one by the outcome it observes; the name goes into the notes as it is.
-       Replace these examples with the prototype's own checks.
-
-    check('menu opens on click', async ({ click, visible, assert }) => {
-      click('#menu-button');
-      assert(visible('#menu'), 'the menu is not visible');
-    });
-
-    check('menu closes on Escape and focus returns to its control', async ({ click, press, visible, focused, $, assert }) => {
-      click('#menu-button');
-      press('Escape');
-      assert(!visible('#menu'), 'the menu is still visible');
-      assert(focused() === $('#menu-button'), `focus is on ${focused().outerHTML.slice(0, 60)}`);
-    });
-    */
-
-    window.addEventListener('load', () => {
-      run().catch(error => {
-        report(false, 'harness completes', error.message);
+        if (params.has('checks')) {
+          const name = params.get('checks');
+          const source = onStagingServer(name);
+          if (!source) {
+            report(false, 'checks load', `${name} is not on the staging server`);
+            return finish();
+          }
+          // An error while the checks script runs, such as a syntax error, fails the load instead of passing silently.
+          const errors = [];
+          const onError = event => errors.push(event.message);
+          window.addEventListener('error', onError);
+          const script = document.createElement('script');
+          script.src = source.href;
+          const ready = new Promise((resolve, reject) => {
+            script.onload = resolve;
+            script.onerror = () => reject(new Error(`could not load ${name}`));
+          });
+          document.head.append(script);
+          try {
+            await ready;
+            if (errors.length) throw new Error(errors.join('; '));
+          } catch (error) {
+            report(false, 'checks load', error.message);
+            return finish();
+          } finally {
+            window.removeEventListener('error', onError);
+          }
+        }
+        if (!checks.length) report(false, 'checks defined', 'write at least one check');
+        for (const { name, run: steps } of checks) {
+          pageErrors = [];
+          try {
+            await load();
+            await steps(api);
+            assert(!pageErrors.length, `the page threw: ${pageErrors.join('; ')}`);
+            report(true, name);
+          } catch (error) {
+            report(false, name, error.message);
+          }
+        }
         finish();
+      }
+
+      /* Checks. Name each one by the outcome it observes; the name goes into the notes as it is.
+         Replace these examples with the prototype's own checks.
+
+      check('menu opens on click', async ({ click, visible, assert }) => {
+        click('#menu-button');
+        assert(visible('#menu'), 'the menu is not visible');
       });
-    });
+
+      check('menu closes on Escape and focus returns to its control', async ({ click, press, visible, focused, $, assert }) => {
+        click('#menu-button');
+        press('Escape');
+        assert(!visible('#menu'), 'the menu is still visible');
+        assert(focused() === $('#menu-button'), `focus is on ${focused().outerHTML.slice(0, 60)}`);
+      });
+      */
+
+      window.addEventListener('load', () => {
+        run().catch(error => {
+          report(false, 'harness completes', error.message);
+          finish();
+        });
+      });
+    })();
   </script>
 </body>
 </html>
