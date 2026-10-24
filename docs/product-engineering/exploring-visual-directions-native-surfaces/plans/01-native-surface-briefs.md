@@ -71,4 +71,10 @@ The three sketches share one platform frame, which `building-html-prototypes` ta
 
 ## Notes
 
+- 2026-10-24 01: the transcript scan ships as `evaluations/product-design/scan_transcript.py`, not as a scratchpad script, so a later rerun has it. The profile's changes therefore land with the fixtures in task 1, not with the planning files.
+- 2026-10-24 01: in the fixtures that aren't macOS, the action reads "Settings" without the macOS ellipsis. The shared schedule setting drops "while on battery". Both changes keep a device hint out of the brief that names no platform.
+- 2026-10-24 01: a baseline executor found that "41.2 GB · 2 warnings" disagreed with the volume list, which shows one warning and one failure. The line now reads "1 warning, 1 failure". No criterion reads that line. The baselines are rerun on the corrected fixtures with the candidate trials, so both sides grade the same input.
+- 2026-10-24 01: the transcript scan read arithmetic in a shell heredoc, such as `/255`, as a path. A path now has to start with a letter, `_`, `.` or `~`. The fault probe still gives its three hits, and the clean probe still prints `CLEAN`.
+- 2026-10-24 01: B-droid at f401cae already records Roboto as open source and embeddable, so D1 can't fail on the baseline. D1 guards against the licence rule overcorrecting, and it's reported as a regression guard. No fixture change could make the baseline fail without making the expected behaviour wrong.
+
 ## Changes after launch

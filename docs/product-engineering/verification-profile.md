@@ -1,6 +1,6 @@
 # Verification profile
 
-Confirmed: 2026-10-24 at commit 9982dc6
+Confirmed: 2026-10-24 at commit f401cae
 Re-check when these paths change: `scripts/validate.py`, `.github/workflows/`, `evaluations/`, the installed Chrome version
 
 Names only. A secret value never appears in this file. Mark anything not yet confirmed by a run as `unconfirmed`, and anything designed but not built as `planned`.
@@ -13,11 +13,11 @@ Names only. A secret value never appears in this file. Mark anything not yet con
 
 ## Commands
 
-| Purpose | Command | Covers | Typical time | Baseline on 9982dc6 |
+| Purpose | Command | Covers | Typical time | Baseline on f401cae |
 |---|---|---|---|---|
 | Install | none | | | |
 | Lint, typecheck, unit tests, build | none | | | |
-| Repository invariants | `python3 scripts/validate.py` | Layout, frontmatter, self-containment including the parent-path ban, marketplace, decisions index, changelogs, README skill names | 0.14 s | pass: "0 errors, 0 warnings" |
+| Repository invariants | `python3 scripts/validate.py` | Layout, frontmatter, self-containment including the parent-path ban, marketplace, decisions index, changelogs, README skill names | 0.11 s | pass: "0 errors, 0 warnings" |
 | Whitespace | `git diff --check origin/main...HEAD` | Trailing whitespace and conflict markers in the diff | under 1 s | `unconfirmed` |
 | Render category visuals | `uv run scripts/render_visuals.py <category>` | Category README images; needs Chrome and network access for fonts | | `unconfirmed`, not needed unless a category README changes |
 | Verify entry point | none | The validator is the only check CI runs | | |
@@ -39,7 +39,7 @@ There is no app. The product is a skill that an agent follows, plus copyable HTM
 | URL | `http://127.0.0.1:<port>/` |
 | Readiness | The first request returns 200 |
 | Stop | Kill the server process, for example `pkill -f "http.server <port>"` |
-| Agent trial | A fresh-context subagent (Sonnet or Haiku) gets the candidate skill's path in the worktree, a fixture project copied to the scratchpad, and a task. Its output files are read afterwards |
+| Agent trial | A fresh-context subagent (Opus, Sonnet or Haiku, chosen by the task) gets only `<scratchpad>/<run>/`: the candidate skill staged there with `git archive <sha> <skill dir>`, outside any checkout; a fixture copied to `project/`; and a task that allows only absolute paths under `<run>`. Its output files are read afterwards, and its transcript is scanned (see "Verification tools") |
 
 ## Configuration and accounts
 
@@ -54,7 +54,8 @@ None.
 | Narrow viewport | A same-origin `<iframe>` of the target width, read over HTTP. Headless Chrome kept a minimum window width of 500 CSS px: `--window-size=320,800` gave `innerWidth` 500 | A 320 px frame reported `innerWidth` 320 and no horizontal scroll | 2026-10-24 |
 | Open from disk | Headless Chrome on a `file://` URL | A page in `views/panel/` applied a stylesheet two folders up (`PASS shared-css 7px`) | 2026-10-24 |
 | Serve files locally | `python3 -m http.server` (Python 3.13.2) | Served `/a/b/index.html` to headless Chrome | 2026-10-24 |
-| Run an agent with fresh context | Subagent (Agent tool), Haiku or Sonnet | Read the candidate `SKILL.md` and returned its name and line count (41) | 2026-10-24 |
+| Run an agent with fresh context | Subagent (Agent tool), Opus, Sonnet or Haiku | Read the candidate `SKILL.md` and returned its name and line count (41) | 2026-10-24 |
+| Scan a subagent's tool calls | `python3 -I evaluations/product-design/scan_transcript.py <transcript> <run>`, where the transcript is the subagent's `agent-<id>.jsonl` in the session's `subagents/` folder | A synthetic transcript with a `Read` of the main checkout's `AGENTS.md`, a relative-path `Bash` call and a `Skill` call printed three lines and exited 1; one confined to the run folder printed `CLEAN` | 2026-10-24 |
 | Read screenshots | The agent's image-reading file tool | | `unconfirmed` |
 | Drive a real browser interactively | none in this session. Playwright for Python exists only as a dependency of `scripts/render_visuals.py` | not probed | |
 
@@ -80,3 +81,4 @@ Another host or machine may expose different tools. Probe before use. A tool wit
 
 - No interactive browser-driving tool on this host. Accepted: the work item's checks run through headless DOM dumps and screenshots by design.
 - No CI job runs browser checks. Template checks rerun by hand from `evaluations/product-design/`.
+- A subagent's shell starts in the main checkout, and the host loads the installed product-design plugin at its released text. Accepted: trials stage the candidate outside any checkout and void any run whose transcript reaches outside it. A subagent still receives the session's project instructions, which hold none of the skill text under test.
