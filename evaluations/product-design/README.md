@@ -9,6 +9,10 @@ Fixtures and rerun commands for the checks that `building-html-prototypes` ships
 | `fixtures/clean-tree/` | AC5 | An entry page at the root, a view in `views/saved-guides/`, the notes-only page, and `shared/` with tokens, components and images |
 | `fixtures/shared-foundations-project/` | AC2 trial | A project whose `design/foundations/` holds `tokens.css` and `components.css`, with a selected direction to refine into one view |
 | `fixtures/no-shared-files-project/` | AC3 trial | A project with three direction briefs and no design files |
+| `fixtures/panel-bug/` | AC9 | A filter panel whose button click also reaches a document click-outside handler, so the panel opens and closes on one click |
+| `fixtures/panel-fixed/` | AC9 | The same panel with the click-outside handler ignoring its button |
+| `fixtures/long-page/` | AC12 | A page 4,000 CSS px tall, in four bands labeled 0, 1000, 2000 and 3000 |
+| `checks/panel-checks.js` | AC9 | The six harness checks for the panel, loaded with `?checks=panel-checks.js` |
 
 ## Stage and serve
 
@@ -41,6 +45,20 @@ Stage `broken-tree` with `tree-check.html`, and put `outside-tree/` next to the 
   - `views/archive/index.html href` to `shared/archive.css`: no file.
 - To confirm nothing reaches `example.com`, add `--log-net-log=<file>` to the Chrome command and search the log for the host.
 - Repeat with `clean-tree`. Pass: no `FAIL`, and the last line is `DONE 14/14`.
+
+## Interaction harness (AC9)
+
+Stage `panel-bug` with `interaction-harness.html` and `checks/panel-checks.js`, both at the staging root, then dump `http://127.0.0.1:8765/interaction-harness.html?checks=panel-checks.js`.
+
+- Pass: `FAIL panel stays open after one click`, while `PASS panel opens on click` shows the panel did open inside the click.
+- Repeat with `panel-fixed`. Pass: six `PASS` lines, named as in `checks/panel-checks.js`, and `DONE 6/6`.
+
+## Page slices (AC12)
+
+Stage `long-page` with `page-slices.html`. For each offset 0, 1000, 2000 and 3000, dump and screenshot `http://127.0.0.1:8765/page-slices.html?src=a/b/index.html&width=1000&height=1000&offset=<n>`, with `--hide-scrollbars --window-size=1000,1000 --screenshot=<file>` for the screenshot.
+
+- Pass: each dump reads `PASS scrolled <n>` and lists `data-offsets="0 1000 2000 3000"`; each 1000 × 1000 screenshot shows only its own band's label at the top. No full-page image is taken.
+- Negative control: offset 3500 reads `FAIL scrolled 3500: stopped at 3000`.
 
 ## Agent trials (AC2, AC3)
 

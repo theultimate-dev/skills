@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Page slices</title>
+  <style>
+    html, body { margin: 0; overflow: hidden; background: #fff; }
+    iframe { display: block; border: 0; }
+    #results { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: pre; }
+  </style>
+</head>
+<body>
+  <iframe id="frame" title="Page slice"></iframe>
+  <pre id="results"></pre>
+  <script>
+    /* Put this page at the staging root, with the prototype copied untouched to a/b/, and open it over HTTP:
+       page-slices.html?src=a/b/index.html&width=1280&height=1000&offset=0
+       The frame fills the top-left corner at the given size, scrolled to the offset, so a screenshot of this
+       URL with a window of the same size shows one slice. #results lists every offset in data-offsets. */
+    const params = new URLSearchParams(location.search);
+    const src = params.get('src') ?? 'a/b/index.html';
+    const width = Number(params.get('width') ?? 1280);
+    const height = Number(params.get('height') ?? 1000);
+    const offset = Number(params.get('offset') ?? 0);
+
+    const output = document.querySelector('#results');
+    const frame = document.querySelector('#frame');
+    frame.style.width = `${width}px`;
+    frame.style.height = `${height}px`;
+
+    function write(line, passed) {
+      output.textContent = `${line}\nDONE ${passed ? 1 : 0}/1`;
+    }
+
+    frame.addEventListener('load', async () => {
+      if (frame.contentWindow.location.href === 'about:blank') return;
+      const name = `scrolled ${offset}`;
+      try {
+        const win = frame.contentWindow;
+        const doc = win.document;
+        await doc.fonts.ready;
+        const pageHeight = doc.documentElement.scrollHeight;
+        const last = Math.max(0, pageHeight - height);
+        const offsets = [];
+        for (let top = 0; top < last; top += height) offsets.push(top);
+        offsets.push(last);
+        output.dataset.pageHeight = pageHeight;
+        output.dataset.offsets = offsets.join(' ');
+        win.scrollTo({ top: offset, left: 0, behavior: 'instant' });
+        await new Promise(resolve => setTimeout(resolve, 50));
+        if (Math.round(win.scrollY) === offset) {
+          write(`PASS ${name}`, true);
+        } else {
+          write(`FAIL ${name}: stopped at ${Math.round(win.scrollY)}; the page is ${pageHeight} px tall, so the last offset is ${last}`, false);
+        }
+      } catch (error) {
+        write(`FAIL ${name}: ${error.message}`, false);
+      }
+    });
+
+    if (/^https?:$/.test(location.protocol)) {
+      frame.src = new URL(src, location.href).href;
+    } else {
+      write('FAIL served over HTTP: serve the staging folder with a local static server; a file:// frame is an opaque origin', false);
+    }
+  </script>
+</body>
+</html>
