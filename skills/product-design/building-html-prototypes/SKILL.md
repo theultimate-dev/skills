@@ -33,6 +33,8 @@ If asked to build immediately from a rough idea, state a provisional direction a
 
 Use the [neutral HTML starter](templates/prototype.html) for document structure and adaptation points, not as a prescribed visual style. Replace its sample content, tune tokens, and change composition to fit the brief. The [completed collection example](templates/collection-example.html) demonstrates local filtering and recovery; its [annotation](references/example-notes.md) explains the choices and limitations.
 
+When the prototype shows a native surface at the device's own scale, such as a menu-bar panel, a desktop window, a phone widget or a watch face, draw each one as a fixed-scale scene and follow the [native-surface profile](references/native-surface-profile.md), which replaces the 320 px check for the scenes.
+
 Use meaningful representative content, semantic HTML, visible labels and focus, keyboard-operable controls, and a reading order that survives narrow layouts. Keep the actual app UI free of developer notes, test switches, and approval panels. Put assumptions, simulated behavior, asset provenance, and review questions in the [prototype notes](templates/prototype-notes.md).
 
 Check typography in context: font roles and actual rendered fallbacks, hierarchy, line height, measure, content wrapping, spacing rhythm, and control density. Preserve the selected direction's character while making necessary usability refinements. Flag substantial departures for user review.

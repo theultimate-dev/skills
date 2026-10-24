@@ -15,6 +15,20 @@ List every page in the tree, including pages that no link reaches yet, and the s
 |---|---|
 | | |
 
+## Native surface (fixed-scale scenes)
+
+For a native surface drawn as fixed-scale scenes, as the native-surface profile describes.
+
+- Surfaces and platform:
+- Scale mapping, for example 1 CSS px = 1 pt:
+- Type fidelity limit: the font the scenes render through `system-ui` on the machines reviewers use:
+- Symbol fidelity limit: the system symbols drawn as stand-ins:
+- Settings the platform has, the ones the scenes show, and how each was checked:
+
+| Geometry token | Value | Source: document, device and date read, or "unsourced estimate" |
+|---|---|---|
+| | | |
+
 ## Design decisions
 
 - Composition and information priority:
@@ -44,6 +58,8 @@ List every page in the tree, including pages that no link reaches yet, and the s
 | Driven: [check name], one row per check exercised with a browser-driving tool | | |
 | Keyboard and focus | | |
 | Narrow and wide layouts | | |
+| Native scenes at device scale factors 1 and 2 | | |
+| Native scenes in a 320 CSS px frame: no page scroll, and each scene scrolls in its own container | | |
 | Long-page slices (`page-slices.html`): frame size and offsets, for a long page | | |
 | Zoom and text-spacing overrides | | |
 | Contrast and reduced motion, if applicable | | |
