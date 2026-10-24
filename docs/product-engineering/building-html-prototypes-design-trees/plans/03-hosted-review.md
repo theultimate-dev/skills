@@ -1,6 +1,6 @@
 # Plan 03: Hosted review
 
-Status: planned
+Status: done
 
 Spec: `spec.md` · Roadmap: `roadmap.md`
 Requirements: R5, R6
@@ -36,5 +36,11 @@ When reviewers will open a prototype through a host, the agent checks it served 
 - PR slice: own PR, about 80 changed lines. Predicted category: `human`, because the user reviews every PR.
 
 ## Notes
+
+- 2026-10-24 03: reconciled with `main` after slices 01 and 02. `clean-tree` already had its entry page, `index.html`, which links to `views/saved-guides/index.html`, so the fixture is unchanged. Only `check` is global in the harness, so AC7's checks live in `evaluations/product-design/checks/hosted-checks.js`, loaded with `?checks=`, and the template stays unfilled.
+- 2026-10-24 03: the notes template has two hosted rows instead of one: the local check under `/a/b/`, and the render on the review host, which is "not performed" until the user confirms it. The agent's stand-in and the host's own result stay apart.
+- 2026-10-24 03: the hosted step is step 3 of the verification sequence, so the later steps move down one. Nothing in the skill cites a step by number; plan 04's "step 5" (Layout) is now step 6.
+- 2026-10-24 03: the root `CHANGELOG.md` gets an entry for the new checks file, which the plan's file list omits.
+- 2026-10-24 03: the evaluations README also records the negative control's tree check, which reports the view's four references as outside the tree and ends `DONE 1/5`.
 
 ## Changes after launch
