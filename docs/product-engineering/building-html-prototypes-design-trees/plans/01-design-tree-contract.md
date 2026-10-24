@@ -59,5 +59,6 @@ Branch: feat/building-html-prototypes-design-trees
 - The references name `templates/tree-check.html` and `templates/prototype-notes.md` in backticks instead of linking them, because a link from `references/` to `templates/` needs a parent path, which `scripts/validate.py` bans. `SKILL.md` links the template directly.
 - `fixtures/clean-tree/index.html` is the tree's root page and links the view, so plan 03 can use it as the entry page.
 - The trial fixtures and `evaluations/product-design/README.md` are committed with the tree check, in one evaluations unit.
+- Verification on 778f763 found two gaps, fixed in this slice: `broken-tree`'s out-of-tree `url()` named a missing file, so a check without the in-tree rule still passed AC5 (it now reaches `fixtures/outside-tree/paper.svg`, and the rerun checks each reason); and the check skipped form `action` and `formaction`, which it now reads.
 
 ## Changes after launch
