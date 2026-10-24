@@ -102,19 +102,45 @@
       return url;
     }
 
-    // Drops comments with indexOf rather than a regular expression, which would backtrack on unclosed ones.
-    // An unclosed comment runs to the end of the stylesheet, as in CSS.
+    // Drops comments in one pass, with indexOf rather than a regular expression, which would backtrack on unclosed
+    // ones. As in CSS, "/*" inside a string or an unquoted url() is text, and an unclosed comment runs to the end.
     function stripComments(css) {
+      const next = /\/\*|["']|url\(/gi;
       let source = '';
-      let at = 0;
-      while (at < css.length) {
-        const start = css.indexOf('/*', at);
-        if (start < 0) return source + css.slice(at);
-        source += css.slice(at, start);
-        const end = css.indexOf('*/', start + 2);
-        at = end < 0 ? css.length : end + 2;
+      let from = 0;
+      let match;
+      while ((match = next.exec(css))) {
+        if (match[0] === '/*') {
+          const end = css.indexOf('*/', next.lastIndex);
+          source += css.slice(from, match.index);
+          from = next.lastIndex = end < 0 ? css.length : end + 2;
+        } else {
+          next.lastIndex = match[0].length === 1 ? endOfString(css, next.lastIndex, match[0]) : endOfUrl(css, next.lastIndex);
+        }
       }
-      return source;
+      return source + css.slice(from);
+    }
+
+    // Returns the index after a string's closing quote. An unclosed string ends at a newline, as in CSS.
+    function endOfString(css, at, quote) {
+      while (at < css.length) {
+        const char = css[at];
+        if (char === quote) return at + 1;
+        if (char === '\n' || char === '\r' || char === '\f') return at;
+        at += char === '\\' ? 2 : 1;
+      }
+      return css.length;
+    }
+
+    // Returns the index after an unquoted url()'s closing ")", or the index of the quote that opens a quoted one.
+    function endOfUrl(css, at) {
+      while (/[ \t\n\r\f]/.test(css[at] ?? '')) at += 1;
+      if (css[at] === '"' || css[at] === "'") return at;
+      while (at < css.length) {
+        if (css[at] === ')') return at + 1;
+        at += css[at] === '\\' ? 2 : 1;
+      }
+      return css.length;
     }
 
     // Decodes CSS escapes: one to six hex digits and one optional whitespace character, or a backslash and any
@@ -185,11 +211,12 @@
       }
       for (const element of page.querySelectorAll('*')) {
         for (const { name, value } of [...element.attributes]) {
-          if (['href', 'src', 'poster', 'xlink:href', 'action', 'formaction'].includes(name) || (name === 'data' && element.localName === 'object')) {
+          if (['href', 'src', 'poster', 'xlink:href', 'action', 'formaction', 'background'].includes(name) || (name === 'data' && element.localName === 'object')) {
             await checkReference(file, name, value, url);
           } else if (name === 'srcset' || name === 'imagesrcset') {
             for (const candidate of srcsetUrls(value)) await checkReference(file, name, candidate, url);
-          } else if (name === 'style') {
+          } else if (name === 'style' || (element.namespaceURI === 'http://www.w3.org/2000/svg' && /url\(/i.test(value))) {
+            // SVG presentation attributes such as mask and fill take url() as CSS does.
             await checkCss(file, value, url);
           } else if (name === 'content' && /^refresh$/i.test(element.getAttribute('http-equiv') ?? '')) {
             const target = value.match(/url\s*=\s*["']?([^"']+)/i);
