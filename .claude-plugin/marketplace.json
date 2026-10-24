@@ -8,7 +8,7 @@
   },
   "metadata": {
     "description": "The Ultimate Dev skills catalog",
-    "version": "0.3.1"
+    "version": "0.3.2"
   },
   "plugins": [
     {
@@ -59,7 +59,7 @@
     {
       "name": "product-design",
       "description": "From rough ideas to product/design handoffs: requirements, UX flows, visual directions, and offline HTML prototypes, as single files or as a design tree that shares the project's tokens and components, with an optional discovery coordinator.",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "source": "./",
       "strict": false,
       "license": "MIT",
