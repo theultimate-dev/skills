@@ -8,6 +8,10 @@ Releases are tagged `product-design--vX.Y.Z`.
 
 ## [Unreleased]
 
+### Added
+
+- `templates/tree-check.html`, a page you serve locally next to a staged copy of the tree. It reports every reference in the tree that points to a remote host, uses a root-absolute path, climbs out of the tree or names a missing file, as `PASS` and `FAIL` lines that a headless browser can read.
+
 ## [0.1.0] - 2026-09-28
 
 ### Added
