@@ -75,16 +75,24 @@ for entry in entries:
                 bad.append(f"Bash path in the home folder: {found.group()}")
             # A relative path that climbs with .. is resolved from the folder the command has changed into.
             cwd = start.group(1) if start else "/"
-            for found in re.finditer(r'\bcd\s+"?([^"\s;&|)]+)"?|(?<![\w./~$-])(?:[\w.-]+/)*\.\.(?![\w.])[^\s"\';|&)<>]*', scanned):
-                if found.group(1):
-                    cwd = os.path.join(cwd, found.group(1))
+            # A cd with no folder, to the previous folder, or to one built from a variable can't be resolved here.
+            for found in re.finditer(r'\b(?P<cd>cd|pushd|popd)\b(?:[ \t]+"?(?P<to>[^"\s;&|)]+)"?)?|(?<![\w./~$-])(?:[\w.-]+/)*\.\.(?![\w.])[^\s"\';|&)<>]*', scanned):
+                to = found.group("to")
+                if not found.group("cd"):
+                    if not inside(found.group(), cwd):
+                        bad.append(f"Bash path outside the run: {found.group()}")
+                elif found.group("cd") == "popd" or not to or to[0] in "-+" or re.search(r"[$`]", to):
+                    bad.append(f"Bash cd that can't be resolved here: {found.group()}")
+                else:
+                    cwd = os.path.join(cwd, to)
                     if not inside(cwd):
                         bad.append(f"Bash cd outside the run: {found.group()}")
-                elif not inside(found.group(), cwd):
-                    bad.append(f"Bash path outside the run: {found.group()}")
             # A climb that starts from a variable or a command substitution can't be resolved here.
             for found in re.finditer(r"(?:\$\{?\w+\}?|\$\([^()]*\)|\))/(?:[^\s\"';|&)<>/]+/)*\.\.(?![\w.])", scanned):
                 bad.append(f"Bash path that climbs from a variable: {found.group()}")
+            # So can the previous folder, a parent taken with dirname, or a variable with its end cut or replaced.
+            for found in re.finditer(r"\$\{?OLDPWD\b\}?|\bdirname\b|\$\{\w+(?:%%?/|//?)[^}]*\}", scanned):
+                bad.append(f"Bash path that can't be resolved here: {found.group()}")
         else:
             for key in ("file_path", "path", "notebook_path"):
                 path = args.get(key)
