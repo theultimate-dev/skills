@@ -21,6 +21,7 @@ Marketplace releases are tagged `vX.Y.Z`. Every plugin release is also a marketp
 - Evaluation fixtures for `building-html-prototypes` in `evaluations/product-design/`: a broken and a clean design tree for the tree check, two fictional projects for agent trials, and the commands to rerun them.
 - Fixtures for the interaction harness and page slices in `evaluations/product-design/`: a filter panel with and without a click-propagation bug, its six harness checks, a checks file that reuses the harness's internal names, a page of visibility cases with its checks, and a long page in labeled bands.
 - Harness checks for the hosted render of the clean design tree in `evaluations/product-design/`: they follow the entry page to its view under `/a/b/` and read a shared token, with a negative control that publishes only the view and a stage at the wrong prefix, which the checks report as an HTTP 404. A publish-set run shows the tree check catching a file that only a stylesheet loads.
+- A native-scene fixture for `building-html-prototypes` in `evaluations/product-design/`: a desktop window drawn at a fixed scale, with harness checks that a 320 px frame shows no horizontal page scroll while the scene scrolls inside its own container, and a control whose scene widens the page.
 
 ## [0.3.1] - 2026-10-23
 

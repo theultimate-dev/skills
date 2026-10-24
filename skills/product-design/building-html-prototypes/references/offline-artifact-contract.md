@@ -22,7 +22,7 @@ Do not modify the production theme as a side effect of exploration. For an inten
 
 ## Fonts and imagery
 
-Prefer a small, deliberate asset set. Embedding increases file size, so avoid unnecessary weights and oversized imagery. A system font stack is an acceptable offline fallback but does not guarantee identical typography on every machine. Record the intended face, actual fallback, language coverage concerns, and any resulting fidelity limitation.
+Prefer a small, deliberate asset set. Embedding increases file size, so avoid unnecessary weights and oversized imagery. A system font stack is an acceptable offline fallback but does not guarantee identical typography on every machine. Record the intended face, actual fallback, language coverage concerns, and any resulting fidelity limitation. A platform's system font and symbols are never embedded: a native surface renders them through `system-ui` and drawn stand-ins, as the [native-surface profile](native-surface-profile.md#system-type-and-symbols) describes.
 
 Never package a locally installed commercial font merely because it can be read. When a suitable font is unavailable, preserve the offline contract, show a considered fallback, and expose the choice in the review notes. The [MDN font-face documentation](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@font-face) explains the source and descriptor mechanisms.
 
