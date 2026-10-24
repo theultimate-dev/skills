@@ -123,10 +123,12 @@
         report(false, `${file} @import "${match[1]}"`, 'link each stylesheet from the page instead, so its dependencies stay listed');
       }
       source = source.replace(/@import[^;]*;?/gi, '');
-      // The unquoted form cannot be empty or hold whitespace, quotes or "(", as in CSS, so a failed match
-      // never backtracks across whitespace or into the next url(.
-      for (const match of source.matchAll(/url\(\s*(?:"([^"]*)"|'([^']*)'|([^)\s"'(]+))\s*\)/gi)) {
-        await checkReference(file, 'url()', match[1] ?? match[2] ?? match[3], base);
+      // Each form reads a CSS escape (a backslash and the next character) or one plain character, never both,
+      // so a failed match does not backtrack. Unescaped, the unquoted form holds no whitespace, quote or "(",
+      // as in CSS. The value is unescaped before it is checked: url(Foo_\(1\).png) names Foo_(1).png.
+      for (const match of source.matchAll(/url\(\s*(?:"((?:\\[\s\S]|[^"\\])*)"|'((?:\\[\s\S]|[^'\\])*)'|((?:\\[\s\S]|[^)\s"'(\\])+))\s*\)/gi)) {
+        const value = (match[1] ?? match[2] ?? match[3]).replace(/\\([\s\S])/g, '$1');
+        await checkReference(file, 'url()', value, base);
       }
     }
 

@@ -44,6 +44,7 @@ Stage `broken-tree` with `tree-check.html`, and put `outside-tree/` next to the 
 - Repeat with `clean-tree`. Pass: no `FAIL`, and the last line is `DONE 14/14`.
 - Repeat with `edge-tree` and no query string. Pass: `FAIL index.html href "views": points to a folder…`, `FAIL index.html src "shared/100%.png": no file at shared/100%.png`, `FAIL views/index.html is a full HTML document…`, and `DONE 3/6`.
 - Repeat with `clean-tree` three times, each on a fresh stage with one slow input appended to `"$run/a/b/shared/tokens.css"` with `>>`: an unclosed `url(` and 100,000 spaces, `python3 -c "print('a{b:url(' + ' ' * 100000, end='')"`; 60,000 unclosed comments, `python3 -c "print('/*a' * 60000, end='')"`; and `url(` repeated 40,000 times, `python3 -c "print('url(' * 40000, end='')"`. Pass: each dump returns within a few seconds and ends `DONE 14/14`. A scanner that backtracks on one of these shapes takes far longer on that input.
+- Repeat with `clean-tree` after appending two escaped URLs: `printf '%s' 'a{b:url(https://cdn.example.com/Foo_\(bar\).png)} c{d:url("q\"uote.png")}' >> "$run/a/b/shared/tokens.css"`. Pass: `FAIL shared/tokens.css url() "https://cdn.example.com/Foo_(bar).png": points to a remote host`, `FAIL shared/tokens.css url() "q"uote.png": no file at shared/q"uote.png`, and `DONE 14/16`.
 
 ## Agent trials (AC2, AC3)
 
