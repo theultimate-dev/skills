@@ -5,6 +5,7 @@ Fixtures and rerun commands for the checks that `building-html-prototypes` ships
 | Fixture | Used by | What it holds |
 |---|---|---|
 | `fixtures/broken-tree/` | AC5 | The clean tree with four faults: a remote stylesheet, a root-absolute image, a CSS `url()` that climbs out of the tree, and a missing stylesheet on `views/archive/index.html`, a page that only the notes list |
+| `fixtures/outside-tree/` | AC5 | `paper.svg`, the file that broken tree's `url()` reaches next to the tree, so only the rule against leaving the tree can catch it |
 | `fixtures/clean-tree/` | AC5 | An entry page at the root, a view in `views/saved-guides/`, the notes-only page, and `shared/` with tokens, components and images |
 | `fixtures/shared-foundations-project/` | AC2 trial | A project whose `design/foundations/` holds `tokens.css` and `components.css`, with a selected direction to refine into one view |
 | `fixtures/no-shared-files-project/` | AC3 trial | A project with three direction briefs and no design files |
@@ -31,9 +32,14 @@ Stop the server with `kill %1` and delete `$run` afterwards.
 
 ## Design-tree check (AC5)
 
-Stage `broken-tree` with `tree-check.html`, then dump `http://127.0.0.1:8765/tree-check.html?entry=index.html&pages=views/archive/index.html`.
+Stage `broken-tree` with `tree-check.html`, and put `outside-tree/` next to the tree, where the faulty `url()` reaches it: `mkdir -p "$run/a/outside-tree" && cp evaluations/product-design/fixtures/outside-tree/paper.svg "$run/a/outside-tree/"`. Then dump `http://127.0.0.1:8765/tree-check.html?entry=index.html&pages=views/archive/index.html`.
 
-- Pass: exactly four `FAIL` lines, for `views/saved-guides/index.html href "https://cdn.example.com/x.css"`, `views/saved-guides/index.html src "/img/logo.svg"`, the `url()` in `shared/components.css`, and `views/archive/index.html href` to `shared/archive.css`. To confirm nothing reaches `example.com`, add `--log-net-log=<file>` to the Chrome command and search the log for the host.
+- Pass: exactly four `FAIL` lines, each with its reason:
+  - `views/saved-guides/index.html href "https://cdn.example.com/x.css"`: points to a remote host.
+  - `views/saved-guides/index.html src "/img/logo.svg"`: root-absolute path.
+  - the `url()` in `shared/components.css`: resolves to `/a/outside-tree/paper.svg`, outside the tree.
+  - `views/archive/index.html href` to `shared/archive.css`: no file.
+- To confirm nothing reaches `example.com`, add `--log-net-log=<file>` to the Chrome command and search the log for the host.
 - Repeat with `clean-tree`. Pass: no `FAIL`, and the last line is `DONE 14/14`.
 
 ## Agent trials (AC2, AC3)
