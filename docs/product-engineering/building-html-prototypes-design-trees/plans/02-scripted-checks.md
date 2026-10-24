@@ -1,6 +1,6 @@
 # Plan 02: Scripted checks for headless verification
 
-Status: in progress
+Status: done
 
 Spec: `spec.md` · Roadmap: `roadmap.md`
 Requirements: R7, R8, R9, R10
@@ -48,5 +48,10 @@ When an agent has no browser-driving tool, it can still exercise a prototype's s
 - PR slice: own PR, about 370 changed lines including about 90 lines of fixtures. Predicted category: `human`, because the user reviews every PR.
 
 ## Notes
+
+- The harness also reads checks from a classic script at the staging root named with `?checks=`, so `evaluations/product-design/checks/panel-checks.js` holds AC9's checks and the template stays unfilled.
+- The harness's `record(target, attribute)` helper keeps every value an attribute takes within one event, so `panel opens on click` passes on `panel-bug` while `panel stays open after one click` fails, which pins the defect to the click-outside handler.
+- `page-slices.html` reads the scroll position after a 50 ms timer, not `requestAnimationFrame`: under `--virtual-time-budget`, headless Chrome left three of five dumps without a result line when the template waited for animation frames. It also lists the covering offsets in `data-offsets` on `#results`.
+- The notes template gains a long-page row next to the Scripted and Driven rows.
 
 ## Changes after launch
