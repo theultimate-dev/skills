@@ -7,7 +7,7 @@ Fixtures and rerun commands for the checks that `building-html-prototypes` ships
 | `fixtures/broken-tree/` | AC5 | The clean tree with four faults: a remote stylesheet, a root-absolute image, a CSS `url()` that climbs out of the tree, and a missing stylesheet on `views/archive/index.html`, a page that only the notes list |
 | `fixtures/outside-tree/` | AC5 | `paper.svg`, the file that broken tree's `url()` reaches next to the tree, so only the rule against leaving the tree can catch it |
 | `fixtures/edge-tree/` | AC5 | Edge cases the check must report: a folder linked without its trailing slash, a missing file whose name has a malformed percent escape, a page with no `meta charset`, a remote `table` background and a remote SVG `mask` |
-| `fixtures/clean-tree/` | AC5 | An entry page at the root, a view in `views/saved-guides/`, the notes-only page, and `shared/` with tokens, components and images |
+| `fixtures/clean-tree/` | AC5, AC7 | An entry page at the root, a view in `views/saved-guides/`, the notes-only page, and `shared/` with tokens, components and images |
 | `fixtures/shared-foundations-project/` | AC2 trial | A project whose `design/foundations/` holds `tokens.css` and `components.css`, with a selected direction to refine into one view |
 | `fixtures/no-shared-files-project/` | AC3 trial | A project with three direction briefs and no design files |
 | `fixtures/panel-bug/` | AC9 | A filter panel whose button click also reaches a document click-outside handler, so the panel opens and closes on one click |
@@ -17,6 +17,7 @@ Fixtures and rerun commands for the checks that `building-html-prototypes` ships
 | `checks/panel-checks.js` | AC9 | The six harness checks for the panel, loaded with `?checks=panel-checks.js` |
 | `checks/visibility-checks.js` | AC9 | The three harness checks for `fixtures/visibility/`, loaded with `?checks=visibility-checks.js` |
 | `checks/scope-checks.js` | AC9 | One check for `fixtures/panel-fixed/` in a file that declares names the harness uses internally, such as `frame` and `report` |
+| `checks/hosted-checks.js` | AC7 | The two harness checks for the hosted render of `fixtures/clean-tree/`: the entry page reaches the view, and the view's shared tokens apply. Loaded with `?checks=hosted-checks.js` |
 
 ## Stage and serve
 
@@ -54,6 +55,15 @@ Stage `broken-tree` with `tree-check.html`, and put `outside-tree/` next to the 
 - Repeat with `clean-tree` after appending four escaped URLs: `printf '%s' 'a{b:url(https://cdn.example.com/Foo_\(bar\).png)} c{d:url("q\"uote.png")} e{f:url("https://cdn.example.com/Hex_\28 bar\29.png")} g{h:url(\68ttps://cdn.example.com/h.png)}' >> "$run/a/b/shared/tokens.css"`. Pass: `FAIL shared/tokens.css url() "https://cdn.example.com/Foo_(bar).png": points to a remote host`, `FAIL shared/tokens.css url() "q"uote.png": no file at shared/q"uote.png`, `FAIL shared/tokens.css url() "https://cdn.example.com/Hex_(bar).png": points to a remote host`, `FAIL shared/tokens.css url() "https://cdn.example.com/h.png": points to a remote host`, and `DONE 14/18`.
 - Repeat with `clean-tree` after appending a `/*` inside a string and inside an unquoted `url()`, each followed by a remote URL: `printf '%s' '.s1{content:"/*"} .s2{background:url(https://cdn.example.com/after-string.png)} .s3{background:url(img/*.png)} .s4{background:url(https://cdn.example.com/after-url.png)} /* closing */' >> "$run/a/b/shared/tokens.css"`. Pass: `FAIL shared/tokens.css url() "https://cdn.example.com/after-string.png": points to a remote host`, `FAIL shared/tokens.css url() "img/*.png": no file at shared/img/*.png`, `FAIL shared/tokens.css url() "https://cdn.example.com/after-url.png": points to a remote host`, and `DONE 14/17`. A scan that reads `/*` as a comment there reports none of them.
 - Repeat with `clean-tree` after appending an escaped quote outside any string and a string continued across CR LF, each followed by a `/*` in a string and a remote URL: `printf '.a\\"x{color:red} .b{content:"/*"} .c{background:url(https://cdn.example.com/after-escaped-quote.png)} .d{content:"a\\\r\n/*"} .e{background:url(https://cdn.example.com/after-crlf.png)}' >> "$run/a/b/shared/tokens.css"`. Pass: `FAIL shared/tokens.css url() "https://cdn.example.com/after-escaped-quote.png": points to a remote host`, `FAIL shared/tokens.css url() "https://cdn.example.com/after-crlf.png": points to a remote host`, and `DONE 14/16`.
+
+## Hosted render (AC7)
+
+Stage `clean-tree` with both `interaction-harness.html` and `tree-check.html`, and copy its checks to the staging root, `cp evaluations/product-design/checks/hosted-checks.js "$run/"`. Dump `http://127.0.0.1:8765/interaction-harness.html?checks=hosted-checks.js`, then `http://127.0.0.1:8765/tree-check.html?entry=index.html&pages=views/archive/index.html`.
+
+- Pass: `PASS entry reaches view`, `PASS shared tokens applied` and `DONE 2/2`, and the tree check ends `DONE 14/14`.
+- Negative control: stage only the view's folder, as a host that publishes only the view would: `cp -R evaluations/product-design/fixtures/clean-tree/views/saved-guides/. "$run/a/b/"` in place of the fixture copy, with the same two templates and checks file. Dump the same harness URL. Pass: `FAIL entry reaches view: the page at a/b/index.html has no link to the view`, `FAIL shared tokens applied: --color-paper is "", so shared/tokens.css did not apply` and `DONE 0/2`. Dump `tree-check.html` with no query string as well. Pass: four `FAIL` lines that say the view's references resolve outside the tree, such as `FAIL index.html href "../../shared/tokens.css": resolves to /shared/tokens.css, outside the tree`, and `DONE 1/5`.
+- Wrong prefix: stage the fixture one folder deeper, `mkdir -p "$run/a/b/c"` and `cp -R evaluations/product-design/fixtures/clean-tree/. "$run/a/b/c/"` in place of the fixture copy, with the same two templates and checks file. Dump the same harness URL. Pass: `FAIL entry reaches view: /a/b/index.html returned HTTP 404`, `FAIL shared tokens applied: /a/b/index.html returned HTTP 404` and `DONE 0/2`.
+- Publish set: after the fixture copy, remove the files a host would not get if the set held only the shared files the pages link, `rm "$run/a/b/notes.md" "$run/a/b/shared/texture.svg"`. Dump both URLs. Pass: the harness still ends `DONE 2/2`, and the tree check reports `FAIL shared/components.css url() "texture.svg": no file at shared/texture.svg` and ends `DONE 13/14`, because `components.css` loads `texture.svg` itself.
 
 ## Interaction harness (AC9)
 
