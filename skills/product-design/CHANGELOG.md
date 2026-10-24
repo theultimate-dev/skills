@@ -10,8 +10,8 @@ Releases are tagged `product-design--vX.Y.Z`.
 
 ### Added
 
-- `building-html-prototypes` can build a design tree: prototype pages that link the project's shared `tokens.css`, `components.css` and other design files by relative path instead of copying them, and that still open offline from disk while the tree stays together. Its rules are in a new design-tree contract, and the prototype notes name the contract and list the shared files each page links.
-- `templates/tree-check.html` in `building-html-prototypes`, a page you serve locally next to a staged copy of a design tree. It reports every reference in the tree that points to a remote host, uses a root-absolute path, climbs out of the tree or names a missing file, as `PASS` and `FAIL` lines that a headless browser can read.
+- `building-html-prototypes` can build a design tree: prototype pages that link the project's shared `tokens.css`, `components.css` and other design files by relative path instead of copying them, and that still open offline from disk while the tree stays together. Its rules are in a new design-tree contract, and the prototype notes name the contract and the tree's root folder, and list the shared files each page links.
+- `templates/tree-check.html` in `building-html-prototypes`, a page you serve locally next to a staged copy of a design tree. It reads the references in the tree's pages and stylesheets and reports each one that points to a remote host, uses a root-absolute path, climbs out of the tree or names a missing file, as `PASS` and `FAIL` lines that a headless browser can read.
 
 ### Changed
 

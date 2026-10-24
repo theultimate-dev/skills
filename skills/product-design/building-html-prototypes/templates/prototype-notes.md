@@ -1,6 +1,6 @@
 # Prototype notes: [initiative / direction]
 
-- Artifact filename, or the tree's entry page:
+- Artifact filename, or the tree's root folder and entry page:
 - Contract: one-file artifact / design tree
 - Fidelity: direction sketch / refined prototype / bounded experiment
 - Purpose and user task:
