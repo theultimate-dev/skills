@@ -37,6 +37,8 @@ List every page in the tree, including pages that no link reaches yet, and the s
 |---|---|---|
 | Design-tree check (`tree-check.html`), for a design tree | | |
 | Direct file opening and offline behavior | | |
+| Hosted render under a nested prefix (`/a/b/`), through the entry page, for an artifact reviewed through a host | | |
+| Hosted render on the review host: "not performed" when you cannot open the host; ask the user to confirm it, and record their answer here | | |
 | Primary task and recovery | | |
 | Scripted: [check name], one row per check, for example "Scripted: panel closes on Escape and focus returns to its control" | | |
 | Driven: [check name], one row per check exercised with a browser-driving tool | | |

@@ -31,6 +31,15 @@ Link the project's shared files as they are. Put rules that only one page needs 
 
 The prototype notes (`templates/prototype-notes.md`) name the contract, the tree's root folder, the entry page and every page in the tree, including pages that no link reaches yet. For each page they list the shared files it links. An implementer reads the list to map each page back to its foundations, and the tree check reads the page list to reach every page.
 
+## Publish through an entry page
+
+Some hosts publish one page and the files beside it, such as an artifact viewer or a preview that opens a single URL. Publish the tree from its root, so the view's relative paths still reach the shared files:
+
+- **An entry page at the tree's root.** A small page that follows the page rules and links to the view, or to each view when the tree has several. It may also forward to the view with a `meta` refresh, such as `<meta http-equiv="refresh" content="0; url=views/saved-guides/index.html">`; keep the link as well, for a host or browser that ignores the refresh. Publish the entry page as the host's one page.
+- **The shared files at their tree-relative paths.** Publish every file in the tree at its path relative to the tree's root, beside the entry page, so a view that climbs to a parent folder for `shared/tokens.css` still finds it there. A host that publishes only the view's folder leaves the shared files above its root, where no relative path reaches them, and the view renders without its shared styles.
+
+Name the entry page in the notes. Before reviewers open the tree through a host, check it served under a nested prefix, as the [hosted render step](interaction-and-verification.md#verification-sequence) describes.
+
 ## Check the tree
 
 Run the design-tree check, `templates/tree-check.html`, after every change to the tree, before opening any page:
