@@ -6,6 +6,7 @@ Fixtures and rerun commands for the checks that `building-html-prototypes` ships
 |---|---|---|
 | `fixtures/broken-tree/` | AC5 | The clean tree with four faults: a remote stylesheet, a root-absolute image, a CSS `url()` that climbs out of the tree, and a missing stylesheet on `views/archive/index.html`, a page that only the notes list |
 | `fixtures/outside-tree/` | AC5 | `paper.svg`, the file that broken tree's `url()` reaches next to the tree, so only the rule against leaving the tree can catch it |
+| `fixtures/edge-tree/` | AC5 | Edge cases the check must report: a folder linked without its trailing slash, a missing file whose name has a malformed percent escape, and a page with no `meta charset` |
 | `fixtures/clean-tree/` | AC5 | An entry page at the root, a view in `views/saved-guides/`, the notes-only page, and `shared/` with tokens, components and images |
 | `fixtures/shared-foundations-project/` | AC2 trial | A project whose `design/foundations/` holds `tokens.css` and `components.css`, with a selected direction to refine into one view |
 | `fixtures/no-shared-files-project/` | AC3 trial | A project with three direction briefs and no design files |
@@ -45,6 +46,7 @@ Stage `broken-tree` with `tree-check.html`, and put `outside-tree/` next to the 
   - `views/archive/index.html href` to `shared/archive.css`: no file.
 - To confirm nothing reaches `example.com`, add `--log-net-log=<file>` to the Chrome command and search the log for the host.
 - Repeat with `clean-tree`. Pass: no `FAIL`, and the last line is `DONE 14/14`.
+- Repeat with `edge-tree` and no query string. Pass: `FAIL index.html href "views": points to a folder…`, `FAIL index.html src "shared/100%.png": no file at shared/100%.png`, `FAIL views/index.html is a full HTML document…`, and `DONE 3/6`.
 
 ## Interaction harness (AC9)
 
