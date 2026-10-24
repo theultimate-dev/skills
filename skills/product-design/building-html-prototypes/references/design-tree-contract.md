@@ -29,7 +29,7 @@ The [one-file contract](offline-artifact-contract.md)'s guidance on fonts, image
 
 Link the project's shared files as they are. Put rules that only one page needs in that page's `style` element or in a file next to it. Changing a shared file changes every page that links it: record the change in the notes, and make it only when the user asks.
 
-The prototype notes (`templates/prototype-notes.md`) name the contract, the entry page and every page in the tree, including pages that no link reaches yet. For each page they list the shared files it links. An implementer reads the list to map each page back to its foundations, and the tree check reads the page list to reach every page.
+The prototype notes (`templates/prototype-notes.md`) name the contract, the tree's root folder, the entry page and every page in the tree, including pages that no link reaches yet. For each page they list the shared files it links. An implementer reads the list to map each page back to its foundations, and the tree check reads the page list to reach every page.
 
 ## Check the tree
 
