@@ -51,10 +51,11 @@ Stage `broken-tree` with `tree-check.html`, and put `outside-tree/` next to the 
 
 ## Interaction harness (AC9)
 
-Stage `panel-bug` with `interaction-harness.html` and `checks/panel-checks.js`, both at the staging root, then dump `http://127.0.0.1:8765/interaction-harness.html?checks=panel-checks.js`.
+Stage `panel-bug` with `interaction-harness.html`, copy its checks to the staging root as well, `cp evaluations/product-design/checks/panel-checks.js "$run/"`, then dump `http://127.0.0.1:8765/interaction-harness.html?checks=panel-checks.js`.
 
 - Pass: `FAIL panel stays open after one click`, while `PASS panel opens on click` shows the panel did open inside the click.
 - Repeat with `panel-fixed`. Pass: six `PASS` lines, named as in `checks/panel-checks.js`, and `DONE 6/6`.
+- Repeat with `visibility` and `checks/visibility-checks.js`, dumping `interaction-harness.html?checks=visibility-checks.js`. Pass: three `PASS` lines and `DONE 3/3`. A `visible()` that trusts the `hidden` attribute over the page's CSS fails the first check.
 
 ## Page slices (AC12)
 

@@ -142,9 +142,10 @@
       return page().document.activeElement;
     }
 
+    // Reads what the page renders, not the hidden attribute, which the page's own CSS can override.
+    // An element inside a hidden one has no box. Opacity is not considered.
     function visible(target) {
       const element = $(target);
-      if (element.closest('[hidden]')) return false;
       const style = page().window.getComputedStyle(element);
       if (style.display === 'none' || style.visibility === 'hidden') return false;
       const box = element.getBoundingClientRect();
