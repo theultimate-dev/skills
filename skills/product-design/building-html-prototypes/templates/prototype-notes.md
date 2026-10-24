@@ -23,7 +23,7 @@ For a native surface drawn as fixed-scale scenes, as the native-surface profile 
 - Scale mapping, for example 1 CSS px = 1 pt:
 - Type fidelity limit: the font the scenes render through `system-ui` on the machines reviewers use:
 - Symbol fidelity limit: the system symbols drawn as stand-ins:
-- Settings the platform has, the ones the scenes show, and how each was checked:
+- Settings the platform has, and the ones the scenes show:
 
 | Geometry token | Value | Source: document, device and date read, or the user's answer |
 |---|---|---|
@@ -60,6 +60,7 @@ For a native surface drawn as fixed-scale scenes, as the native-surface profile 
 | Narrow and wide layouts | | |
 | Native scenes at device scale factors 1 and 2 | | |
 | Native scenes in a 320 CSS px frame: no page scroll, and each scene scrolls in its own container | | |
+| Native scenes under each setting they show, switched from the settings control | | |
 | Long-page slices (`page-slices.html`): frame size and offsets, for a long page | | |
 | Zoom and text-spacing overrides | | |
 | Contrast and reduced motion, if applicable | | |

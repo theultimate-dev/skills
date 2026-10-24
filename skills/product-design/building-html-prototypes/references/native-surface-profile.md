@@ -55,4 +55,4 @@ Where the platform has them, show the scenes under its appearance and accessibil
 - **It starts from the operating system's settings** through the CSS media features `prefers-color-scheme`, `prefers-contrast`, `prefers-reduced-transparency` and `prefers-reduced-motion`, read with `matchMedia()` when the page loads.
 - **It forces each setting where its media feature is unavailable.** `prefers-reduced-transparency` is experimental and not Baseline ([MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-transparency)), so some browsers never report it. A feature is unavailable when none of its values matches, for example when neither `(prefers-reduced-transparency: reduce)` nor `(prefers-reduced-transparency: no-preference)` does. Start that setting at the platform's default, such as full transparency, and keep its switch, so the reviewer can still see the scenes under it.
 
-Record in the notes which settings the platform has, which the scenes show, and how each was checked.
+Record in the notes which settings the platform has and which the scenes show, and record the check of the scenes under each setting in the notes' verification table.

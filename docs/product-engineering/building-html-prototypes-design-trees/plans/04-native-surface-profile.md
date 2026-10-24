@@ -46,7 +46,7 @@ A prototype of a native surface (a menu-bar panel, desktop window, phone widget 
 
 - 2026-10-24 04: reconciled with `main` and slice 03. Slice 03 added the hosted step as step 3, so task 3's "step 5" (Layout) is step 6. Only `check` is global in the harness, so AC16's checks live in `evaluations/product-design/checks/native-scene-checks.js`, loaded with `?checks=native-scene-checks.js&width=320`, and the template stays unfilled.
 - 2026-10-24 04: the fixture ships task 1's widening variant as `fixtures/native-scene/widens.html`, next to the profile's pattern in `index.html`, so the README's negative control reruns from the same stage. The README also records the harness opened without `width=320`, where both checks fail.
-- 2026-10-24 04: besides the scale, geometry-sources and fidelity-limit fields, the notes template gets two verification rows, for device scale factors 1 and 2 and for the 320 px frame, because the profile tells the agent to record both checks.
+- 2026-10-24 04: besides the scale, geometry-sources and fidelity-limit fields, the notes template gets three verification rows, for device scale factors 1 and 2, for the 320 px frame, and for the scenes under each setting, because the profile tells the agent to record those checks.
 - 2026-10-24 04: the container check also asserts that the scene is drawn at its width token, so a scene shrunk with `transform` or a fluid width fails, as the profile's "Keep the scale" rule requires. Its check names and AC16's `DONE 2/2` are unchanged.
 - 2026-10-24 04: this branch stacks on slice 03's branch, which it takes in by merge commits, never by rebase.
 
