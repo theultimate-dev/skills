@@ -41,7 +41,7 @@ Check typography in context: font roles and actual rendered fallbacks, hierarchy
 
 Read [interaction and verification guidance](references/interaction-and-verification.md). For a design tree, run the [design-tree check](templates/tree-check.html) first. Open each artifact directly through `file://` when a browser is available, verify it without network access, inspect narrow and wide layouts, and exercise the primary task and recovery with keyboard as well as pointer input. Check relevant zoom, text-spacing overrides, reduced motion, and content pressure.
 
-When reviewers will open a design tree through a host, also serve it under a nested prefix through an [entry page](references/design-tree-contract.md#publish-through-an-entry-page) at its root, repeat the render check, and record that result in its own row; when you cannot open the host itself, record its render as "not performed" and ask the user to confirm it.
+When reviewers will open a design tree through a host, also serve it under a nested prefix through an [entry page](references/design-tree-contract.md#publish-through-an-entry-page) at its root, repeat the render check, and record that result in its own row. For any artifact reviewed through a host that you cannot open yourself, record the host's render as "not performed" and ask the user to confirm it.
 
 Exercise every stateful interaction, such as open and close, a timer, or focus return. Drive it with a browser-driving tool when one can; when none can, write a scripted check for it with the [interaction harness](templates/interaction-harness.html), as [scripted checks](references/scripted-checks.md) describes, and record each check by name.
 
