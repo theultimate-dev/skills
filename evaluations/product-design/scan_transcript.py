@@ -1,5 +1,5 @@
 # usage: python3 -I scan_transcript.py <agent-transcript.jsonl> <run-dir>
-# Prints every tool call that reaches outside <run-dir> or loads a skill, agent or web tool; exits 1 if any.
+# Prints every tool call that may reach outside <run-dir> or loads a skill, agent or web tool, for a reader to judge; exits 1 if it prints any.
 import json, os, re, sys
 
 transcript, run = sys.argv[1], sys.argv[2].rstrip("/") + "/"
