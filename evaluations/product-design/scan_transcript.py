@@ -1,6 +1,6 @@
 # usage: python3 -I scan_transcript.py <agent-transcript.jsonl> <run-dir>
 # Prints every tool call that reaches outside <run-dir> or loads a skill, agent or web tool; exits 1 if any.
-import json, re, sys
+import json, os, re, sys
 
 transcript, run = sys.argv[1], sys.argv[2].rstrip("/") + "/"
 
@@ -22,9 +22,12 @@ for line in open(transcript):
             bad.append(f"{name}: not allowed in a trial")
         elif name == "Bash":
             command = args.get("command", "")
-            if not re.match(rf'cd "?({re.escape(run[:-1])}|{re.escape(norm(run)[:-1])})/?"? ?&&', command):
+            # The body of a heredoc that cat or tee writes to a file is content, not a path the command reads.
+            scanned = re.sub(r"\b(?:cat|tee)\b[^\n]*<<-?\s*['\"]?(\w+)['\"]?\n.*?\n\1(?=\n|$)", "", command, flags=re.S)
+            start = re.match(r'cd "?([^"&]+?)"? ?&&', command)
+            if not start or not norm(os.path.normpath(start.group(1))).startswith(norm(run)):
                 bad.append(f"Bash not run from the run folder: {command[:80]}")
-            for path in re.findall(r"(?<![\w.:/)\]])/[A-Za-z_.~][^\s\"';|&)]*", command):
+            for path in re.findall(r"(?<![\w.:/)\]])/[A-Za-z_.~][^\s\"';|&)]*", scanned):
                 if path != "/dev/null" and not norm(path).startswith(norm(run)):
                     bad.append(f"Bash path outside the run: {path}")
         else:
