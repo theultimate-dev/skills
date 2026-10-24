@@ -26,7 +26,7 @@ Releases are tagged `product-design--vX.Y.Z`.
 - The native-surface profile in `building-html-prototypes` checks the license of a platform's system font and symbol set, rather than never embedding them:
   - When the license forbids embedding, as for Apple's SF fonts and Segoe UI, the scenes render the font through `system-ui` and draw stand-ins for the symbols, as before.
   - An openly licensed one, such as Roboto, is embedded or falls back like any other font.
-  - The prototype notes record the face, its license, and which case applies.
+  - The prototype notes record the face, its license, and which case applies. A font rendered through `system-ui` and symbols drawn as stand-ins are recorded as fidelity limits.
 - When a direction brief supplies a platform frame, the profile starts from it. Its values and sources go into the notes as written, and you're asked only for what the frame lacks.
 
 ## [0.2.0] - 2026-10-24

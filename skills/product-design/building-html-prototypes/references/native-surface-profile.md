@@ -49,7 +49,7 @@ Check the license of the platform's system font and symbol set before embedding 
 - **Type whose license forbids embedding:** render it through `font-family: system-ui`. It shows the system font of the machine that opens the page, which is the target platform's only on that platform.
 - **Symbols whose license forbids embedding, or can't be confirmed:** draw stand-ins, such as inline SVG shapes of a similar size and weight. Don't copy the set's glyphs.
 - **An openly licensed font or symbol set** follows the [offline-artifact contract](offline-artifact-contract.md#fonts-and-imagery) like any other font or asset: embed it with its notice, or fall back and record the limit.
-- **Record each case** in the notes: the face and its license, then either the embedded file or the font the scenes render through `system-ui` on the machines reviewers use. Record which symbols are embedded and which are stand-ins.
+- **Record each case** in the notes: the face and its license, then either the embedded file or the font the scenes render through `system-ui` on the machines reviewers use. Record which symbols are embedded and which are stand-ins. A font rendered through `system-ui` and symbols drawn as stand-ins are fidelity limits.
 
 ## Appearance and accessibility settings
 
