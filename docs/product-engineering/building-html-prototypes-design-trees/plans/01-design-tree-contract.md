@@ -1,6 +1,6 @@
 # Plan 01: The design-tree contract
 
-Status: in progress
+Status: done
 
 Spec: `spec.md` · Roadmap: `roadmap.md`
 Requirements: R1, R2, R3, R4, R16
@@ -54,5 +54,10 @@ Branch: feat/building-html-prototypes-design-trees
 - PR slice: own PR, about 490 changed lines. That includes about 110 lines of fixtures and the two records approved at G3, but not the planning files approved at the gates. Predicted category: `human`, because the user reviews every PR, and the slice touches `.claude-plugin/marketplace.json` and adds accepted decision records.
 
 ## Notes
+
+- `tree-check.html` also fails what the contract forbids and markup can show: a page that is not a full HTML document, a `base` element, a module script, a CSS `@import`, and a reference to a folder rather than a file. Scripts are still read by hand for requests.
+- The references name `templates/tree-check.html` and `templates/prototype-notes.md` in backticks instead of linking them, because a link from `references/` to `templates/` needs a parent path, which `scripts/validate.py` bans. `SKILL.md` links the template directly.
+- `fixtures/clean-tree/index.html` is the tree's root page and links the view, so plan 03 can use it as the entry page.
+- The trial fixtures and `evaluations/product-design/README.md` are committed with the tree check, in one evaluations unit.
 
 ## Changes after launch
