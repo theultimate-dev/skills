@@ -211,11 +211,12 @@
       }
       for (const element of page.querySelectorAll('*')) {
         for (const { name, value } of [...element.attributes]) {
-          if (['href', 'src', 'poster', 'xlink:href', 'action', 'formaction'].includes(name) || (name === 'data' && element.localName === 'object')) {
+          if (['href', 'src', 'poster', 'xlink:href', 'action', 'formaction', 'background'].includes(name) || (name === 'data' && element.localName === 'object')) {
             await checkReference(file, name, value, url);
           } else if (name === 'srcset' || name === 'imagesrcset') {
             for (const candidate of srcsetUrls(value)) await checkReference(file, name, candidate, url);
-          } else if (name === 'style') {
+          } else if (name === 'style' || (element.namespaceURI === 'http://www.w3.org/2000/svg' && /url\(/i.test(value))) {
+            // SVG presentation attributes such as mask and fill take url() as CSS does.
             await checkCss(file, value, url);
           } else if (name === 'content' && /^refresh$/i.test(element.getAttribute('http-equiv') ?? '')) {
             const target = value.match(/url\s*=\s*["']?([^"']+)/i);
