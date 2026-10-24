@@ -35,6 +35,7 @@ check('entry reaches view', async helpers => {
 check('shared tokens applied', async helpers => {
   const { $, style, assert } = helpers;
   await openView(helpers);
+  // $ throws when the page shown is not the view, before the tokens are read.
   $('#view-heading');
   const token = style(':root', '--color-paper');
   assert(token === '#f5f3e9', `--color-paper is "${token}", so shared/tokens.css did not apply`);
