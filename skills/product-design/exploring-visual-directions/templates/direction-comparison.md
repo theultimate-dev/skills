@@ -1,6 +1,6 @@
 # Visual directions: [initiative]
 
-<!-- Lines marked "(native surface)" apply only to a native platform surface, and lines marked "(responsive page)" only to a responsive page. Keep the lines for the kind of surface this brief is for, delete the others, and drop the markers. A brief with both kinds keeps each kind's lines in the directions for that surface. Delete this comment. -->
+<!-- Lines marked "(native surface)" apply only to a native platform surface, and lines marked "(responsive page)" only to a responsive page. Keep the lines for the kind of surface this brief is for, delete the others without noting that they don't apply, and drop the markers. A brief with both kinds keeps each kind's lines in the directions for that surface. Delete this comment. -->
 
 Status: proposals / selected / needs review
 
@@ -36,7 +36,7 @@ Status: proposals / selected / needs review
 
 ### Platform frame (native surface)
 
-<!-- One frame for all directions. Directions refer to it and don't restate its values. -->
+<!-- One frame for all directions. Directions refer to it and don't repeat its values, the scale mapping included. -->
 
 - Placements, each drawn at real scale:
 - Scale mapping, for example 1 CSS px = 1 pt:

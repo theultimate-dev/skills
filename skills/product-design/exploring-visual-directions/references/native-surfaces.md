@@ -36,7 +36,7 @@ List the placements once in the platform frame. Each direction then says what ch
 
 ## The platform frame
 
-One frame per native surface, written once in the rendering task and shared by every direction. Directions refer to it and never restate its values, so the sketches stay comparable. The fields use the terms of `building-html-prototypes`' native-surface profile, so a renderer can copy them into its prototype notes:
+One frame per native surface, written once in the rendering task and shared by every direction. Directions refer to it, for example "at the frame's scale", and never repeat its values, the scale mapping included, so the sketches stay comparable. The fields use the terms of `building-html-prototypes`' native-surface profile, so a renderer can copy them into its prototype notes:
 
 - **Placements:** as above.
 - **Scale mapping:** how CSS pixels map to the platform's unit, for example 1 CSS px = 1 pt, or 1 CSS px = 1 dp.
@@ -81,7 +81,7 @@ Licenses retrieved on 2026-10-24. Read the current license before relying on one
 
 Besides its other usability risks, each direction names these:
 
-- **Reading at hardware size:** type, symbols and targets at the device's real size, not enlarged in a browser window. Small labels that read well in a large sketch can fail on the device.
+- **Reading at hardware size:** type, symbols and targets at the device's real size, as the frame's scale mapping draws them, not enlarged in a browser window. Small labels that read well in a large sketch can fail on the device.
 - **Competing with system UI for space:** what the surface loses to the menu bar, a hardware cut-out, system bars or safe areas, and what it shows when the space shrinks.
 - **States that rely on color or motion alone:** at least one state the direction must convey by shape, label or position as well, such as a failure that is not only red, or progress that still reads with reduced motion.
 
