@@ -4,7 +4,7 @@
 
 A native surface, such as a menu-bar panel, a desktop window, a phone widget or a watch face, is drawn at the device's own scale. It cannot reflow to 320 CSS pixels the way a web page does. Draw each such surface as a fixed-scale scene on a page, and follow this profile for the scenes. The page around the scenes stays an ordinary responsive page with the usual checks. For fixed-scale scenes, this profile replaces the 320 px narrow-viewport check: a scene does not reflow, so the check in a 320 px frame asks instead that the page does not scroll sideways and that each scene scrolls inside its own container, as [Reflow around the scenes](#reflow-around-the-scenes) describes.
 
-When a direction brief supplies a platform frame, start from it. A frame holds the placements, scale mapping, geometry tokens with their sources, system type and symbols, and settings. Carry its values and sources into the notes as written. Ask the user only for what the frame lacks or marks for the user to supply.
+When a direction brief supplies a platform frame, start from it. A frame holds the placements, scale mapping, geometry tokens with their sources, the system UI beside the surface, settings, and system type and symbols. Draw a scene for each placement, and carry the frame's values and sources into the notes as written. Ask the user only for what the frame lacks or marks for the user to supply.
 
 ## Scale
 

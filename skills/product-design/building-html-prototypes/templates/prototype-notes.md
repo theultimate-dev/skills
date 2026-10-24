@@ -20,9 +20,11 @@ List every page in the tree, including pages that no link reaches yet, and the s
 For a native surface drawn as fixed-scale scenes, as the native-surface profile describes.
 
 - Surfaces and platform:
+- Placements, each drawn as its own scene:
 - Scale mapping, for example 1 CSS px = 1 pt:
 - System type: the intended face and its license, then the embedded file with its notice, or the font the scenes render through `system-ui` on the machines reviewers use, a fidelity limit:
 - System symbols: the set and its license, then the embedded symbols, or the ones drawn as stand-ins, a fidelity limit:
+- System UI beside the surface, such as menus, status items and system bars:
 - Settings the platform has, and the ones the scenes show:
 
 | Geometry token | Value | Source: document, device and date read, or the user's answer |
