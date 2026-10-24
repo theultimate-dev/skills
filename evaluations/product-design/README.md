@@ -12,8 +12,10 @@ Fixtures and rerun commands for the checks that `building-html-prototypes` ships
 | `fixtures/no-shared-files-project/` | AC3 trial | A project with three direction briefs and no design files |
 | `fixtures/panel-bug/` | AC9 | A filter panel whose button click also reaches a document click-outside handler, so the panel opens and closes on one click |
 | `fixtures/panel-fixed/` | AC9 | The same panel with the click-outside handler ignoring its button |
+| `fixtures/visibility/` | AC9 | Three visibility cases for the harness's `visible()`: an element whose `hidden` attribute the page's CSS overrides, an element inside a hidden one, and plain text |
 | `fixtures/long-page/` | AC12 | A page 4,000 CSS px tall, in four bands labeled 0, 1000, 2000 and 3000 |
 | `checks/panel-checks.js` | AC9 | The six harness checks for the panel, loaded with `?checks=panel-checks.js` |
+| `checks/visibility-checks.js` | AC9 | The three harness checks for `fixtures/visibility/`, loaded with `?checks=visibility-checks.js` |
 
 ## Stage and serve
 
@@ -55,7 +57,7 @@ Stage `panel-bug` with `interaction-harness.html`, copy its checks to the stagin
 
 - Pass: `FAIL panel stays open after one click`, while `PASS panel opens on click` shows the panel did open inside the click.
 - Repeat with `panel-fixed`. Pass: six `PASS` lines, named as in `checks/panel-checks.js`, and `DONE 6/6`.
-- Repeat with `visibility` and `checks/visibility-checks.js`, dumping `interaction-harness.html?checks=visibility-checks.js`. Pass: three `PASS` lines and `DONE 3/3`. A `visible()` that trusts the `hidden` attribute over the page's CSS fails the first check.
+- Repeat with `visibility`, copying its checks instead, `cp evaluations/product-design/checks/visibility-checks.js "$run/"`, and dumping `interaction-harness.html?checks=visibility-checks.js`. Pass: three `PASS` lines and `DONE 3/3`. A `visible()` that trusts the `hidden` attribute over the page's CSS fails the first check.
 
 ## Page slices (AC12)
 
