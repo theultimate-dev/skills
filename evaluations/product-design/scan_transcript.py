@@ -23,7 +23,8 @@ for line in open(transcript):
         elif name == "Bash":
             command = args.get("command", "")
             # The body of a heredoc that cat or tee writes to a file is content, not a path the command reads.
-            scanned = re.sub(r"\b(?:cat|tee)\b[^\n]*<<-?\s*['\"]?(\w+)['\"]?\n.*?\n\1(?=\n|$)", "", command, flags=re.S)
+            # Only the body is skipped: the command line, with its redirect, is still scanned.
+            scanned = re.sub(r"(\b(?:cat|tee)\b[^\n;&|]*<<-?\s*['\"]?(\w+)['\"]?[^\n]*\n).*?\n\2(?=\n|$)", r"\1", command, flags=re.S)
             start = re.match(r'cd "?([^"&]+?)"? ?&&', command)
             if not start or not norm(os.path.normpath(start.group(1))).startswith(norm(run)):
                 bad.append(f"Bash not run from the run folder: {command[:80]}")
