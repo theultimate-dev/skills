@@ -4,6 +4,8 @@
 
 A native surface, such as a menu-bar panel, a desktop window, a phone widget or a watch face, is drawn at the device's own scale. It cannot reflow to 320 CSS pixels the way a web page does. Draw each such surface as a fixed-scale scene on a page, and follow this profile for the scenes. The page around the scenes stays an ordinary responsive page with the usual checks. For fixed-scale scenes, this profile replaces the 320 px narrow-viewport check: a scene does not reflow, so the check in a 320 px frame asks instead that the page does not scroll sideways and that each scene scrolls inside its own container, as [Reflow around the scenes](#reflow-around-the-scenes) describes.
 
+When a direction brief supplies a platform frame, start from it. A frame holds the placements, scale mapping, geometry tokens with their sources, system type and symbols, and settings. Carry its values and sources into the notes as written. Ask the user only for what the frame lacks or marks for the user to supply.
+
 ## Scale
 
 - **State the scale mapping** in the notes, for example 1 CSS px = 1 pt for a platform that measures in points, or 1 CSS px = 1 dp for one that measures in density-independent pixels. Draw every scene at that mapping: a window 800 pt wide is 800 CSS px wide at any viewport size.
@@ -42,9 +44,12 @@ Check it in a frame 320 CSS pixels wide with the interaction harness, as [Narrow
 
 ## System type and symbols
 
-- **Type:** render the platform's system font through `font-family: system-ui`. It shows the system font of the machine that opens the page, which is the target platform's only on that platform. Do not embed a platform's system font file.
-- **Symbols:** draw stand-ins for system symbols and icons, such as inline SVG shapes of a similar size and weight. Do not embed or copy a platform's symbol font or icon set.
-- **Record both as fidelity limits** in the notes: the font the scenes render on the machines reviewers use, and which symbols are stand-ins.
+Check the license of the platform's system font and symbol set before embedding either. Some forbid it: Apple's SF fonts may not be embedded in other products, and Microsoft's Windows fonts, Segoe UI and Segoe Fluent Icons among them, may not be redistributed. Others are openly licensed, such as Roboto under the SIL Open Font License and Material Symbols under the Apache License 2.0.
+
+- **Type whose license forbids embedding:** render it through `font-family: system-ui`. It shows the system font of the machine that opens the page, which is the target platform's only on that platform.
+- **Symbols whose license forbids embedding, or can't be confirmed:** draw stand-ins, such as inline SVG shapes of a similar size and weight. Don't copy the set's glyphs.
+- **An openly licensed font or symbol set** follows the [offline-artifact contract](offline-artifact-contract.md#fonts-and-imagery) like any other font or asset: embed it with its notice, or fall back and record the limit.
+- **Record each case** in the notes: the face and its license, then either the embedded file or the font the scenes render through `system-ui` on the machines reviewers use. Record which symbols are embedded and which are stand-ins.
 
 ## Appearance and accessibility settings
 
