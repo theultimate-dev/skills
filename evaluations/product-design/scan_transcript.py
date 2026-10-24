@@ -1,6 +1,17 @@
-# usage: python3 -I scan_transcript.py <agent-transcript.jsonl> <run-dir>
-# Prints every tool call that may reach outside <run-dir> or loads a skill, agent or web tool, for a reader to judge; exits 1 if it prints any.
-import json, os, re, sys
+"""List the tool calls in a trial agent's transcript that may reach outside its run folder.
+
+Usage: python3 -I scan_transcript.py <agent-transcript.jsonl> <run-dir>
+
+Prints every tool call that may reach outside <run-dir>, and every call to a tool a trial
+may not use, for a reader to judge. Exits 1 if it prints any; prints CLEAN otherwise.
+"""
+import json
+import os
+import re
+import sys
+
+# The tools a trial may use. Any other tool, such as a skill, an agent, a web tool or a connector, is flagged.
+ALLOWED = {"Read", "Write", "Edit", "MultiEdit", "NotebookEdit", "Glob", "Grep", "Bash", "TodoWrite", "SubagentHandback"}
 
 transcript, run = sys.argv[1], sys.argv[2].rstrip("/") + "/"
 
@@ -34,16 +45,18 @@ def written_heredocs_removed(command):
     return "\n".join(kept)
 
 
+with open(transcript) as handle:
+    entries = [json.loads(line) for line in handle]
+
 bad = []
-for line in open(transcript):
-    entry = json.loads(line)
+for entry in entries:
     if entry.get("type") != "assistant":
         continue
     for block in entry.get("message", {}).get("content") or []:
         if not isinstance(block, dict) or block.get("type") != "tool_use":
             continue
         name, args = block["name"], block["input"]
-        if name in ("Skill", "Agent", "WebFetch", "WebSearch", "ToolSearch"):
+        if name not in ALLOWED:
             bad.append(f"{name}: not allowed in a trial")
         elif name == "Bash":
             command = args.get("command", "")
@@ -69,6 +82,9 @@ for line in open(transcript):
                         bad.append(f"Bash cd outside the run: {found.group()}")
                 elif not inside(found.group(), cwd):
                     bad.append(f"Bash path outside the run: {found.group()}")
+            # A climb that starts from a variable or a command substitution can't be resolved here.
+            for found in re.finditer(r"(?:\$\{?\w+\}?|\$\([^()]*\)|\))/(?:[^\s\"';|&)<>/]+/)*\.\.(?![\w.])", scanned):
+                bad.append(f"Bash path that climbs from a variable: {found.group()}")
         else:
             for key in ("file_path", "path", "notebook_path"):
                 path = args.get(key)
