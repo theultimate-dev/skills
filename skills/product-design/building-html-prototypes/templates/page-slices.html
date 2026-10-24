@@ -33,6 +33,16 @@
       output.textContent = `${line}\nDONE ${passed ? 1 : 0}/1`;
     }
 
+    // Resolves the page's path, or returns null when it is not on the staging server.
+    function onStagingServer(path) {
+      try {
+        const url = new URL(path, location.href);
+        return url.origin === location.origin ? url : null;
+      } catch (error) {
+        return null;
+      }
+    }
+
     frame.addEventListener('load', async () => {
       if (frame.contentWindow.location.href === 'about:blank') return;
       const name = `scrolled ${offset}`;
@@ -59,10 +69,15 @@
       }
     });
 
-    if (/^https?:$/.test(location.protocol)) {
-      frame.src = new URL(src, location.href).href;
-    } else {
+    const target = onStagingServer(src);
+    if (!/^https?:$/.test(location.protocol)) {
       write('FAIL served over HTTP: serve the staging folder with a local static server; a file:// frame is an opaque origin', false);
+    } else if (![width, height, offset].every(Number.isFinite) || width < 1 || height < 1 || offset < 0) {
+      write('FAIL settings: width and height must be at least 1, and offset at least 0', false);
+    } else if (!target) {
+      write(`FAIL page loads: ${src} is not on the staging server`, false);
+    } else {
+      frame.src = target.href;
     }
   </script>
 </body>

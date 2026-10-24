@@ -67,6 +67,7 @@ Stage `long-page` with `page-slices.html`. For each offset 0, 1000, 2000 and 300
 
 - Pass: each dump reads `PASS scrolled <n>` and lists `data-offsets="0 1000 2000 3000"`; each 1000 × 1000 screenshot shows only its own band's label at the top. No full-page image is taken.
 - Negative control: offset 3500 reads `FAIL scrolled 3500: stopped at 3000`.
+- Invalid input: `height=0` reads `FAIL settings: width and height must be at least 1, and offset at least 0`, and `src=javascript:void(0)` reads `FAIL page loads: javascript:void(0) is not on the staging server`. Each dump returns within a few seconds.
 
 ## Agent trials (AC2, AC3)
 
