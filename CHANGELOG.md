@@ -24,6 +24,7 @@ Marketplace releases are tagged `vX.Y.Z`. Every plugin release is also a marketp
   - a brief that names no platform;
   - the same brief with a macOS app's code;
   - a brief that mixes a panel and a web page.
+
   They come with the trial tasks and rubric, and with a script that lists each tool call that reaches outside a trial's run folder or loads an installed skill, so a reader can void the trials that did.
 
 ## [0.3.2] - 2026-10-24
