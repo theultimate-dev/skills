@@ -180,4 +180,4 @@ Rubric, each criterion yes or no:
 - **H3.** The scene's CSS defines each of the frame's geometry tokens as a custom property, and the settings control sits outside every scene.
 - **H4.** Staged at `a/b/` with `interaction-harness.html` and a checks file generated from the frame's tokens, the harness reports `DONE n/n`: every token resolves to a non-empty computed value, and the page has no horizontal scroll at 320. With one token deleted from the scene's CSS, it reports `FAIL` naming that token.
 
-A row passes only when every run passes. A row whose baseline also passes is reported as a regression guard, not as proof of the change. The trials stand in for real briefs and codebases. `QUESTIONS.md` stands in for the user, so they don't show how an agent goes on after an answer.
+A row passes only when every run passes. A row whose baseline also passes is reported as a regression guard, not as proof of the change. The trials stand in for real briefs and codebases. `QUESTIONS.md` stands in for the user, so, apart from T2's simulated answer in `ANSWERS.md`, they don't show how an agent goes on after an answer.
