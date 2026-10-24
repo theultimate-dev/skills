@@ -117,6 +117,16 @@
       return source;
     }
 
+    // Decodes CSS escapes: one to six hex digits and one optional whitespace character, or a backslash and any
+    // other character. A code point CSS does not allow becomes U+FFFD, as in CSS.
+    function unescapeCss(value) {
+      return value.replace(/\\(?:([0-9a-f]{1,6})[ \t\n\r\f]?|([\s\S]))/gi, (escape, hex, char) => {
+        if (!hex) return char;
+        const code = parseInt(hex, 16);
+        return code > 0 && code <= 0x10ffff && (code < 0xd800 || code > 0xdfff) ? String.fromCodePoint(code) : '\ufffd';
+      });
+    }
+
     async function checkCss(file, css, base) {
       let source = stripComments(css);
       for (const match of source.matchAll(/@import\s+(?:url\(\s*)?["']?([^"')\s;]*)[^;]*;?/gi)) {
@@ -127,8 +137,7 @@
       // so a failed match does not backtrack. Unescaped, the unquoted form holds no whitespace, quote or "(",
       // as in CSS. The value is unescaped before it is checked: url(Foo_\(1\).png) names Foo_(1).png.
       for (const match of source.matchAll(/url\(\s*(?:"((?:\\[\s\S]|[^"\\])*)"|'((?:\\[\s\S]|[^'\\])*)'|((?:\\[\s\S]|[^)\s"'(\\])+))\s*\)/gi)) {
-        const value = (match[1] ?? match[2] ?? match[3]).replace(/\\([\s\S])/g, '$1');
-        await checkReference(file, 'url()', value, base);
+        await checkReference(file, 'url()', unescapeCss(match[1] ?? match[2] ?? match[3]), base);
       }
     }
 
