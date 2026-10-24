@@ -15,6 +15,11 @@ Marketplace releases are tagged `vX.Y.Z`. Every plugin release is also a marketp
 
 ## [Unreleased]
 
+### Added
+
+- Decision 0016 lets `building-html-prototypes` share files as a design tree and amends the one-file clause of decision 0006, which stays unchanged. Decision 0017 records that the prototype checks ship as browser-only templates rather than scripts; the design-tree check is the first.
+- Evaluation fixtures for `building-html-prototypes` in `evaluations/product-design/`: a broken and a clean design tree for the tree check, two fictional projects for agent trials, and the commands to rerun them.
+
 ## [0.3.1] - 2026-10-23
 
 ### Changed

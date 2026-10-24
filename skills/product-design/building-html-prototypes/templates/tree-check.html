@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Design-tree check</title>
+  <style>
+    body { margin: 0; padding: 1.5rem; background: #fafaf7; color: #202722; font: 1rem/1.5 system-ui, sans-serif; }
+    h1 { font-size: 1.25rem; margin: 0 0 1rem; }
+    #results { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; font: .875rem/1.6 ui-monospace, monospace; }
+  </style>
+</head>
+<body>
+  <h1>Design-tree check</h1>
+  <pre id="results"></pre>
+  <script>
+    /* Put this page at the staging root, with the tree copied untouched to a/b/, and open it over HTTP.
+       Fill in the entry page and every page the notes list that no link reaches, or pass them in the URL:
+       tree-check.html?entry=index.html&pages=views/archive/index.html,views/settings/index.html */
+    const config = {
+      root: 'a/b/',
+      entry: 'index.html',
+      pages: []
+    };
+
+    const params = new URLSearchParams(location.search);
+    if (params.has('entry')) config.entry = params.get('entry');
+    if (params.has('pages')) config.pages = params.get('pages').split(',').map(page => page.trim()).filter(Boolean);
+
+    const output = document.querySelector('#results');
+    const lines = [];
+    let passed = 0;
+    function report(ok, name, detail) {
+      if (ok) passed += 1;
+      lines.push(ok ? `PASS ${name}` : `FAIL ${name}: ${detail}`);
+      output.textContent = lines.join('\n');
+    }
+    function finish() {
+      const total = lines.length;
+      lines.push(`DONE ${passed}/${total}`);
+      output.textContent = lines.join('\n');
+    }
+
+    const treeRoot = new URL(config.root, location.href);
+    const inTree = url => url.origin === treeRoot.origin && url.pathname.startsWith(treeRoot.pathname);
+    const treePath = url => {
+      const path = url.pathname.slice(treeRoot.pathname.length);
+      try { return decodeURIComponent(path); } catch (error) { return path; }
+    };
+    const notAFile = /^(#|data:|blob:|javascript:|mailto:|tel:|about:)/i;
+    const absolute = /^([a-z][a-z0-9+.-]*:|\/\/)/i;
+    const remote = /^(https?:)?\/\//i;
+    const reported = new Set();
+    const probes = new Map();
+    const pagesSeen = new Set();
+    const stylesheetsSeen = new Set();
+    const queue = [config.entry, ...config.pages].map(page => new URL(page, treeRoot));
+
+    // Resolves to 'file', 'folder' (the server redirected to a path ending in a slash) or 'missing'.
+    function probe(url) {
+      const file = url.origin + url.pathname;
+      if (!probes.has(file)) {
+        probes.set(file, fetch(file, { method: 'HEAD', cache: 'no-store' })
+          .then(response => response.status === 405 || response.status === 501 ? fetch(file, { cache: 'no-store' }) : response)
+          .then(response => !response.ok ? 'missing' : new URL(response.url).pathname.endsWith('/') ? 'folder' : 'file', () => 'missing'));
+      }
+      return probes.get(file);
+    }
+
+    // Reports one reference and returns its URL when it names a file inside the tree.
+    async function checkReference(file, kind, value, base) {
+      const reference = value.trim();
+      if (reference === '' || notAFile.test(reference)) return null;
+      const name = `${file} ${kind} "${reference}"`;
+      if (reported.has(name)) return null;
+      reported.add(name);
+      if (absolute.test(reference)) {
+        report(false, name, remote.test(reference) ? 'points to a remote host' : 'absolute URL outside the tree');
+        return null;
+      }
+      if (reference.startsWith('/')) {
+        report(false, name, 'root-absolute path, which breaks when a host serves the tree under a prefix');
+        return null;
+      }
+      const url = new URL(reference, base);
+      if (!inTree(url)) {
+        report(false, name, `resolves to ${url.pathname}, outside the tree`);
+        return null;
+      }
+      const found = url.pathname.endsWith('/') ? 'folder' : await probe(url);
+      if (found === 'folder') {
+        report(false, name, 'points to a folder; name the file, because a folder does not open its page from disk');
+        return null;
+      }
+      if (found === 'missing') {
+        report(false, name, `no file at ${treePath(url)}`);
+        return null;
+      }
+      report(true, name);
+      if (/\.html?$/i.test(url.pathname)) queue.push(url);
+      if (/\.css$/i.test(url.pathname)) await checkStylesheet(url);
+      return url;
+    }
+
+    // Drops comments in one pass, with indexOf rather than a regular expression, which would backtrack on unclosed
+    // ones. As in CSS, "/*" inside a string or an unquoted url() is text, an escaped character such as \" opens
+    // nothing, and an unclosed comment runs to the end. \u stays unskipped, because \url( still opens a url().
+    function stripComments(css) {
+      const next = /\/\*|\\[^u]|["']|url\(/gi;
+      let source = '';
+      let from = 0;
+      let match;
+      while ((match = next.exec(css))) {
+        const token = match[0];
+        if (token === '/*') {
+          const end = css.indexOf('*/', next.lastIndex);
+          source += css.slice(from, match.index);
+          from = next.lastIndex = end < 0 ? css.length : end + 2;
+        } else if (token === '"' || token === "'") {
+          next.lastIndex = endOfString(css, next.lastIndex, token);
+        } else if (token[0] !== '\\') {
+          next.lastIndex = endOfUrl(css, next.lastIndex);
+        }
+      }
+      return source + css.slice(from);
+    }
+
+    // Returns the index after a string's closing quote. An unclosed string ends at a newline, as in CSS.
+    function endOfString(css, at, quote) {
+      while (at < css.length) {
+        const char = css[at];
+        if (char === quote) return at + 1;
+        if (char === '\n') return at;
+        at += char === '\\' ? 2 : 1;
+      }
+      return css.length;
+    }
+
+    // Returns the index after an unquoted url()'s closing ")", or the index of the quote that opens a quoted one.
+    function endOfUrl(css, at) {
+      while (/[ \t\n\r\f]/.test(css[at] ?? '')) at += 1;
+      if (css[at] === '"' || css[at] === "'") return at;
+      while (at < css.length) {
+        if (css[at] === ')') return at + 1;
+        at += css[at] === '\\' ? 2 : 1;
+      }
+      return css.length;
+    }
+
+    // Decodes CSS escapes: one to six hex digits and one optional whitespace character, or a backslash and any
+    // other character. A code point CSS does not allow becomes U+FFFD, as in CSS.
+    function unescapeCss(value) {
+      return value.replace(/\\(?:([0-9a-f]{1,6})[ \t\n\r\f]?|([\s\S]))/gi, (escape, hex, char) => {
+        if (!hex) return char;
+        const code = parseInt(hex, 16);
+        return code > 0 && code <= 0x10ffff && (code < 0xd800 || code > 0xdfff) ? String.fromCodePoint(code) : '\ufffd';
+      });
+    }
+
+    async function checkCss(file, css, base) {
+      // CSS reads CR LF, CR and FF as one newline before anything else.
+      let source = stripComments(css.replace(/\r\n?|\f/g, '\n'));
+      for (const match of source.matchAll(/@import\s+(?:url\(\s*)?["']?([^"')\s;]*)[^;]*;?/gi)) {
+        report(false, `${file} @import "${match[1]}"`, 'link each stylesheet from the page instead, so its dependencies stay listed');
+      }
+      source = source.replace(/@import[^;]*;?/gi, '');
+      // Each form reads a CSS escape (a backslash and the next character) or one plain character, never both,
+      // so a failed match does not backtrack. Unescaped, the unquoted form holds no whitespace, quote or "(",
+      // as in CSS. The value is unescaped before it is checked: url(Foo_\(1\).png) names Foo_(1).png.
+      for (const match of source.matchAll(/url\(\s*(?:"((?:\\[\s\S]|[^"\\])*)"|'((?:\\[\s\S]|[^'\\])*)'|((?:\\[\s\S]|[^)\s"'(\\])+))\s*\)/gi)) {
+        await checkReference(file, 'url()', unescapeCss(match[1] ?? match[2] ?? match[3]), base);
+      }
+    }
+
+    async function checkStylesheet(url) {
+      if (stylesheetsSeen.has(url.pathname)) return;
+      stylesheetsSeen.add(url.pathname);
+      const response = await fetch(url.origin + url.pathname, { cache: 'no-store' });
+      await checkCss(treePath(url), await response.text(), url);
+    }
+
+    function srcsetUrls(value) {
+      const urls = [];
+      let rest = value;
+      while ((rest = rest.replace(/^[\s,]+/, ''))) {
+        const url = rest.match(/^\S+/)[0];
+        rest = rest.slice(url.length);
+        if (url.endsWith(',')) {
+          urls.push(url.replace(/,+$/, ''));
+        } else {
+          urls.push(url);
+          rest = rest.replace(/^[^,]*/, '');
+        }
+      }
+      return urls;
+    }
+
+    async function checkPage(url) {
+      const file = treePath(url);
+      let text;
+      try {
+        const response = await fetch(url.origin + url.pathname, { cache: 'no-store' });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        text = await response.text();
+      } catch (error) {
+        report(false, `${file} opens`, `the page could not be read (${error.message})`);
+        return;
+      }
+      const page = new DOMParser().parseFromString(text, 'text/html');
+      const complete = page.doctype?.name === 'html' && /<html[\s>]/i.test(text) && /<head[\s>]/i.test(text)
+        && /<body[\s>]/i.test(text) && page.title.trim() !== '' && page.querySelector('meta[charset]') !== null;
+      report(complete, `${file} is a full HTML document`, 'add the doctype, html, head with meta charset and title, and body');
+      if (page.querySelector('base')) report(false, `${file} base`, 'a base element changes how every relative path resolves');
+      for (const script of page.querySelectorAll('script[type="module" i]')) {
+        report(false, `${file} module script ${script.getAttribute('src') ?? '(inline)'}`, 'modules do not load from disk; use a classic script');
+      }
+      for (const element of page.querySelectorAll('*')) {
+        for (const { name, value } of [...element.attributes]) {
+          if (['href', 'src', 'poster', 'xlink:href', 'action', 'formaction', 'background'].includes(name) || (name === 'data' && element.localName === 'object')) {
+            await checkReference(file, name, value, url);
+          } else if (name === 'srcset' || name === 'imagesrcset') {
+            for (const candidate of srcsetUrls(value)) await checkReference(file, name, candidate, url);
+          } else if (name === 'style' || (element.namespaceURI === 'http://www.w3.org/2000/svg' && /url\(/i.test(value))) {
+            // SVG presentation attributes such as mask and fill take url() as CSS does.
+            await checkCss(file, value, url);
+          } else if (name === 'content' && /^refresh$/i.test(element.getAttribute('http-equiv') ?? '')) {
+            const target = value.match(/url\s*=\s*["']?([^"']+)/i);
+            if (target) await checkReference(file, 'refresh', target[1], url);
+          }
+        }
+      }
+      for (const style of page.querySelectorAll('style')) await checkCss(file, style.textContent, url);
+    }
+
+    async function run() {
+      if (!/^https?:$/.test(location.protocol)) {
+        report(false, 'served over HTTP', 'serve the staging folder with a local static server; browsers block these reads from file://');
+        return finish();
+      }
+      while (queue.length) {
+        const url = queue.shift();
+        if (pagesSeen.has(url.pathname)) continue;
+        pagesSeen.add(url.pathname);
+        await checkPage(url);
+      }
+      finish();
+    }
+    run().catch(error => {
+      report(false, 'check completes', error.message);
+      finish();
+    });
+  </script>
+</body>
+</html>

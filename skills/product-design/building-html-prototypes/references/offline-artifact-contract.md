@@ -1,8 +1,10 @@
 # Offline artifact contract
 
+This contract governs the one-file artifact. It applies unless the project already keeps shared design files or the user asks for them, and direction sketches use it by default even then. A design tree follows the [design-tree contract](design-tree-contract.md) instead.
+
 ## One artifact, one file
 
-Every sketch and refined prototype must open through `file://` and complete its demonstrated local interactions without a network connection, server, package installation, or build step.
+Every one-file artifact must open through `file://` and complete its demonstrated local interactions without a network connection, server, package installation, or build step.
 
 - Put CSS in inline `style` elements and necessary JavaScript in inline, non-importing scripts.
 - Embed required images and fonts as data URLs; inline SVG is appropriate for original diagrams and icons. Use font embedding only with suitable files and redistribution permission, retaining required notices.
@@ -10,11 +12,11 @@ Every sketch and refined prototype must open through `file://` and complete its 
 - Ordinary outbound reference links may exist if useful, but they are not part of the offline task and must not be required for it. Prefer keeping research links in companion notes.
 - Avoid persistence for a disposable prototype unless the task requires exploring it. File-origin storage behavior varies; local in-memory state is sufficient for many demonstrations.
 
-If the user later explicitly requests a different portability contract, state that change and its implications. Do not silently relax offline behavior because a font or image is inconvenient to embed.
+When the [design-tree contract](design-tree-contract.md) applies, link the shared files rather than copying their rules into every page, and state the change of contract and its implications. Do not silently relax offline behavior because a font or image is inconvenient to embed.
 
 ## Existing styles
 
-Respect the user's preserve/evolve/replace choice. For continuity, inspect project styles and copy the smallest coherent set of relevant tokens and rules. Resolve inherited or framework-generated values into plain CSS where needed. Record source locations in companion notes so the implementer can map back later.
+Respect the user's preserve/evolve/replace choice. For continuity, inspect project styles and copy the smallest coherent set of relevant tokens and rules; a design tree links the project's shared design files instead. Resolve inherited or framework-generated values into plain CSS where needed. Record source locations in companion notes so the implementer can map back later.
 
 Do not modify the production theme as a side effect of exploration. For an intentional redesign, record what changes and which product constraints remain. Approval of a prototype does not automatically authorize migrating the existing application.
 

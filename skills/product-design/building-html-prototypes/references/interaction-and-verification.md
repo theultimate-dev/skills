@@ -10,8 +10,8 @@ Simulate asynchronous states only when exploring that future behavior. Do not ad
 
 ## Verification sequence
 
-1. **Static portability:** inspect HTML, CSS URLs, scripts, and embedded assets for remote or sibling dependencies, imports, requests, form submissions, and external SVG references. Check inline script syntax.
-2. **Direct opening:** open the file itself, not a development server. Block/disconnect the network and reload. Check for failed resource requests and script errors with available browser tools. Browser background traffic is distinct from document requests.
+1. **Static portability:** inspect HTML, CSS URLs, scripts, and embedded assets for remote or sibling dependencies, imports, requests, form submissions, and external SVG references. Check inline script syntax. For a design tree, run the design-tree check from the [design-tree contract](design-tree-contract.md#check-the-tree) instead of following references by hand; sibling files inside the tree are expected, and the check reports any reference that leaves it. Still read each script for requests and imports.
+2. **Direct opening:** open the file itself, not a development server; in a design tree, open each page from its place in the tree. Block/disconnect the network and reload. Check for failed resource requests and script errors with available browser tools. Browser background traffic is distinct from document requests.
 3. **Task behavior:** exercise the primary journey and relevant recovery states. Confirm counts, labels, results, return actions, and simulations behave as described.
 4. **Input:** complete the task using keyboard alone, with visible focus and appropriate reading order. Check pointer/touch-relevant controls do not require hover. If announcing dynamic results matters, inspect semantics and use assistive technology when available; DOM inspection alone does not verify spoken output.
 5. **Layout:** inspect a narrow viewport around 320 CSS pixels and a representative wide viewport. Test long titles, realistic paragraphs, and relevant missing content. Check wrapping, overlap, and unintended horizontal scrolling; genuinely two-dimensional content may need a different approach. See [W3C reflow guidance](https://www.w3.org/WAI/WCAG22/Understanding/reflow.html).
@@ -19,6 +19,17 @@ Simulate asynchronous states only when exploring that future behavior. Do not ad
 7. **Visual and motion review:** check text/control contrast against the project's accessibility target, type hierarchy, measure, grouping, and density. If animation exists, honor reduced-motion preferences and ensure understanding does not depend on animation.
 
 Use available browser tooling; no particular automation library is required. Record exact checks performed and limitations. A file can pass static checks and still render poorly. Do not claim conformance to an accessibility standard based on a prototype checklist.
+
+## Serve files locally
+
+Some checks run over HTTP, because a browser treats each `file://` document as an opaque origin and blocks the reads and frames a check needs ([MDN, Same-origin policy: File origins](https://developer.mozilla.org/en-US/docs/Web/Security/Same-origin_policy#file_origins)). Stage the files the same way for every such check:
+
+1. Create an empty staging folder outside the project. Copy the exact file set, untouched, to `<staging>/a/b/`. The nested prefix stands in for a host that serves the files under a path.
+2. Copy each check template you use, such as `templates/tree-check.html`, to `<staging>/`, outside the tree, and fill in its inputs.
+3. Serve `<staging>/` from the server root with any static file server bound to the local machine, for example `python3 -m http.server 8000 --bind 127.0.0.1` run in `<staging>/`.
+4. Open `http://127.0.0.1:<port>/<template>` and read its results. Stop the server and delete the staging folder when the checks are done.
+
+Every check template writes its results into one element, `#results`, one line per check: `PASS <name>`, or `FAIL <name>: <detail>`. The last line is `DONE <passed>/<total>`. Read the lines in the page, or from a DOM dump in a headless browser that lets the page's timers and requests finish first, for example Chrome's `--headless --virtual-time-budget=5000 --dump-dom <url>`. Without a `DONE` line the check has not finished, which is not a pass. Copy each check's name into the notes' verification table as it appears.
 
 ## Compare and refine
 

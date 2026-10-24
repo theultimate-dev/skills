@@ -23,7 +23,7 @@ Start with `guiding-product-discovery` for the whole workflow, or invoke any spe
 
 The usual sequence is a product brief, UX flows, visual direction briefs, three comparable HTML sketches, a selected and refined prototype, then a product/design handoff. You decide scope, choose a direction after viewing the sketches, and review readiness. Small features can combine documents and skip settled phases; proofs of concept focus on the question they need to answer.
 
-The skills inspect project instructions, existing technology, and design assets. You choose whether existing visual language should be preserved, evolved, or replaced. No production stack is prescribed. Each prototype opens as one offline HTML file with embedded CSS, required assets, and minimal JavaScript; font fallbacks and simulated behavior are documented. The handoff prepares engineering planning rather than claiming implementation or deployment is complete.
+The skills inspect project instructions, existing technology, and design assets. You choose whether existing visual language should be preserved, evolved, or replaced. No production stack is prescribed. Every prototype opens offline. By default it is a single HTML file with embedded CSS, required assets, and minimal JavaScript, and direction sketches stay that way. When the project keeps shared design files such as tokens and component styles, refined prototypes become a design tree instead: pages that link those files by relative path and open from disk while the tree stays together. Font fallbacks and simulated behavior are documented. The handoff prepares engineering planning rather than claiming implementation or deployment is complete.
 
 Example requests (use the invocation syntax your agent supports):
 
