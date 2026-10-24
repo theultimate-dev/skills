@@ -62,6 +62,7 @@ Stage `clean-tree` with both `interaction-harness.html` and `tree-check.html`, a
 
 - Pass: `PASS entry reaches view`, `PASS shared tokens applied` and `DONE 2/2`, and the tree check ends `DONE 14/14`.
 - Negative control: stage only the view's folder, as a host that publishes only the view would: `cp -R evaluations/product-design/fixtures/clean-tree/views/saved-guides/. "$run/a/b/"` in place of the fixture copy, with the same two templates and checks file. Dump the same harness URL. Pass: `FAIL entry reaches view: the page at a/b/index.html has no link to the view`, `FAIL shared tokens applied: --color-paper is "", so shared/tokens.css did not apply` and `DONE 0/2`. Dump `tree-check.html` with no query string as well. Pass: four `FAIL` lines that say the view's references resolve outside the tree, such as `FAIL index.html href "../../shared/tokens.css": resolves to /shared/tokens.css, outside the tree`, and `DONE 1/5`.
+- Wrong prefix: stage the fixture one folder deeper, `mkdir -p "$run/a/b/c"` and `cp -R evaluations/product-design/fixtures/clean-tree/. "$run/a/b/c/"` in place of the fixture copy, with the same two templates and checks file. Dump the same harness URL. Pass: `FAIL entry reaches view: /a/b/index.html returned HTTP 404`, `FAIL shared tokens applied: /a/b/index.html returned HTTP 404` and `DONE 0/2`.
 
 ## Interaction harness (AC9)
 
