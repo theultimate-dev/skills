@@ -18,7 +18,7 @@ Distinctive work can use familiar controls. Avoid novelty that hides navigation,
 
 ## Critique the rendered result
 
-Compare audience fit, task clarity, hierarchy, reading comfort, density, rhythm, responsiveness, accessibility risks, and fit with project constraints. Describe observations before recommendations: “The heading consumes most of the narrow viewport and pushes the topic filter below the first guide” supports a concrete revision.
+Compare audience fit, task clarity, hierarchy, reading comfort, density, rhythm, responsiveness or, for a native surface, placements and scale, accessibility risks, and fit with project constraints. Describe observations before recommendations: “The heading consumes most of the narrow viewport and pushes the topic filter below the first guide” supports a concrete revision.
 
 Keep judgments provisional where evidence is missing. “This should help readers scan titles” is a hypothesis; “readers found guides faster” requires actual observation. A prototype review cannot establish global uniqueness or production accessibility conformance.
 

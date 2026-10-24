@@ -8,6 +8,19 @@ Releases are tagged `product-design--vX.Y.Z`.
 
 ## [Unreleased]
 
+### Added
+
+- `exploring-visual-directions` handles native platform surfaces, such as a menu-bar panel, a desktop window, a phone widget, a watch face, or a TV or car screen.
+  - It recognizes one from the brief or from the project's code, and asks you when neither settles it.
+  - Each direction states:
+    - its placements at real scale, in place of narrow-screen changes;
+    - its platform fit: materials, standard controls, guidelines, and each deliberate departure with its reason;
+    - native risks, such as reading at hardware size.
+  - The rendering task carries one platform frame for all three sketches: the placements, the scale mapping, geometry tokens with their sources, the system UI beside the surface, and the appearance and accessibility settings to honor.
+  - System type and symbols are embedded only when their license allows it. Otherwise they render through `system-ui` and as drawn stand-ins.
+  - A new native-surfaces reference holds the detail, and the comparison template marks its native and responsive lines.
+  - Responsive pages keep their briefs as before.
+
 ## [0.2.0] - 2026-10-24
 
 ### Added
