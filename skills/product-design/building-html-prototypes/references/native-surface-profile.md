@@ -26,7 +26,7 @@ Take each value from the platform's own design guidelines or specifications for 
 The page around the scenes reflows at 320 CSS pixels: its headings, descriptions and settings control wrap without horizontal scrolling. Each scene keeps its fixed size and scrolls inside its own container, never the page:
 
 ```html
-<div class="scene-viewport" role="region" aria-label="Desktop window scene" tabindex="0">
+<div class="scene-viewport" role="region" aria-label="Phone home screen scene" tabindex="0">
   <div class="scene">…</div>
 </div>
 ```
@@ -38,7 +38,7 @@ The page around the scenes reflows at 320 CSS pixels: its headings, descriptions
 
 The container is labeled and can take focus, so a keyboard user can scroll it. WCAG 2.2's reflow criterion exempts "parts of the content which require two-dimensional layout for usage or meaning" ([W3C, Understanding Reflow](https://www.w3.org/WAI/WCAG22/Understanding/reflow.html)). A fixed-scale scene is such a part; the page around it is not.
 
-Check it in a frame 320 CSS pixels wide with the interaction harness, as [Narrow viewports](scripted-checks.md#narrow-viewports) describes: the page's `scrollWidth` is no larger than 320, each scene container's `scrollWidth` is larger than its `clientWidth`, with `overflow-x` set to `auto` or `scroll`, and each scene's drawn width, `getBoundingClientRect().width`, equals its width token. A scene shrunk with `transform` or `zoom` can still overflow its container, so the `scrollWidth` check passes; only the drawn width shows that the scene lost its scale.
+Check it in a frame 320 CSS pixels wide with the interaction harness, as [Narrow viewports](scripted-checks.md#narrow-viewports) describes: the page's `scrollWidth` is no larger than 320, each scene container's `scrollWidth` is larger than its `clientWidth`, with `overflow-x` set to `auto` or `scroll`, and each scene's drawn width, `getBoundingClientRect().width`, equals the token that sets its width, such as `--display-width` above. A scene shrunk with `transform` or `zoom` can still overflow its container, so the `scrollWidth` check passes; only the drawn width shows that the scene lost its scale.
 
 ## System type and symbols
 
