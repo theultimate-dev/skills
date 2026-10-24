@@ -54,5 +54,7 @@ When an agent has no browser-driving tool, it can still exercise a prototype's s
 - 2026-10-24 02: `page-slices.html` waits 50 ms with `setTimeout`, because headless Chrome left 3 of 5 dumps without a result when it waited for animation frames.
 - 2026-10-24 02: the notes template gains a long-page row next to the Scripted and Driven rows.
 - 2026-10-24 02: the quick review added `fixtures/visibility/` and its checks as the regression for `visible()`.
+- 2026-10-24 02: task 5 kept "no particular automation library is required" in `interaction-and-verification.md`, which matches the spec's non-goal, and added the pointer to `scripted-checks.md` after it.
+- 2026-10-24 02: the slice came to about 640 changed lines before the full review, against the estimate of 370, with the visibility fixture, the quick-review fixes and the checks files for AC9.
 
 ## Changes after launch
