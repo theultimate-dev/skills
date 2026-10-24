@@ -19,7 +19,7 @@ Fixtures and rerun commands for the checks that `building-html-prototypes` ships
 | `checks/visibility-checks.js` | AC9 | The three harness checks for `fixtures/visibility/`, loaded with `?checks=visibility-checks.js` |
 | `checks/scope-checks.js` | AC9 | One check for `fixtures/panel-fixed/` in a file that declares names the harness uses internally, such as `frame` and `report` |
 | `checks/hosted-checks.js` | AC7 | The two harness checks for the hosted render of `fixtures/clean-tree/`: the entry page reaches the view, and the view's shared tokens apply. Loaded with `?checks=hosted-checks.js` |
-| `checks/native-scene-checks.js` | AC16 | The two harness checks for `fixtures/native-scene/` in a 320 CSS px frame: the page has no horizontal scroll, and the scene scrolls in its container. Loaded with `?checks=native-scene-checks.js&width=320` |
+| `checks/native-scene-checks.js` | AC16 | The two harness checks for `fixtures/native-scene/` in a 320 CSS px frame: the page has no horizontal scroll, and the scene keeps its scale and scrolls in its container. Loaded with `?checks=native-scene-checks.js&width=320` |
 
 ## Stage and serve
 
@@ -90,8 +90,9 @@ Stage `long-page` with `page-slices.html`. For each offset 0, 1000, 2000 and 300
 Stage `native-scene` with `interaction-harness.html`, copy its checks to the staging root as well, `cp evaluations/product-design/checks/native-scene-checks.js "$run/"`, then dump `http://127.0.0.1:8765/interaction-harness.html?checks=native-scene-checks.js&width=320`.
 
 - Pass: `PASS no page scroll at 320`, `PASS scene scrolls in its container` and `DONE 2/2`.
-- Negative control: on the same stage, dump `interaction-harness.html?checks=native-scene-checks.js&width=320&page=a/b/widens.html`, the same scene in a container that does not scroll. Pass: `FAIL no page scroll at 320: the page is 816 px wide, so it scrolls sideways at 320`, `FAIL scene scrolls in its container: the container's overflow-x is visible, so the scene spills onto the page` and `DONE 0/2`.
+- Negative control: on the same stage, dump `interaction-harness.html?checks=native-scene-checks.js&width=320&page=a/b/widens.html`, the same scene in a container that does not scroll. Pass: `FAIL no page scroll at 320: the page is 816 px wide, so it scrolls sideways at 320`, `FAIL scene scrolls in its container: the container's overflow-x is visible, so the scene does not scroll inside it` and `DONE 0/2`.
 - Dump `interaction-harness.html?checks=native-scene-checks.js` without the width. Pass: `FAIL no page scroll at 320: the frame is 1024 px wide; open the harness with width=320`, `FAIL scene scrolls in its container: the scene fits its 960 px container, so nothing scrolls in it` and `DONE 0/2`.
+- On a fresh stage, shrink the scene to fit, `python3 -c 'import sys; p = sys.argv[1]; s = open(p).read(); open(p, "w").write(s.replace("  </style>", "    .scene { transform: scale(0.35); transform-origin: 0 0; }\n  </style>"))' "$run/a/b/index.html"`, and dump the URL with `&width=320` again. Pass: `PASS no page scroll at 320`, `FAIL scene scrolls in its container: the scene is drawn 280 px wide, not at its 800 px scale` and `DONE 1/2`.
 
 ## Agent trials (AC2, AC3)
 

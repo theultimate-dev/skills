@@ -2,7 +2,7 @@
 
 ## When it applies
 
-A native surface, such as a menu-bar panel, a desktop window, a phone widget or a watch face, is drawn at the device's own scale. It cannot reflow to 320 CSS pixels the way a web page does. Draw each such surface as a fixed-scale scene on a page, and follow this profile for the scenes. The page around the scenes stays an ordinary responsive page with the usual checks. For fixed-scale scenes, this profile replaces the 320 px narrow-viewport check.
+A native surface, such as a menu-bar panel, a desktop window, a phone widget or a watch face, is drawn at the device's own scale. It cannot reflow to 320 CSS pixels the way a web page does. Draw each such surface as a fixed-scale scene on a page, and follow this profile for the scenes. The page around the scenes stays an ordinary responsive page with the usual checks. For fixed-scale scenes, this profile replaces the 320 px narrow-viewport check: a scene does not reflow, so the check in a 320 px frame asks instead that the page does not scroll sideways and that each scene scrolls inside its own container, as [Reflow around the scenes](#reflow-around-the-scenes) describes.
 
 ## Scale
 
@@ -53,6 +53,6 @@ Where the platform has them, show the scenes under its appearance and accessibil
 - **One control, outside the scenes.** Put a settings control in the page around the scenes, never inside a scene. A scene stands for the device's screen, so a control drawn inside it reads as part of the product.
 - **It switches every scene at once,** for example by setting attributes on the page's root element that the scenes' tokens read, such as `data-appearance="dark"`, `data-contrast="more"`, `data-transparency="reduce"` and `data-motion="reduce"`.
 - **It starts from the operating system's settings** through the CSS media features `prefers-color-scheme`, `prefers-contrast`, `prefers-reduced-transparency` and `prefers-reduced-motion`, read with `matchMedia()` when the page loads.
-- **It forces each setting where its media feature is unavailable.** `prefers-reduced-transparency` is experimental and not Baseline ([MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-transparency)), so some browsers never report it. A feature is unavailable when none of its values matches, for example when neither `(prefers-reduced-transparency: reduce)` nor `(prefers-reduced-transparency: no-preference)` does. Start that setting off, and keep its switch, so the reviewer can still see the scenes under it.
+- **It forces each setting where its media feature is unavailable.** `prefers-reduced-transparency` is experimental and not Baseline ([MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-transparency)), so some browsers never report it. A feature is unavailable when none of its values matches, for example when neither `(prefers-reduced-transparency: reduce)` nor `(prefers-reduced-transparency: no-preference)` does. Start that setting at the platform's default, such as full transparency, and keep its switch, so the reviewer can still see the scenes under it.
 
 Record in the notes which settings the platform has, which the scenes show, and how each was checked.
