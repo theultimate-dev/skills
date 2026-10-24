@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Desktop window scene that widens the page — Fieldnotes</title>
+  <style>
+    /* The control for AC16: the scene's container does not scroll, so the 800 px scene widens the page. */
+    body { margin: 0; padding: 1rem; background: #fafaf7; color: #202722; font: 1rem/1.5 system-ui, sans-serif; }
+    main { max-width: 60rem; margin-inline: auto; }
+    .scene-viewport { outline: 1px solid #87978b; }
+    .scene { --window-width: 800px; --window-height: 500px; --title-bar-height: 28px;
+      box-sizing: border-box; width: var(--window-width); height: var(--window-height); background: #ffffff; }
+    .title-bar { height: var(--title-bar-height); background: #e8e8e3; border-bottom: 1px solid #c9c9c2; }
+    .scene-body { padding: 16px; font: 13px/1.4 system-ui, sans-serif; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Desktop window: saved guides</h1>
+    <p>The window is drawn at 1 CSS px = 1 pt. Scroll the scene sideways to see all of it at a narrow width.</p>
+    <div class="scene-viewport" role="region" aria-label="Desktop window scene" tabindex="0">
+      <div class="scene">
+        <div class="title-bar"></div>
+        <div class="scene-body">Your saved guides</div>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
