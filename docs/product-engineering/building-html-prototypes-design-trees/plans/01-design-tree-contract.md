@@ -55,11 +55,12 @@ Branch: feat/building-html-prototypes-design-trees
 
 ## Notes
 
-- `tree-check.html` also fails what the contract forbids and markup can show: a page that is not a full HTML document, a `base` element, a module script, a CSS `@import`, and a reference to a folder rather than a file. Scripts are still read by hand for requests.
-- The references name `templates/tree-check.html` and `templates/prototype-notes.md` in backticks instead of linking them, because a link from `references/` to `templates/` needs a parent path, which `scripts/validate.py` bans. `SKILL.md` links the template directly.
-- `fixtures/clean-tree/index.html` is the tree's root page and links the view, so plan 03 can use it as the entry page.
-- The trial fixtures and `evaluations/product-design/README.md` are committed with the tree check, in one evaluations unit.
-- Verification on 778f763 found two gaps, fixed in this slice: `broken-tree`'s out-of-tree `url()` named a missing file, so a check without the in-tree rule still passed AC5 (it now reaches `fixtures/outside-tree/paper.svg`, and the rerun checks each reason); and the check skipped form `action` and `formaction`, which it now reads.
-- The quick review at 426d616 found that a folder linked without its trailing slash passed, that a malformed percent escape stopped the check, and that the check did not test the `meta charset` the contract requires. Fixed with `fixtures/edge-tree/` as their regression; the contract now states the `base` ban and the case-sensitivity limit. Accepted records 0016 and 0017 already describe the harness, page slices and hosted check that plans 02 and 03 add; the PR says so.
+- 2026-10-24 01: `tree-check.html` also fails non-documents, `base`, module scripts, `@import` and folder references, which the contract forbids and markup shows.
+- 2026-10-24 01: the references name the templates in backticks, because a link from `references/` to `templates/` needs a parent path, which `scripts/validate.py` bans.
+- 2026-10-24 01: `fixtures/clean-tree/index.html` is the tree's root page and links the view, so plan 03 can use it as the entry page.
+- 2026-10-24 01: the trial fixtures and `evaluations/product-design/README.md` are committed with the tree check, as one evaluations unit.
+- 2026-10-24 01: verification added `fixtures/outside-tree/` and form-target checks; the quick review added `fixtures/edge-tree/` and the `base` and case-sensitivity lines.
+- 2026-10-24 01: accepted records 0016 and 0017 already describe the harness, page slices and hosted check that plans 02 and 03 add.
+- 2026-10-24 01: the full review added the tree root, shared-file `FAIL`s going to the user, and a CSS scan without backtracking (F1–F3, F5).
 
 ## Changes after launch
