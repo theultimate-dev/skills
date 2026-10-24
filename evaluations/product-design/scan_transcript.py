@@ -28,7 +28,11 @@ for line in open(transcript):
             start = re.match(r'cd "?([^"&]+?)"? ?&&', command)
             if not start or not norm(os.path.normpath(start.group(1))).startswith(norm(run)):
                 bad.append(f"Bash not run from the run folder: {command[:80]}")
-            for path in re.findall(r"(?<![\w.:/)\]])/[A-Za-z_.~][^\s\"';|&)]*", scanned):
+            for found in re.finditer(r"(?<![\w.:/)\]])/[A-Za-z_.~][^\s\"';|&)]*", scanned):
+                path = found.group()
+                # An HTML closing tag, such as </div>, in generated markup is not a path.
+                if scanned[found.start() - 1 : found.start()] == "<" and re.match(r"/[A-Za-z][\w-]*>", path):
+                    continue
                 if path != "/dev/null" and not norm(path).startswith(norm(run)):
                     bad.append(f"Bash path outside the run: {path}")
         else:
