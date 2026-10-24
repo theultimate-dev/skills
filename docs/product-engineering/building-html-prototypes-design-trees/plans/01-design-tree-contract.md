@@ -60,5 +60,6 @@ Branch: feat/building-html-prototypes-design-trees
 - `fixtures/clean-tree/index.html` is the tree's root page and links the view, so plan 03 can use it as the entry page.
 - The trial fixtures and `evaluations/product-design/README.md` are committed with the tree check, in one evaluations unit.
 - Verification on 778f763 found two gaps, fixed in this slice: `broken-tree`'s out-of-tree `url()` named a missing file, so a check without the in-tree rule still passed AC5 (it now reaches `fixtures/outside-tree/paper.svg`, and the rerun checks each reason); and the check skipped form `action` and `formaction`, which it now reads.
+- The quick review at 426d616 found that a folder linked without its trailing slash passed, that a malformed percent escape stopped the check, and that the check did not test the `meta charset` the contract requires. Fixed with `fixtures/edge-tree/` as their regression; the contract now states the `base` ban and the case-sensitivity limit. Accepted records 0016 and 0017 already describe the harness, page slices and hosted check that plans 02 and 03 add; the PR says so.
 
 ## Changes after launch
