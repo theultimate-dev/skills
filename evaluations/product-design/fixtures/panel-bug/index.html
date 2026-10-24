@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Saved guides: filter panel</title>
+  <style>
+    body { margin: 2rem; font: 1rem/1.5 system-ui, sans-serif; }
+    [hidden] { display: none !important; }
+    #filters { margin-top: .5rem; padding: 1rem; border: 1px solid #526057; max-width: 20rem; }
+    fieldset { border: 0; margin: 0; padding: 0; }
+  </style>
+</head>
+<body>
+  <h1>Saved guides</h1>
+  <button type="button" id="filters-button" aria-expanded="false" aria-controls="filters">Filters</button>
+  <div id="filters" hidden>
+    <fieldset>
+      <legend>Topics</legend>
+      <label><input type="checkbox" name="topic" value="writing"> Writing</label>
+      <label><input type="checkbox" name="topic" value="research"> Research</label>
+    </fieldset>
+  </div>
+  <p>Three saved guides.</p>
+  <script>
+    // The panel closes after two seconds without interaction, on Escape, or on a click outside it.
+    const button = document.querySelector('#filters-button');
+    const panel = document.querySelector('#filters');
+    let idle;
+    function restartIdle() {
+      clearTimeout(idle);
+      idle = setTimeout(closePanel, 2000);
+    }
+    function openPanel() {
+      panel.hidden = false;
+      button.setAttribute('aria-expanded', 'true');
+      panel.querySelector('input').focus();
+      restartIdle();
+    }
+    function closePanel() {
+      if (panel.hidden) return;
+      clearTimeout(idle);
+      const hadFocus = panel.contains(document.activeElement);
+      panel.hidden = true;
+      button.setAttribute('aria-expanded', 'false');
+      if (hadFocus) button.focus();
+    }
+    button.addEventListener('click', () => (panel.hidden ? openPanel() : closePanel()));
+    panel.addEventListener('input', restartIdle);
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape') closePanel();
+    });
+    document.addEventListener('click', event => {
+      if (!panel.contains(event.target)) closePanel();
+    });
+  </script>
+</body>
+</html>

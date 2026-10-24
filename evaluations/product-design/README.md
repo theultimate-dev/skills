@@ -10,6 +10,13 @@ Fixtures and rerun commands for the checks that `building-html-prototypes` ships
 | `fixtures/clean-tree/` | AC5 | An entry page at the root, a view in `views/saved-guides/`, the notes-only page, and `shared/` with tokens, components and images |
 | `fixtures/shared-foundations-project/` | AC2 trial | A project whose `design/foundations/` holds `tokens.css` and `components.css`, with a selected direction to refine into one view |
 | `fixtures/no-shared-files-project/` | AC3 trial | A project with three direction briefs and no design files |
+| `fixtures/panel-bug/` | AC9 | A filter panel whose button click also reaches a document click-outside handler, so the panel opens and closes on one click |
+| `fixtures/panel-fixed/` | AC9 | The same panel with the click-outside handler ignoring its button |
+| `fixtures/visibility/` | AC9 | Three visibility cases for the harness's `visible()`: an element whose `hidden` attribute the page's CSS overrides, an element inside a hidden one, and plain text |
+| `fixtures/long-page/` | AC12 | A page 4,000 CSS px tall, in four bands labeled 0, 1000, 2000 and 3000 |
+| `checks/panel-checks.js` | AC9 | The six harness checks for the panel, loaded with `?checks=panel-checks.js` |
+| `checks/visibility-checks.js` | AC9 | The three harness checks for `fixtures/visibility/`, loaded with `?checks=visibility-checks.js` |
+| `checks/scope-checks.js` | AC9 | One check for `fixtures/panel-fixed/` in a file that declares names the harness uses internally, such as `frame` and `report` |
 
 ## Stage and serve
 
@@ -47,6 +54,25 @@ Stage `broken-tree` with `tree-check.html`, and put `outside-tree/` next to the 
 - Repeat with `clean-tree` after appending four escaped URLs: `printf '%s' 'a{b:url(https://cdn.example.com/Foo_\(bar\).png)} c{d:url("q\"uote.png")} e{f:url("https://cdn.example.com/Hex_\28 bar\29.png")} g{h:url(\68ttps://cdn.example.com/h.png)}' >> "$run/a/b/shared/tokens.css"`. Pass: `FAIL shared/tokens.css url() "https://cdn.example.com/Foo_(bar).png": points to a remote host`, `FAIL shared/tokens.css url() "q"uote.png": no file at shared/q"uote.png`, `FAIL shared/tokens.css url() "https://cdn.example.com/Hex_(bar).png": points to a remote host`, `FAIL shared/tokens.css url() "https://cdn.example.com/h.png": points to a remote host`, and `DONE 14/18`.
 - Repeat with `clean-tree` after appending a `/*` inside a string and inside an unquoted `url()`, each followed by a remote URL: `printf '%s' '.s1{content:"/*"} .s2{background:url(https://cdn.example.com/after-string.png)} .s3{background:url(img/*.png)} .s4{background:url(https://cdn.example.com/after-url.png)} /* closing */' >> "$run/a/b/shared/tokens.css"`. Pass: `FAIL shared/tokens.css url() "https://cdn.example.com/after-string.png": points to a remote host`, `FAIL shared/tokens.css url() "img/*.png": no file at shared/img/*.png`, `FAIL shared/tokens.css url() "https://cdn.example.com/after-url.png": points to a remote host`, and `DONE 14/17`. A scan that reads `/*` as a comment there reports none of them.
 - Repeat with `clean-tree` after appending an escaped quote outside any string and a string continued across CR LF, each followed by a `/*` in a string and a remote URL: `printf '.a\\"x{color:red} .b{content:"/*"} .c{background:url(https://cdn.example.com/after-escaped-quote.png)} .d{content:"a\\\r\n/*"} .e{background:url(https://cdn.example.com/after-crlf.png)}' >> "$run/a/b/shared/tokens.css"`. Pass: `FAIL shared/tokens.css url() "https://cdn.example.com/after-escaped-quote.png": points to a remote host`, `FAIL shared/tokens.css url() "https://cdn.example.com/after-crlf.png": points to a remote host`, and `DONE 14/16`.
+
+## Interaction harness (AC9)
+
+Stage `panel-bug` with `interaction-harness.html`, copy its checks to the staging root as well, `cp evaluations/product-design/checks/panel-checks.js "$run/"`, then dump `http://127.0.0.1:8765/interaction-harness.html?checks=panel-checks.js`.
+
+- Pass: `FAIL panel stays open after one click`, while `PASS panel opens on click` shows the panel did open inside the click.
+- Repeat with `panel-fixed`. Pass: six `PASS` lines, named as in `checks/panel-checks.js`, and `DONE 6/6`.
+- Repeat with `visibility`, copying its checks instead, `cp evaluations/product-design/checks/visibility-checks.js "$run/"`, and dumping `interaction-harness.html?checks=visibility-checks.js`. Pass: three `PASS` lines and `DONE 3/3`. A `visible()` that trusts the `hidden` attribute over the page's CSS fails the first check.
+- Repeat with `panel-fixed`, copying in both `panel-checks.js` and `scope-checks.js`, and dump `interaction-harness.html?checks=scope-checks.js`. Pass: `PASS a checks file may reuse the harness names` and `DONE 1/1`. A harness whose internal names share the checks file's global scope gives `FAIL checks load: Uncaught SyntaxError: Identifier 'frame' has already been declared` instead.
+- On the same stage, put the checks in the harness's checks script instead, `python3 -c 'import sys; h, c = sys.argv[1:]; s = open(h).read(); open(h, "w").write(s.replace("*/\n  </script>\n</body>", "*/\n" + open(c).read() + "  </script>\n</body>"))' "$run/interaction-harness.html" evaluations/product-design/checks/scope-checks.js`, and dump `interaction-harness.html` with no query string. Pass: `PASS a checks file may reuse the harness names` and `DONE 1/1`. Then append `check(` to the same script, `python3 -c 'import sys; h = sys.argv[1]; s = open(h).read(); open(h, "w").write(s.replace("  </script>\n</body>", "check(\n  </script>\n</body>"))' "$run/interaction-harness.html"`, and dump it again. Pass: one `FAIL checks load: Uncaught SyntaxError: …` line and `DONE 0/1`.
+- On a fresh `panel-fixed` stage with `panel-checks.js` copied in, dump `?checks=https://cdn.example.com/checks.js`, `?checks=panel-checks.js&page=javascript:void(0)` and `?checks=panel-checks.js&timeout=0`. Pass, in order: `FAIL checks load: https://cdn.example.com/checks.js is not on the staging server` and `DONE 0/1`; six `FAIL` lines that end `javascript:void(0) is not on the staging server` and `DONE 0/6`; `FAIL settings: width, height and timeout must be positive numbers` and `DONE 0/1`.
+
+## Page slices (AC12)
+
+Stage `long-page` with `page-slices.html`. For each offset 0, 1000, 2000 and 3000, dump and screenshot `http://127.0.0.1:8765/page-slices.html?src=a/b/index.html&width=1000&height=1000&offset=<n>`, with `--hide-scrollbars --window-size=1000,1000 --screenshot=<file>` for the screenshot.
+
+- Pass: each dump reads `PASS scrolled <n>` and lists `data-offsets="0 1000 2000 3000"`; each 1000 × 1000 screenshot shows only its own band's label at the top. No full-page image is taken.
+- Negative control: offset 3500 reads `FAIL scrolled 3500: stopped at 3000`.
+- Invalid input: `height=0` reads `FAIL settings: width and height must be at least 1, and offset at least 0`, and `src=javascript:void(0)` reads `FAIL page loads: javascript:void(0) is not on the staging server`. Each dump returns within a few seconds.
 
 ## Agent trials (AC2, AC3)
 

@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Visibility cases</title>
+  <style>
+    body { margin: 2rem; font: 1rem/1.5 system-ui, sans-serif; }
+    #shown-anyway { display: block; }
+  </style>
+</head>
+<body>
+  <div id="shown-anyway" hidden>Carries the hidden attribute, which this page's CSS overrides, so it is on screen.</div>
+  <div hidden>
+    <p id="inside-hidden">Sits inside an element the browser hides.</p>
+  </div>
+  <p id="plain">Plain text.</p>
+</body>
+</html>

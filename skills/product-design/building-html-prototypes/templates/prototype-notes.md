@@ -38,8 +38,11 @@ List every page in the tree, including pages that no link reaches yet, and the s
 | Design-tree check (`tree-check.html`), for a design tree | | |
 | Direct file opening and offline behavior | | |
 | Primary task and recovery | | |
+| Scripted: [check name], one row per check, for example "Scripted: panel closes on Escape and focus returns to its control" | | |
+| Driven: [check name], one row per check exercised with a browser-driving tool | | |
 | Keyboard and focus | | |
 | Narrow and wide layouts | | |
+| Long-page slices (`page-slices.html`): frame size and offsets, for a long page | | |
 | Zoom and text-spacing overrides | | |
 | Contrast and reduced motion, if applicable | | |
 
