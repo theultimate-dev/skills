@@ -103,19 +103,23 @@
     }
 
     // Drops comments in one pass, with indexOf rather than a regular expression, which would backtrack on unclosed
-    // ones. As in CSS, "/*" inside a string or an unquoted url() is text, and an unclosed comment runs to the end.
+    // ones. As in CSS, "/*" inside a string or an unquoted url() is text, an escaped character such as \" opens
+    // nothing, and an unclosed comment runs to the end. \u stays unskipped, because \url( still opens a url().
     function stripComments(css) {
-      const next = /\/\*|["']|url\(/gi;
+      const next = /\/\*|\\[^u]|["']|url\(/gi;
       let source = '';
       let from = 0;
       let match;
       while ((match = next.exec(css))) {
-        if (match[0] === '/*') {
+        const token = match[0];
+        if (token === '/*') {
           const end = css.indexOf('*/', next.lastIndex);
           source += css.slice(from, match.index);
           from = next.lastIndex = end < 0 ? css.length : end + 2;
-        } else {
-          next.lastIndex = match[0].length === 1 ? endOfString(css, next.lastIndex, match[0]) : endOfUrl(css, next.lastIndex);
+        } else if (token === '"' || token === "'") {
+          next.lastIndex = endOfString(css, next.lastIndex, token);
+        } else if (token[0] !== '\\') {
+          next.lastIndex = endOfUrl(css, next.lastIndex);
         }
       }
       return source + css.slice(from);
@@ -126,7 +130,7 @@
       while (at < css.length) {
         const char = css[at];
         if (char === quote) return at + 1;
-        if (char === '\n' || char === '\r' || char === '\f') return at;
+        if (char === '\n') return at;
         at += char === '\\' ? 2 : 1;
       }
       return css.length;
@@ -154,7 +158,8 @@
     }
 
     async function checkCss(file, css, base) {
-      let source = stripComments(css);
+      // CSS reads CR LF, CR and FF as one newline before anything else.
+      let source = stripComments(css.replace(/\r\n?|\f/g, '\n'));
       for (const match of source.matchAll(/@import\s+(?:url\(\s*)?["']?([^"')\s;]*)[^;]*;?/gi)) {
         report(false, `${file} @import "${match[1]}"`, 'link each stylesheet from the page instead, so its dependencies stay listed');
       }
