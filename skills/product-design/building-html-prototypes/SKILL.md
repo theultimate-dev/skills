@@ -41,6 +41,8 @@ Check typography in context: font roles and actual rendered fallbacks, hierarchy
 
 Read [interaction and verification guidance](references/interaction-and-verification.md). For a design tree, run the [design-tree check](templates/tree-check.html) first. Open each artifact directly through `file://` when a browser is available, verify it without network access, inspect narrow and wide layouts, and exercise the primary task and recovery with keyboard as well as pointer input. Check relevant zoom, text-spacing overrides, reduced motion, and content pressure.
 
+Exercise every stateful interaction, such as open and close, a timer, or focus return. Drive it with a browser-driving tool when one can; when none can, write a scripted check for it with the [interaction harness](templates/interaction-harness.html), as [scripted checks](references/scripted-checks.md) describes, and record each check by name.
+
 Fix failures and record what was actually checked. Static inspection alone does not prove rendering or accessibility. If browser or filesystem access is unavailable, deliver copyable HTML and exact manual checks, clearly marked unverified; do not claim screenshots or successful interaction tests.
 
 Return each HTML artifact and companion notes, identify what differs between sketches, and recommend the next decision or refinement. Keep sketches independently usable; a comparison document may link to them. A one-file artifact needs no other file to render or complete its demonstrated task. A design-tree page needs only files inside its tree, and its notes list the shared files it links.
