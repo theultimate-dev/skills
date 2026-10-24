@@ -140,6 +140,11 @@ T2 stages `building-html-prototypes` as `skill/` and T1 run 1's `project/` as it
 
 > Follow the skill at `<run>/skill/SKILL.md` to render direction A from the direction briefs in `<run>/project/`, as their rendering task asks, as one sketch with its prototype notes. Write the files in `<run>/project/`. Work only inside `<run>`. No network access and no user: if the skill tells you to ask the user, write the question, its options and your recommendation to `<run>/project/QUESTIONS.md`, and stop.
 
+With no network, T1's frame leaves the device geometry to supply, so T2 stops and asks for it, which H1 grades. The trial then puts the user's answer in `<run>/project/ANSWERS.md` and resumes the same executor to render. The answer names a MacBook Pro 14-inch with a camera cut-out, an external 27-inch display and macOS 15. It gives the user's own numbers for the tokens asked for, each with the source "user's answer, <date>":
+- the built-in display, 1512 × 982 pt, with a 37 pt menu bar and a cut-out of 200 × 32 pt centred in it;
+- the external display, 2560 × 1440 pt, with a 24 pt menu bar;
+- a status item 28 pt wide.
+
 | Trial | Fixture | Runs | Rubric |
 |---|---|---|---|
 | T1 | `harbor-menu-bar` | 3 | N1–N7 |
@@ -171,7 +176,7 @@ Rubric, each criterion yes or no:
 - **C1.** The directions are for a macOS menu-bar panel, and no `QUESTIONS.md` asks which surface the view is for.
 - **M1.** The panel's directions have placements and a platform frame, and the web page's directions have narrow-screen changes. There is no `QUESTIONS.md`.
 - **H1.** No `QUESTIONS.md` entry asks for a value the frame supplied.
-- **H2.** The notes' "Native surface" section carries the frame's scale mapping, every geometry token with the frame's source word for word, the type and symbol limits, and the four settings.
+- **H2.** The notes' "Native surface" section carries the frame's scale mapping, every geometry token with the frame's source word for word (or the user's answer, for a token the frame left to supply), the type and symbol limits, and the four settings.
 - **H3.** The scene's CSS defines each of the frame's geometry tokens as a custom property, and the settings control sits outside every scene.
 - **H4.** Staged at `a/b/` with `interaction-harness.html` and a checks file generated from the frame's tokens, the harness reports `DONE n/n`: every token resolves to a non-empty computed value, and the page has no horizontal scroll at 320. With one token deleted from the scene's CSS, it reports `FAIL` naming that token.
 
