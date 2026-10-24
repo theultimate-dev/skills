@@ -13,6 +13,10 @@ Releases are tagged `product-design--vX.Y.Z`.
 - `building-html-prototypes` can build a design tree: prototype pages that link the project's shared `tokens.css`, `components.css` and other design files by relative path instead of copying them, and that still open offline from disk while the tree stays together. Its rules are in a new design-tree contract, and the prototype notes name the contract and list the shared files each page links.
 - `templates/tree-check.html` in `building-html-prototypes`, a page you serve locally next to a staged copy of a design tree. It reports every reference in the tree that points to a remote host, uses a root-absolute path, climbs out of the tree or names a missing file, as `PASS` and `FAIL` lines that a headless browser can read.
 
+### Changed
+
+- A single offline HTML file stays the default, and direction sketches stay one file even in a project with shared design files; a sketch may keep its candidate tokens inline until you choose a direction. The skill, the plugin description, the repository README and the coordinator's task brief no longer say that every prototype is one file.
+
 ## [0.1.0] - 2026-09-28
 
 ### Added
