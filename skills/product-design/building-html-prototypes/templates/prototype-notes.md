@@ -1,10 +1,19 @@
 # Prototype notes: [initiative / direction]
 
-- Artifact filename:
+- Artifact filename, or the tree's root folder and entry page:
+- Contract: one-file artifact / design tree
 - Fidelity: direction sketch / refined prototype / bounded experiment
 - Purpose and user task:
 - Related requirements and UX specification:
 - Direction status: proposed / selected / needs review
+
+## Shared files (design tree)
+
+List every page in the tree, including pages that no link reaches yet, and the shared files each one links.
+
+| Page | Shared files it links |
+|---|---|
+| | |
 
 ## Design decisions
 
@@ -26,6 +35,7 @@
 
 | Check | Result: passed / failed / not performed | Evidence and conditions |
 |---|---|---|
+| Design-tree check (`tree-check.html`), for a design tree | | |
 | Direct file opening and offline behavior | | |
 | Primary task and recovery | | |
 | Keyboard and focus | | |
