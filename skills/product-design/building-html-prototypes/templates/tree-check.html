@@ -102,13 +102,29 @@
       return url;
     }
 
+    // Drops comments with indexOf rather than a regular expression, which would backtrack on unclosed ones.
+    // An unclosed comment runs to the end of the stylesheet, as in CSS.
+    function stripComments(css) {
+      let source = '';
+      let at = 0;
+      while (at < css.length) {
+        const start = css.indexOf('/*', at);
+        if (start < 0) return source + css.slice(at);
+        source += css.slice(at, start);
+        const end = css.indexOf('*/', start + 2);
+        at = end < 0 ? css.length : end + 2;
+      }
+      return source;
+    }
+
     async function checkCss(file, css, base) {
-      let source = css.replace(/\/\*[\s\S]*?\*\//g, '');
+      let source = stripComments(css);
       for (const match of source.matchAll(/@import\s+(?:url\(\s*)?["']?([^"')\s;]*)[^;]*;?/gi)) {
         report(false, `${file} @import "${match[1]}"`, 'link each stylesheet from the page instead, so its dependencies stay listed');
       }
       source = source.replace(/@import[^;]*;?/gi, '');
-      for (const match of source.matchAll(/url\(\s*(?:"([^"]*)"|'([^']*)'|([^)\s]*))\s*\)/gi)) {
+      // The unquoted form cannot be empty or hold whitespace, so the two \s* never share characters.
+      for (const match of source.matchAll(/url\(\s*(?:"([^"]*)"|'([^']*)'|([^)\s"']+))\s*\)/gi)) {
         await checkReference(file, 'url()', match[1] ?? match[2] ?? match[3], base);
       }
     }

@@ -43,6 +43,7 @@ Stage `broken-tree` with `tree-check.html`, and put `outside-tree/` next to the 
 - To confirm nothing reaches `example.com`, add `--log-net-log=<file>` to the Chrome command and search the log for the host.
 - Repeat with `clean-tree`. Pass: no `FAIL`, and the last line is `DONE 14/14`.
 - Repeat with `edge-tree` and no query string. Pass: `FAIL index.html href "views": points to a folder…`, `FAIL index.html src "shared/100%.png": no file at shared/100%.png`, `FAIL views/index.html is a full HTML document…`, and `DONE 3/6`.
+- Repeat with `clean-tree`, after appending an unclosed `url(` and 100,000 spaces to its stylesheet: `printf 'a{b:url(' >> "$run/a/b/shared/tokens.css" && head -c 100000 /dev/zero | tr '\0' ' ' >> "$run/a/b/shared/tokens.css"`. Pass: the dump returns within a few seconds and ends `DONE 14/14`. A scanner that backtracks takes far longer.
 
 ## Agent trials (AC2, AC3)
 
