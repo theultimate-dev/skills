@@ -25,7 +25,7 @@ For a native surface drawn as fixed-scale scenes, as the native-surface profile 
 - Symbol fidelity limit: the system symbols drawn as stand-ins:
 - Settings the platform has, the ones the scenes show, and how each was checked:
 
-| Geometry token | Value | Source: document, device and date read, or "unsourced estimate" |
+| Geometry token | Value | Source: document, device and date read, or the user's answer |
 |---|---|---|
 | | | |
 
