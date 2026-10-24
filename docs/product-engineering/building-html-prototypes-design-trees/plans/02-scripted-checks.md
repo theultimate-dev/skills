@@ -49,9 +49,10 @@ When an agent has no browser-driving tool, it can still exercise a prototype's s
 
 ## Notes
 
-- The harness also reads checks from a classic script at the staging root named with `?checks=`, so `evaluations/product-design/checks/panel-checks.js` holds AC9's checks and the template stays unfilled.
-- The harness's `record(target, attribute)` helper keeps every value an attribute takes within one event, so `panel opens on click` passes on `panel-bug` while `panel stays open after one click` fails, which pins the defect to the click-outside handler.
-- `page-slices.html` reads the scroll position after a 50 ms timer, not `requestAnimationFrame`: under `--virtual-time-budget`, headless Chrome left three of five dumps without a result line when the template waited for animation frames. It also lists the covering offsets in `data-offsets` on `#results`.
-- The notes template gains a long-page row next to the Scripted and Driven rows.
+- 2026-10-24 02: the harness also reads checks from a classic script named with `?checks=`, so `checks/panel-checks.js` holds AC9's checks and the template stays unfilled.
+- 2026-10-24 02: `record(target, attribute)` keeps every value an attribute takes within one event, which tells "opened, then closed on one click" from "never opened".
+- 2026-10-24 02: `page-slices.html` waits 50 ms with `setTimeout`, because headless Chrome left 3 of 5 dumps without a result when it waited for animation frames.
+- 2026-10-24 02: the notes template gains a long-page row next to the Scripted and Driven rows.
+- 2026-10-24 02: the quick review added `fixtures/visibility/` and its checks as the regression for `visible()`.
 
 ## Changes after launch
