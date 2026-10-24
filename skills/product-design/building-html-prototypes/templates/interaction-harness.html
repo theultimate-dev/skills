@@ -18,9 +18,9 @@
   <script>
     /* Put this page at the staging root, with the prototype copied untouched to a/b/, and open it over HTTP.
        Set the page and the frame size below or in the URL (?page=a/b/views/panel.html&width=320&height=640),
-       then write one check per stateful interaction in the checks block at the end, or in a classic script
+       then write one check per stateful interaction in the checks script at the end, or in a classic script
        at the staging root named in the URL (?checks=panel-checks.js). Every check starts from a fresh load.
-       Only check() is global, so a checks file can declare any names of its own. */
+       Only check() is global, so the checks can declare any names of their own. */
     (() => {
       const config = {
         page: 'a/b/index.html',
@@ -53,6 +53,12 @@
       frame.style.width = `${config.width}px`;
       frame.style.height = `${config.height}px`;
       let pageErrors = [];
+
+      // An error while a checks script runs, such as a syntax error, fails the load instead of passing silently.
+      // The listener hears the checks script at the end of this page, then a checks file named in the URL.
+      const loadErrors = [];
+      const onLoadError = event => loadErrors.push(event.message);
+      window.addEventListener('error', onLoadError);
 
       // Resolves a path from the URL or a check, or returns null when it is not on the staging server.
       function onStagingServer(path) {
@@ -196,6 +202,20 @@
       window.check = check;
       const api = { page, load, loaded, $, $$, click, press, wait, until, assert, focused, visible, attr, style, record };
 
+      // Loads a checks file from the staging server as a classic script.
+      function loadChecks(name) {
+        const source = onStagingServer(name);
+        if (!source) return Promise.reject(new Error(`${name} is not on the staging server`));
+        const script = document.createElement('script');
+        script.src = source.href;
+        const ready = new Promise((resolve, reject) => {
+          script.onload = resolve;
+          script.onerror = () => reject(new Error(`could not load ${name}`));
+        });
+        document.head.append(script);
+        return ready;
+      }
+
       async function run() {
         if (!/^https?:$/.test(location.protocol)) {
           report(false, 'served over HTTP', 'serve the staging folder with a local static server; a file:// frame is an opaque origin');
@@ -205,33 +225,14 @@
           report(false, 'settings', 'width, height and timeout must be positive numbers');
           return finish();
         }
-        if (params.has('checks')) {
-          const name = params.get('checks');
-          const source = onStagingServer(name);
-          if (!source) {
-            report(false, 'checks load', `${name} is not on the staging server`);
-            return finish();
-          }
-          // An error while the checks script runs, such as a syntax error, fails the load instead of passing silently.
-          const errors = [];
-          const onError = event => errors.push(event.message);
-          window.addEventListener('error', onError);
-          const script = document.createElement('script');
-          script.src = source.href;
-          const ready = new Promise((resolve, reject) => {
-            script.onload = resolve;
-            script.onerror = () => reject(new Error(`could not load ${name}`));
-          });
-          document.head.append(script);
-          try {
-            await ready;
-            if (errors.length) throw new Error(errors.join('; '));
-          } catch (error) {
-            report(false, 'checks load', error.message);
-            return finish();
-          } finally {
-            window.removeEventListener('error', onError);
-          }
+        try {
+          if (params.has('checks')) await loadChecks(params.get('checks'));
+          if (loadErrors.length) throw new Error(loadErrors.join('; '));
+        } catch (error) {
+          report(false, 'checks load', error.message);
+          return finish();
+        } finally {
+          window.removeEventListener('error', onLoadError);
         }
         if (!checks.length) report(false, 'checks defined', 'write at least one check');
         for (const { name, run: steps } of checks) {
@@ -248,22 +249,6 @@
         finish();
       }
 
-      /* Checks. Name each one by the outcome it observes; the name goes into the notes as it is.
-         Replace these examples with the prototype's own checks.
-
-      check('menu opens on click', async ({ click, visible, assert }) => {
-        click('#menu-button');
-        assert(visible('#menu'), 'the menu is not visible');
-      });
-
-      check('menu closes on Escape and focus returns to its control', async ({ click, press, visible, focused, $, assert }) => {
-        click('#menu-button');
-        press('Escape');
-        assert(!visible('#menu'), 'the menu is still visible');
-        assert(focused() === $('#menu-button'), `focus is on ${focused().outerHTML.slice(0, 60)}`);
-      });
-      */
-
       window.addEventListener('load', () => {
         run().catch(error => {
           report(false, 'harness completes', error.message);
@@ -271,6 +256,24 @@
         });
       });
     })();
+  </script>
+  <script>
+    /* Checks. Name each one by the outcome it observes; the name goes into the notes as it is.
+       Replace these examples with the prototype's own checks. This script runs apart from the harness,
+       so its names never clash with the harness's own.
+
+    check('menu opens on click', async ({ click, visible, assert }) => {
+      click('#menu-button');
+      assert(visible('#menu'), 'the menu is not visible');
+    });
+
+    check('menu closes on Escape and focus returns to its control', async ({ click, press, visible, focused, $, assert }) => {
+      click('#menu-button');
+      press('Escape');
+      assert(!visible('#menu'), 'the menu is still visible');
+      assert(focused() === $('#menu-button'), `focus is on ${focused().outerHTML.slice(0, 60)}`);
+    });
+    */
   </script>
 </body>
 </html>
