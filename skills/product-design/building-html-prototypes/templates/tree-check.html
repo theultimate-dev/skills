@@ -123,8 +123,9 @@
         report(false, `${file} @import "${match[1]}"`, 'link each stylesheet from the page instead, so its dependencies stay listed');
       }
       source = source.replace(/@import[^;]*;?/gi, '');
-      // The unquoted form cannot be empty or hold whitespace, so the two \s* never share characters.
-      for (const match of source.matchAll(/url\(\s*(?:"([^"]*)"|'([^']*)'|([^)\s"']+))\s*\)/gi)) {
+      // The unquoted form cannot be empty or hold whitespace, quotes or "(", as in CSS, so a failed match
+      // never backtracks across whitespace or into the next url(.
+      for (const match of source.matchAll(/url\(\s*(?:"([^"]*)"|'([^']*)'|([^)\s"'(]+))\s*\)/gi)) {
         await checkReference(file, 'url()', match[1] ?? match[2] ?? match[3], base);
       }
     }
