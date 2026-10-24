@@ -8,6 +8,8 @@ Releases are tagged `product-design--vX.Y.Z`.
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-10-24
+
 ### Added
 
 - `building-html-prototypes` can build a design tree: prototype pages that link the project's shared `tokens.css`, `components.css` and other design files by relative path instead of copying them, and that still open offline from disk while the tree stays together. Its rules are in a new design-tree contract, and the prototype notes name the contract and the tree's root folder, and list the shared files each page links.
@@ -27,5 +29,6 @@ Releases are tagged `product-design--vX.Y.Z`.
 
 - Six stack-neutral skills for guided discovery, product briefs, UX flows, visual direction exploration, offline HTML prototypes, and product/design handoffs. Includes copyable templates, fictional worked examples, typography and spacing guidance, and checkpoints for user decisions.
 
-[Unreleased]: https://github.com/theultimate-dev/skills/compare/product-design--v0.1.0...HEAD
+[Unreleased]: https://github.com/theultimate-dev/skills/compare/product-design--v0.2.0...HEAD
+[0.2.0]: https://github.com/theultimate-dev/skills/compare/product-design--v0.1.0...product-design--v0.2.0
 [0.1.0]: https://github.com/theultimate-dev/skills/releases/tag/product-design--v0.1.0

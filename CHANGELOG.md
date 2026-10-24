@@ -15,6 +15,8 @@ Marketplace releases are tagged `vX.Y.Z`. Every plugin release is also a marketp
 
 ## [Unreleased]
 
+## [0.3.2] - 2026-10-24
+
 ### Added
 
 - Decision 0016 lets `building-html-prototypes` share files as a design tree and amends the one-file clause of decision 0006, which stays unchanged. Decision 0017 records that the prototype checks ship as browser-only templates rather than scripts; the design-tree check is the first.
@@ -22,6 +24,11 @@ Marketplace releases are tagged `vX.Y.Z`. Every plugin release is also a marketp
 - Fixtures for the interaction harness and page slices in `evaluations/product-design/`: a filter panel with and without a click-propagation bug, its six harness checks, a checks file that reuses the harness's internal names, a page of visibility cases with its checks, and a long page in labeled bands.
 - Harness checks for the hosted render of the clean design tree in `evaluations/product-design/`: they follow the entry page to its view under `/a/b/` and read a shared token, with a negative control that publishes only the view and a stage at the wrong prefix, which the checks report as an HTTP 404. A publish-set run shows the tree check catching a file that only a stylesheet loads.
 - A native-scene fixture for `building-html-prototypes` in `evaluations/product-design/`: a desktop window drawn at a fixed scale, with harness checks that a 320 px frame shows no horizontal page scroll while the scene scrolls inside its own container, and a control whose scene widens the page.
+
+### Changed
+
+- Plugins released with this version:
+  - `product-design` [0.2.0](https://github.com/theultimate-dev/skills/releases/tag/product-design--v0.2.0): `building-html-prototypes` builds design trees that share a project's design files, checks them with browser-only templates for the tree, scripted interactions and long pages, checks a tree reviewers open through a host, and draws native surfaces at the device's own scale.
 
 ## [0.3.1] - 2026-10-23
 
@@ -116,7 +123,8 @@ Marketplace releases are tagged `vX.Y.Z`. Every plugin release is also a marketp
 - Published releases are immutable: their archives, `checksums.txt` and tag cannot change after publication.
 - The CI and release workflows run `actions/checkout` pinned to a full commit SHA, and Dependabot proposes updates to it weekly.
 
-[Unreleased]: https://github.com/theultimate-dev/skills/compare/v0.3.1...HEAD
+[Unreleased]: https://github.com/theultimate-dev/skills/compare/v0.3.2...HEAD
+[0.3.2]: https://github.com/theultimate-dev/skills/compare/v0.3.1...v0.3.2
 [0.3.1]: https://github.com/theultimate-dev/skills/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/theultimate-dev/skills/compare/v0.2.1...v0.3.0
 [0.2.1]: https://github.com/theultimate-dev/skills/compare/v0.2.0...v0.2.1
