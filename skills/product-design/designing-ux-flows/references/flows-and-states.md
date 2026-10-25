@@ -36,3 +36,14 @@ Define headings, landmarks, and reading order before relying on position or colo
 Use meaningful sample labels and plausible text lengths instead of lorem ipsum. Check unusually long titles, missing optional fields, and localized text when relevant to the audience. Label invented content in the notes, without stuffing implementation commentary into the product interface.
 
 Responsive behavior is about priority and task continuity: say what rearranges, wraps, or becomes sequential. Do not assume desktop controls can simply be made smaller. A touch user must not need hover to reveal an essential action.
+
+## Placements on a native surface
+
+A native platform surface, such as a menu-bar panel, a desktop window, a phone widget or a watch face, doesn't reflow to a narrow screen. It appears in placements: the displays and states it meets, each at the device's real scale. Take them from the brief and the project, and add the ones a surface of its kind always meets:
+
+- **A menu-bar panel:** a built-in display with a hardware cut-out such as a camera housing; an external display without one; and a full-screen app, where the menu bar stays hidden until the pointer reaches it.
+- **A phone widget:** each widget size it offers, on the home screen and on the lock screen.
+- **A desktop window:** its smallest size, its default size, and side by side with another window.
+- **A watch face:** each case size, and the always-on state.
+
+For each placement, say what changes: what the surface loses to system UI such as the menu bar, a cut-out or system bars, where it opens, and what it shows first when space runs short. Keep reading order and the essential actions the same in every placement.

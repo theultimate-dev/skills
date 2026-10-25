@@ -20,6 +20,7 @@ Releases are tagged `product-design--vX.Y.Z`.
   - System type and symbols are embedded only when their license allows it. Otherwise they render through `system-ui` and as drawn stand-ins.
   - A new native-surfaces reference holds the detail, and the comparison template marks its native and responsive lines.
   - Responsive pages keep their briefs as before.
+- `designing-ux-flows` gives a native platform surface its placements in place of narrow-screen behavior: the displays and states it appears in, at real scale, and what changes in each. The UX specification template marks its native and responsive lines.
 
 ### Changed
 

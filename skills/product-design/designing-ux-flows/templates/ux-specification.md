@@ -1,5 +1,7 @@
 # UX: [initiative or journey]
 
+<!-- Lines marked "(native surface)" apply only to a native platform surface, and lines marked "(responsive page)" only to a responsive page. Keep the lines for the kind of surface this specification is for, delete the others without noting that they don't apply, and drop the markers. A specification that covers both kinds keeps each kind's lines and names the surface they are for. Delete this comment. -->
+
 Status: draft / agreed / needs review
 Related requirements: [IDs or existing sections]
 
@@ -26,7 +28,8 @@ Related requirements: [IDs or existing sections]
 ## Layout and input constraints
 
 - Information priority and reading order:
-- Narrow-screen behavior:
+- Narrow-screen behavior (responsive page):
+- Placements (native surface): the displays and states the surface appears in, at real scale, and what changes in each:
 - Keyboard and touch expectations:
 - Representative content and long-content cases:
 
