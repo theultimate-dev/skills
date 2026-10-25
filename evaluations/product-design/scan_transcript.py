@@ -64,19 +64,22 @@ for entry in entries:
             start = re.match(r'cd "?([^"&]+?)"? ?&&', command)
             if not start or not inside(start.group(1)):
                 bad.append(f"Bash not run from the run folder: {command[:80]}")
-            for found in re.finditer(r"(?<![\w.:/)\]])/[A-Za-z_.~][^\s\"';|&)]*", scanned):
+            for found in re.finditer(r"(?<![\w.:/)\]])/+[A-Za-z_.~][^\s\"';|&)]*", scanned):
                 path = found.group()
                 # An HTML closing tag, such as </div>, in generated markup is not a path.
                 if scanned[found.start() - 1 : found.start()] == "<" and re.match(r"/[A-Za-z][\w-]*>", path):
                     continue
                 if path != "/dev/null" and not inside(path):
                     bad.append(f"Bash path outside the run: {path}")
+            # The root folder on its own, as in find /, is outside the run too.
+            for found in re.finditer(r"(?<![^\s=])[\"']?/+(?=[\"']?(?:[\s;|&)]|$))", scanned):
+                bad.append(f"Bash path outside the run: {found.group()}")
             for found in re.finditer(r"(?<![\w$])(\$\{?HOME\b\}?|~(?=[/\s\"']|$))", scanned):
                 bad.append(f"Bash path in the home folder: {found.group()}")
             # A relative path that climbs with .. is resolved from the folder the command has changed into.
             cwd = start.group(1) if start else "/"
             # A cd with no folder, to the previous folder, or to one built from a variable can't be resolved here.
-            for found in re.finditer(r'\b(?P<cd>cd|pushd|popd)\b(?:[ \t]+"?(?P<to>[^"\s;&|)]+)"?)?|(?<![\w./~$-])(?:[\w.-]+/)*\.\.(?![\w.])[^\s"\';|&)<>]*', scanned):
+            for found in re.finditer(r'\b(?P<cd>cd|pushd|popd)\b(?:[ \t]+(?P<q>["\']?)(?P<to>[^"\'\s;&|)]+)(?P=q))?|(?<![\w./~$-])(?:[\w.-]+/)*\.\.(?![\w.])[^\s"\';|&)<>]*', scanned):
                 to = found.group("to")
                 if not found.group("cd"):
                     if not inside(found.group(), cwd):
@@ -90,8 +93,9 @@ for entry in entries:
             # A climb that starts from a variable or a command substitution can't be resolved here.
             for found in re.finditer(r"(?:\$\{?\w+\}?|\$\([^()]*\)|\))/(?:[^\s\"';|&)<>/]+/)*\.\.(?![\w.])", scanned):
                 bad.append(f"Bash path that climbs from a variable: {found.group()}")
-            # So can the previous folder, a parent taken with dirname, or a variable with its end cut or replaced.
-            for found in re.finditer(r"\$\{?OLDPWD\b\}?|\bdirname\b|\$\{\w+(?:%%?/|//?)[^}]*\}", scanned):
+            # So can the previous folder, a parent taken with dirname, a trimmed or replaced PWD, OLDPWD or HOME,
+            # and another variable with its end cut at a slash or replaced.
+            for found in re.finditer(r"\$\{?OLDPWD\b\}?|\bdirname\b|\$\{(?:PWD|HOME)[^}\w][^}]*\}?|\$\{\w+(?:%%?/|//?)[^}]*\}", scanned):
                 bad.append(f"Bash path that can't be resolved here: {found.group()}")
         else:
             for key in ("file_path", "path", "notebook_path"):
