@@ -1,6 +1,6 @@
 # Plan 02: Native placements in UX flows and handoffs
 
-Status: planned
+Status: done
 
 Spec: `spec.md` · Roadmap: `roadmap.md`
 Requirements: R12, R13, R14
@@ -60,5 +60,12 @@ The coordinator's Converge row names placements. Responsive pages keep their nar
 - PR slice: own PR, about 250 changed lines. Predicted category: `human`, because the user reviews every PR.
 
 ## Notes
+
+- 2026-10-25 02: the branch stacks on 01's head, `d5a628f`, while PR #20 awaits review, as the roadmap allows.
+- 2026-10-25 02: F-handoff holds T1 run 1's `visual-directions.md` from `e0ee116`, and T2's sketch, checks and notes from `146d3a3`, copied unchanged. Its README is the `harbor-menu-bar` brief, with the design state brought up to date and a "Decisions so far" section: direction A chosen and its departures accepted, and the device geometry as the owner's own figures. Without that section, no artifact records a selection. T2's `QUESTIONS.md` and `ANSWERS.md` are left out, so a trial's own `QUESTIONS.md` can't mix with them. The notes keep their stale "proposed" and "not viewed" lines and a link outside the folder, and every handoff flagged them.
+- 2026-10-25 02: both baselines fail at `f401cae`. B-ux keeps "Narrow-screen behavior" and has no placements, so it fails U1. B4 fails P1: it carries no note that other platforms show their own system font, and its symbol stand-ins sit outside "Selected design". B4 passes P2, so P2 alone is a regression guard. AC15's row still discriminates through P1.
+- 2026-10-25 02: one sentence of the readiness reference was added after reading B4's output, before any candidate run: a face that can't be embedded renders through `system-ui`, "so reviewers on other platforms saw their own system font in its place". Without it, the skill didn't ask for P1's other-platform note.
+- 2026-10-25 02: calibration ran before each real grade, on mutated copies of T-ux-3 and T4-3 with an unmutated control. The graders failed all five mutations and passed both controls. The handoff grader read "the owner's answer" as the notes' "user's answer" source in calibration, and applied that reading to every handoff, B4 included.
+- 2026-10-25 02: all trials pass at `a6c8570`. U1 passes in T-ux 1 to 3, U2 in T-ux-web, and P1 and P2 in T4 1 to 3. Every transcript is clean or prints only text, such as a `sed` expression or a relative glob.
 
 ## Changes after launch
