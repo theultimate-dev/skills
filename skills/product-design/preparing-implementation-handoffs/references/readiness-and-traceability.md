@@ -18,6 +18,15 @@ Use identifiers only where they help connect artifacts. Avoid a separate registr
 
 State the chosen direction and any explicit combination. Include typography roles, actual and intended font faces, weights, sizes, line heights, text measure, spacing tokens, layout rhythm, color roles, and responsive changes. Map copied tokens back to project sources when available. Note where a prototype uses a fallback instead of the intended asset.
 
+For a native platform surface, state its placements in place of responsive changes: the displays and states it appears in, at real scale, and what changes in each. Carry its platform frame from the selected direction and the prototype notes:
+
+- the scale mapping, such as 1 CSS px = 1 pt;
+- each geometry token with its value and its source, as those artifacts give it. A value the user supplied or the prototype chose stays marked as such, never as the device's specification;
+- the system UI beside the surface;
+- the platform settings honored, such as appearance, contrast, transparency and motion.
+
+Record how system type and symbols render, next to the font limitations. A face whose license forbids embedding renders through `system-ui`, so reviewers on other platforms saw their own system font in its place, and a symbol set under such a license is drawn as stand-ins. Each is a fidelity limit. An openly licensed one is embedded or falls back like any other font or asset.
+
 Treat values as agreed, provisional, or inherited according to the actual decisions. Do not require the implementer to reverse-engineer a screenshot to discover them. Preserve motion and interaction expectations where they affect the experience.
 
 ## Readiness boundaries
