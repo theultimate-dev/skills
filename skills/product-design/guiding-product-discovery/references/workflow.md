@@ -9,7 +9,7 @@ Start where the uncertainty is, not automatically at phase one. A supplied, appr
 | Frame | Audience, problem, outcomes, smallest useful scope, requirements and assumptions | User agrees what is being explored and what is excluded |
 | Model | Information hierarchy, primary task, relevant states and recovery | Proposed behavior can be walked through without inventing major decisions |
 | Diverge | Three direction briefs, then comparable offline HTML sketches | User can assess meaningful differences using the same task and content |
-| Converge | Selected or explicitly combined direction, tokens, responsive behavior, key interactions | User's feedback is reflected in the refined prototype |
+| Converge | Selected or explicitly combined direction, tokens, responsive behavior or, for a native surface, placements, key interactions | User's feedback is reflected in the refined prototype |
 | Hand off | Traceability, acceptance criteria, limitations, suggested delivery slices | User agrees product/design readiness or remaining blockers are explicit |
 
 UX questions that change product scope return to the scope decision. Direction selection follows HTML sketches, not merely verbal mood descriptions. Small type and spacing refinements can happen during convergence without a separate approval for every value.
