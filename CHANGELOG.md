@@ -15,6 +15,8 @@ Marketplace releases are tagged `vX.Y.Z`. Every plugin release is also a marketp
 
 ## [Unreleased]
 
+## [0.3.3] - 2026-10-25
+
 ### Added
 
 - Agent-trial fixtures for native platform surfaces in `evaluations/product-design/`. They are seven projects for Harbor, a fictional backup watcher:
@@ -27,6 +29,11 @@ Marketplace releases are tagged `vX.Y.Z`. Every plugin release is also a marketp
   - the panel's chosen direction, with its sketch and notes, ready for a handoff.
 
   They come with the trial tasks and rubric, and with a script that lists each tool call that may reach outside a trial's run folder or uses a tool a trial may not use, such as an installed skill, so a reader can void the trials that did.
+
+### Changed
+
+- Plugins released with this version:
+  - `product-design` [0.3.0](https://github.com/theultimate-dev/skills/releases/tag/product-design--v0.3.0): `exploring-visual-directions` gives a native platform surface placements at real scale and one shared platform frame, `building-html-prototypes` embeds a system font or symbol set only when its license allows and starts from that frame, and UX flows and handoffs carry the native variant through to engineering.
 
 ## [0.3.2] - 2026-10-24
 
@@ -136,7 +143,8 @@ Marketplace releases are tagged `vX.Y.Z`. Every plugin release is also a marketp
 - Published releases are immutable: their archives, `checksums.txt` and tag cannot change after publication.
 - The CI and release workflows run `actions/checkout` pinned to a full commit SHA, and Dependabot proposes updates to it weekly.
 
-[Unreleased]: https://github.com/theultimate-dev/skills/compare/v0.3.2...HEAD
+[Unreleased]: https://github.com/theultimate-dev/skills/compare/v0.3.3...HEAD
+[0.3.3]: https://github.com/theultimate-dev/skills/compare/v0.3.2...v0.3.3
 [0.3.2]: https://github.com/theultimate-dev/skills/compare/v0.3.1...v0.3.2
 [0.3.1]: https://github.com/theultimate-dev/skills/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/theultimate-dev/skills/compare/v0.2.1...v0.3.0
