@@ -15,12 +15,13 @@ Fixtures and rerun commands for the checks that `building-html-prototypes` ships
 | `fixtures/visibility/` | AC9 | Three visibility cases for the harness's `visible()`: an element whose `hidden` attribute the page's CSS overrides, an element inside a hidden one, and plain text |
 | `fixtures/long-page/` | AC12 | A page 4,000 CSS px tall, in four bands labeled 0, 1000, 2000 and 3000 |
 | `fixtures/native-scene/` | AC16 | A desktop window drawn at 1 CSS px = 1 pt as an 800 × 500 scene: `index.html` scrolls it inside its own container, and `widens.html`, the control, lets it widen the page |
-| `fixtures/harbor-menu-bar/` | #10 AC3–AC8, AC13 | Harbor, a fictional backup watcher, as a macOS menu-bar panel and settings window. It names no placements |
+| `fixtures/harbor-menu-bar/` | #10 AC3–AC8, AC13, AC14 | Harbor, a fictional backup watcher, as a macOS menu-bar panel and settings window. It names no placements |
 | `fixtures/harbor-android-widget/` | #10 AC6 | Harbor as an Android home-screen widget (4 × 2 cells) and its configuration screen |
-| `fixtures/harbor-web-dashboard/` | #10 AC9 | Harbor as a web dashboard opened in a browser on phones and desktops, with a `package.json` |
+| `fixtures/harbor-web-dashboard/` | #10 AC9, AC14 | Harbor as a web dashboard opened in a browser on phones and desktops, with a `package.json` |
 | `fixtures/harbor-status-unclear/` | #10 AC2 | Harbor's "backup status at a glance" view with no platform and no code |
 | `fixtures/harbor-status-app/` | #10 AC2 | The same brief with a `Package.swift` for macOS 14 and a `MenuBarExtra` app in `Sources/`, never built |
 | `fixtures/harbor-mixed/` | #10 AC1 | Harbor's macOS menu-bar panel and its web account page |
+| `fixtures/harbor-handoff-inputs/` | #10 AC15 | Harbor's menu-bar panel with direction A chosen: T1 run 1's three direction briefs and T2's sketch, checks and notes, with a README that records the selection |
 | `checks/panel-checks.js` | AC9 | The six harness checks for the panel, loaded with `?checks=panel-checks.js` |
 | `checks/visibility-checks.js` | AC9 | The three harness checks for `fixtures/visibility/`, loaded with `?checks=visibility-checks.js` |
 | `checks/scope-checks.js` | AC9 | One check for `fixtures/panel-fixed/` in a file that declares names the harness uses internally, such as `frame` and `report` |
@@ -112,7 +113,7 @@ A trial runs once, so it does not show variance across runs or models.
 
 ## Agent trials: native surfaces (#10)
 
-These trials check the native-surface variant of `exploring-visual-directions`, and its hand-over to `building-html-prototypes`, on the `harbor-` fixtures. Each trial runs one skill on one fixture, in a run folder of its own outside any checkout:
+These trials check the native-surface variant of `exploring-visual-directions`, its hand-over to `building-html-prototypes`, and its placements in `designing-ux-flows` and `preparing-implementation-handoffs`, on the `harbor-` fixtures. Each trial runs one skill on one fixture, in a run folder of its own outside any checkout:
 
 ```sh
 run=$(mktemp -d)
