@@ -1,0 +1,6 @@
+{
+  "name": "harbor-web-dashboard",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Harbor's web dashboard. Nothing is built yet."
+}

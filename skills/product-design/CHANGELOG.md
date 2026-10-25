@@ -8,6 +8,27 @@ Releases are tagged `product-design--vX.Y.Z`.
 
 ## [Unreleased]
 
+### Added
+
+- `exploring-visual-directions` handles native platform surfaces, such as a menu-bar panel, a desktop window, a phone widget, a watch face, or a TV or car screen.
+  - It recognizes one from the brief or from the project's code, and asks you when neither settles it.
+  - Each direction states:
+    - its placements at real scale, in place of narrow-screen changes;
+    - its platform fit: materials, standard controls, guidelines, and each deliberate departure with its reason;
+    - native risks, such as reading at hardware size.
+  - The rendering task carries one platform frame for all three sketches: the placements, the scale mapping, geometry tokens with their sources, the system UI beside the surface, and the appearance and accessibility settings to honor.
+  - System type and symbols are embedded only when their license allows it. Otherwise they render through `system-ui` and as drawn stand-ins.
+  - A new native-surfaces reference holds the detail, and the comparison template marks its native and responsive lines.
+  - Responsive pages keep their briefs as before.
+
+### Changed
+
+- The native-surface profile in `building-html-prototypes` checks the license of a platform's system font and symbol set, rather than never embedding them:
+  - When the license forbids embedding, as for Apple's SF fonts and Segoe UI, the scenes render the font through `system-ui` and draw stand-ins for the symbols, as before.
+  - An openly licensed one, such as Roboto, is embedded or falls back like any other font.
+  - The prototype notes record the face, its license, and which case applies. A font rendered through `system-ui` and symbols drawn as stand-ins are recorded as fidelity limits.
+- When a direction brief supplies a platform frame, the profile starts from it. It draws a scene for each placement, its values and sources go into the notes as written, and you're asked only for what the frame lacks. The prototype notes gain Placements and System UI lines, so every field of the frame has a place.
+
 ## [0.2.0] - 2026-10-24
 
 ### Added

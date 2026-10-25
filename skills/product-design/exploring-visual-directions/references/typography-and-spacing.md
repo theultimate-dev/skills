@@ -28,8 +28,10 @@ The rendering brief must distinguish the intended face from what the prototype c
 
 If embedding is unavailable, choose an explicit system fallback, record the intended face and limitation, and inspect the fallback layout. Do not use only `local()` and call the artifact typographically portable: it can resolve differently on another machine. The [MDN font-face reference](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@font-face) documents font sources and descriptors.
 
+A platform's system font and symbol set need the same license check. Some forbid embedding: Apple's SF fonts may not be embedded in other products, and Microsoft's Segoe UI may not be redistributed. Render such a font through `font-family: system-ui`. Record that it isn't embedded and that machines on other platforms show their own system font instead. Draw stand-ins for symbols whose license forbids embedding or can't be confirmed. An openly licensed system font, such as Roboto under the SIL Open Font License, follows the paragraphs above. [Native surfaces](native-surfaces.md#system-type-and-symbols) lists the sources.
+
 ## Review type and spacing together
 
-Assess the first visual hierarchy, sustained reading, scanability, line wrapping, controls, and narrow layouts. Check zoom and user spacing overrides for clipped or overlapping content. The [W3C text-spacing criterion](https://www.w3.org/WAI/WCAG22/Understanding/text-spacing.html) concerns tolerating overrides; its values are not mandatory authored typography defaults.
+Assess the first visual hierarchy, sustained reading, scanability, line wrapping, controls, and narrow layouts, or each placement at real scale for a native surface. Check zoom and user spacing overrides for clipped or overlapping content. The [W3C text-spacing criterion](https://www.w3.org/WAI/WCAG22/Understanding/text-spacing.html) concerns tolerating overrides; its values are not mandatory authored typography defaults.
 
 Record decisions in context: “Use the tighter list gap to keep title and summary together while preserving the larger gap between guides” is more useful than “make it cleaner.” Keep font limitations and still-provisional choices visible in the companion notes and handoff.
