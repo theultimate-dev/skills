@@ -1,5 +1,7 @@
 # Product/design handoff: [initiative]
 
+<!-- Lines marked "(native surface)" apply only to a native platform surface, and lines marked "(responsive page)" only to a responsive page. A marked heading covers everything under it, up to the next heading. Keep the lines for the kind of surface this handoff is for, delete the others without noting that they don't apply, and drop the markers. A handoff that covers both kinds keeps each kind's lines and names the surface they are for. Delete this comment. -->
+
 Readiness: ready for engineering planning / ready for prototype evaluation / needs product-design decisions
 User decision status: [what is agreed, delegated, or pending]
 
@@ -20,9 +22,22 @@ User decision status: [what is agreed, delegated, or pending]
 - Direction and rationale; agreed combinations:
 - Preserve/evolve/replace choice and exceptions:
 - Typography roles, tokens, actual fonts/fallbacks, and limitations:
-- Spacing tokens, density, composition, and responsive rules:
+- System type and symbols (native surface): the intended face and its license, embedded or rendered through `system-ui`, and the symbols drawn as stand-ins, as fidelity limits:
+- Spacing tokens, density, composition, and responsive rules (responsive page):
+- Spacing tokens, density, and composition (native surface):
+- Placements and scale (native surface): each placement at real scale, and what changes in it:
 - Color, assets, motion, and accessibility expectations:
 - Relevant project token/component sources:
+
+### Platform frame (native surface)
+
+- Scale mapping:
+- System UI beside the surface:
+- Settings honored:
+
+| Geometry token | Value | Source: document, device and date read, the user's answer, or a design choice |
+|---|---|---|
+| | | |
 
 ## Behavior and content notes
 

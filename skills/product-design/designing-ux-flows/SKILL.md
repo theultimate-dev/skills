@@ -20,7 +20,7 @@ Read [flows and states](references/flows-and-states.md). Define the primary jour
 
 Include representative content, control labels, validation messages, and long-content cases where they influence design. State what information must be available; do not invent data or API contracts. For an existing product, preserve familiar navigation unless redesign is in scope.
 
-Consider keyboard and touch operation, visible focus, reading order, and narrow layouts while defining behavior. For dynamic controls, describe where focus goes and what feedback is announced. Avoid adding a modal, hover-only control, or multi-step flow unless it helps the task.
+Consider keyboard and touch operation, visible focus, reading order, and narrow layouts while defining behavior. When the brief or the project names a native platform surface, such as a menu-bar panel, a desktop window, a phone widget or a watch face, define its placements in place of narrow layouts: the displays and states it appears in, at real scale, and what changes in each, as [flows and states](references/flows-and-states.md#placements-on-a-native-surface) describes. For dynamic controls, describe where focus goes and what feedback is announced. Avoid adding a modal, hover-only control, or multi-step flow unless it helps the task.
 
 Use a small flow diagram only when branches or transitions are clearer visually. A sentence is enough for a one-step action. Use the [UX specification template](templates/ux-specification.md), scaled to the task. Read the [worked recovery journey](references/worked-journey.md) for an example of interaction precision without architecture decisions.
 

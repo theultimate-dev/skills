@@ -20,6 +20,13 @@ Releases are tagged `product-design--vX.Y.Z`.
   - System type and symbols are embedded only when their license allows it. Otherwise they render through `system-ui` and as drawn stand-ins.
   - A new native-surfaces reference holds the detail, and the comparison template marks its native and responsive lines.
   - Responsive pages keep their briefs as before.
+- `designing-ux-flows` gives a native platform surface its placements in place of narrow-screen behavior: the displays and states it appears in, at real scale, and what changes in each. The UX specification template marks its native and responsive lines.
+- `preparing-implementation-handoffs` carries a native surface's design into the handoff:
+  - its placements and scale, in place of responsive rules;
+  - its platform frame: the scale mapping, the geometry tokens with their sources, the system UI beside the surface, and the settings honored;
+  - the system type and symbol limits, next to the font limitations.
+
+  The handoff template marks its native and responsive lines. Responsive pages keep their narrow-screen behavior and responsive rules.
 
 ### Changed
 
@@ -28,6 +35,7 @@ Releases are tagged `product-design--vX.Y.Z`.
   - An openly licensed one, such as Roboto, is embedded or falls back like any other font.
   - The prototype notes record the face, its license, and which case applies. A font rendered through `system-ui` and symbols drawn as stand-ins are recorded as fidelity limits.
 - When a direction brief supplies a platform frame, the profile starts from it. It draws a scene for each placement, its values and sources go into the notes as written, and you're asked only for what the frame lacks. The prototype notes gain Placements and System UI lines, so every field of the frame has a place.
+- `guiding-product-discovery` lists placements for a native surface next to responsive behavior in the Converge phase.
 
 ## [0.2.0] - 2026-10-24
 

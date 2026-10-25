@@ -15,12 +15,13 @@ Fixtures and rerun commands for the checks that `building-html-prototypes` ships
 | `fixtures/visibility/` | AC9 | Three visibility cases for the harness's `visible()`: an element whose `hidden` attribute the page's CSS overrides, an element inside a hidden one, and plain text |
 | `fixtures/long-page/` | AC12 | A page 4,000 CSS px tall, in four bands labeled 0, 1000, 2000 and 3000 |
 | `fixtures/native-scene/` | AC16 | A desktop window drawn at 1 CSS px = 1 pt as an 800 × 500 scene: `index.html` scrolls it inside its own container, and `widens.html`, the control, lets it widen the page |
-| `fixtures/harbor-menu-bar/` | #10 AC3–AC8, AC13 | Harbor, a fictional backup watcher, as a macOS menu-bar panel and settings window. It names no placements |
+| `fixtures/harbor-menu-bar/` | #10 AC3–AC8, AC13, AC14 | Harbor, a fictional backup watcher, as a macOS menu-bar panel and settings window. It names no placements |
 | `fixtures/harbor-android-widget/` | #10 AC6 | Harbor as an Android home-screen widget (4 × 2 cells) and its configuration screen |
-| `fixtures/harbor-web-dashboard/` | #10 AC9 | Harbor as a web dashboard opened in a browser on phones and desktops, with a `package.json` |
+| `fixtures/harbor-web-dashboard/` | #10 AC9, AC14 | Harbor as a web dashboard opened in a browser on phones and desktops, with a `package.json` |
 | `fixtures/harbor-status-unclear/` | #10 AC2 | Harbor's "backup status at a glance" view with no platform and no code |
 | `fixtures/harbor-status-app/` | #10 AC2 | The same brief with a `Package.swift` for macOS 14 and a `MenuBarExtra` app in `Sources/`, never built |
 | `fixtures/harbor-mixed/` | #10 AC1 | Harbor's macOS menu-bar panel and its web account page |
+| `fixtures/harbor-handoff-inputs/` | #10 AC15 | Harbor's menu-bar panel with direction A chosen: T1 run 1's three direction briefs and T2's sketch, checks and notes, with a README that records the selection |
 | `checks/panel-checks.js` | AC9 | The six harness checks for the panel, loaded with `?checks=panel-checks.js` |
 | `checks/visibility-checks.js` | AC9 | The three harness checks for `fixtures/visibility/`, loaded with `?checks=visibility-checks.js` |
 | `checks/scope-checks.js` | AC9 | One check for `fixtures/panel-fixed/` in a file that declares names the harness uses internally, such as `frame` and `report` |
@@ -112,7 +113,7 @@ A trial runs once, so it does not show variance across runs or models.
 
 ## Agent trials: native surfaces (#10)
 
-These trials check the native-surface variant of `exploring-visual-directions`, and its hand-over to `building-html-prototypes`, on the `harbor-` fixtures. Each trial runs one skill on one fixture, in a run folder of its own outside any checkout:
+These trials check the native-surface variant of `exploring-visual-directions`, its hand-over to `building-html-prototypes`, and its placements in `designing-ux-flows` and `preparing-implementation-handoffs`, on the `harbor-` fixtures. Each trial runs one skill on one fixture, in a run folder of its own outside any checkout:
 
 ```sh
 run=$(mktemp -d)
@@ -181,3 +182,39 @@ Rubric, each criterion yes or no:
 - **H4.** Staged at `a/b/` with `interaction-harness.html` and a checks file generated from the frame's tokens, the harness reports `DONE n/n`: every token resolves to a non-empty computed value, and the page has no horizontal scroll at 320. With one token deleted from the scene's CSS, it reports `FAIL` naming that token.
 
 A row passes only when every run passes. A row whose baseline also passes is reported as a regression guard, not as proof of the change. The trials stand in for real briefs and codebases. `QUESTIONS.md` stands in for the user, so, apart from T2's simulated answer in `ANSWERS.md`, they don't show how an agent goes on after an answer.
+
+### UX flows and handoffs
+
+These trials run `designing-ux-flows` and `preparing-implementation-handoffs` in the same way, staged as `skill/`. `harbor-handoff-inputs` holds T1 run 1's direction briefs, from `e0ee116`, and T2's sketch, checks and notes, from `146d3a3`, copied unchanged. Its README is the `harbor-menu-bar` brief with the design state brought up to date and the decisions so far.
+
+The task for T-ux and T-ux-web is:
+
+> Follow the skill at `<run>/skill/SKILL.md` to write the UX specification for the product in `<run>/project/README.md`. Write Markdown in `<run>/project/`. Work only inside `<run>`. No network access and no user: if the skill tells you to ask the user, write the question, its options and your recommendation to `<run>/project/QUESTIONS.md`, and stop.
+
+The task for T4 is:
+
+> Follow the skill at `<run>/skill/SKILL.md` to prepare the implementation handoff for the product in `<run>/project/README.md`, from the artifacts in `<run>/project/`. Write Markdown in `<run>/project/`. Work only inside `<run>`. No network access and no user: if the skill tells you to ask the user, write the question, its options and your recommendation to `<run>/project/QUESTIONS.md`, and stop.
+
+| Trial | Skill | Fixture | Runs | Rubric |
+|---|---|---|---|---|
+| T-ux | `designing-ux-flows` | `harbor-menu-bar` | 3 | U1 |
+| T-ux-web | `designing-ux-flows` | `harbor-web-dashboard` | 1 | U2 |
+| T4 | `preparing-implementation-handoffs` | `harbor-handoff-inputs` | 3 | P1–P2 |
+
+The baselines B-ux, for T-ux, and B4, for T4, run once each.
+
+- **U1.** The UX specification has a "Placements" entry that names a display with a hardware cut-out, an external display without one, and a full-screen app, and says what changes in each. It has no "Narrow-screen behavior" entry: `grep -ci "narrow-screen behavior"` on it prints 0.
+- **U2.** The specification has a "Narrow-screen behavior" entry that says what rearranges, wraps or becomes sequential. `grep -ciE "placements|platform frame"` on it prints 0.
+- **P1.** The handoff's "Selected design" carries:
+  - the scale mapping, 1 CSS px = 1 pt;
+  - every geometry token in the notes' table, each with its source as the notes give it;
+  - the four settings: appearance, contrast, transparency and motion;
+  - the type and symbol limits: the macOS system font rendered through `system-ui` and not embedded, other platforms showing their own system font, and the symbols drawn as stand-ins.
+- **P2.** "Selected design" names the placements the panel and the settings window appear in, and gives no responsive rule for them: no breakpoint, narrow-screen or viewport-width rule. A line about the sketch's page around the scenes doesn't count.
+
+Before grading, a grader marks mutated copies of one T-ux output and one T4 output, and must fail each on its criterion:
+- an inserted "Narrow-screen behavior" line (U1);
+- a dropped full-screen placement (U1);
+- one geometry token's source removed (P1);
+- the motion setting dropped (P1);
+- an inserted responsive rule for the panel, such as "Below 600 px wide, the volume rows stack" (P2).

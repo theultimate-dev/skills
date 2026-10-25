@@ -17,13 +17,14 @@ Marketplace releases are tagged `vX.Y.Z`. Every plugin release is also a marketp
 
 ### Added
 
-- Agent-trial fixtures for native platform surfaces in `evaluations/product-design/`. They are six briefs for Harbor, a fictional backup watcher:
+- Agent-trial fixtures for native platform surfaces in `evaluations/product-design/`. They are seven projects for Harbor, a fictional backup watcher:
   - a macOS menu-bar panel;
   - an Android widget;
   - a web dashboard;
   - a brief that names no platform;
   - the same brief with a macOS app's code;
-  - a brief that mixes a panel and a web page.
+  - a brief that mixes a panel and a web page;
+  - the panel's chosen direction, with its sketch and notes, ready for a handoff.
 
   They come with the trial tasks and rubric, and with a script that lists each tool call that may reach outside a trial's run folder or uses a tool a trial may not use, such as an installed skill, so a reader can void the trials that did.
 
