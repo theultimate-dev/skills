@@ -23,6 +23,7 @@ Skill format
 - `name` equals the directory name, kebab-case, unique across the repository.
 - `description` says what the skill does and when to use it, names concrete artifacts rather than bare verbs, fits on one line under 1024 characters.
 - A skill is self-contained: links stay inside its directory, and nothing in it assumes a particular harness, install path, or environment variable.
+- A template that two skills need unchanged is copied byte for byte into each skill and listed in `MIRRORS` in `scripts/validate.py`, which fails when a copy differs from its source ([0019](decisions/0019-mirror-shared-templates-across-skills.md)). Change the source and every copy in the same commit.
 - `SKILL.md` stays under 500 lines. Depth goes in `references/`, copyable files in `templates/`.
 
 Layout

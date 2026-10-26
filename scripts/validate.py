@@ -34,6 +34,8 @@ Changelogs: the root one (tags `vX.Y.Z`) and one per category (tags
   changelog links each plugin release dated after the root's first release
   (`.../releases/tag/<category>--vX.Y.Z`), and every such link names a release
   that the plugin's changelog has.
+Mirrors: each file listed in MIRRORS has a byte-identical copy in another skill,
+  and both the source and the copy exist.
 Hygiene: `AGENTS.md` has no unbackticked `@path` import, `README.md` names every
   skill.
 """
@@ -64,6 +66,12 @@ CATEGORY_FILES = ("CHANGELOG.md", "README.md")
 EXTERNAL = ("http://", "https://", "mailto:")
 BANNED = ("../", "~/.claude", ".claude/skills", "${CLAUDE_SKILL_DIR}", "CLAUDE_PLUGIN_ROOT")
 MAX_NAME, MAX_DESCRIPTION, MAX_LINES, WARN_LINES = 64, 1024, 500, 250
+# Templates two skills ship unchanged: (source, copy), relative to the repository root. A change to the source
+# changes the copy in the same commit (decisions/0019).
+MIRRORS = (
+    ("skills/product-design/building-html-prototypes/templates/tree-check.html",
+     "skills/product-design/curating-design-systems/templates/tree-check.html"),
+)
 EXTRA_KEYS_NOTE = ("only name, description and license are allowed here; spec fields such as compatibility,"
                    " metadata and allowed-tools, and Claude-only fields, are not permitted")
 FIELD_NOTE = ("frontmatter line is not a plain 'key: value' pair (block scalars, list items, comments,"
@@ -597,6 +605,17 @@ def check_status(record: Path, report: Report) -> None:
         report.error(record, f"{wrong[0]!r} is not proposed, accepted, deprecated or superseded", line=wrong[1])
 
 
+def check_mirrors(root: Path, report: Report) -> None:
+    for source, copy in MIRRORS:
+        source_path, copy_path = root / source, root / copy
+        if not source_path.is_file():
+            report.error(source_path, f"mirror source is missing; {copy} is a copy of it")
+        elif not copy_path.is_file():
+            report.error(copy_path, f"mirror copy is missing; it must be a byte-identical copy of {source}")
+        elif source_path.read_bytes() != copy_path.read_bytes():
+            report.error(copy_path, f"differs from its source {source}; a mirror copy must be byte-identical")
+
+
 def check_agents(root: Path, report: Report) -> None:
     path = root / "AGENTS.md"
     text = read_required(path, report, "AGENTS.md")
@@ -651,6 +670,7 @@ def main(argv: list[str] | None = None) -> int:
                       report)
     check_plugin_releases_listed(root, releases, plugin_releases, report)
     check_decisions(root, report)
+    check_mirrors(root, report)
     check_agents(root, report)
     check_readme(root, categories, report)
     return report.finish()
