@@ -18,7 +18,7 @@ Marketplace releases are tagged `vX.Y.Z`. Every plugin release is also a marketp
 ### Added
 
 - Decision 0018 adds `curating-design-systems` to product-design as its seventh skill and extends decision 0006, which stays unchanged. Decision 0019 lets two skills ship the same template, with the validator keeping the copies identical.
-- The validator checks mirrored templates: a file listed in its mirror list must have a byte-identical copy in the other skill, and both files must exist. The first pair is the design-tree check that `building-html-prototypes` and `curating-design-systems` ship.
+- The validator checks mirrored templates: a file listed in its mirror list must have a byte-identical copy in the other skill, and both files must exist. The first pair is the design-tree check that `building-html-prototypes` and `curating-design-systems` ship. `AGENTS.md` asks a change to a mirrored template to update each skill's description of it in the same commit.
 
 ## [0.3.3] - 2026-10-25
 

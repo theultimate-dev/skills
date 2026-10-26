@@ -67,8 +67,10 @@ EXTERNAL = ("http://", "https://", "mailto:")
 BANNED = ("../", "~/.claude", ".claude/skills", "${CLAUDE_SKILL_DIR}", "CLAUDE_PLUGIN_ROOT")
 MAX_NAME, MAX_DESCRIPTION, MAX_LINES, WARN_LINES = 64, 1024, 500, 250
 # Templates two skills ship unchanged: (source, copy), relative to the repository root. A change to the source
-# changes the copy in the same commit (decisions/0019).
+# changes the copy in the same commit (decisions/0019), and the text in each skill that describes it.
 MIRRORS = (
+    # Described in building-html-prototypes/references/design-tree-contract.md ("Check the tree") and in
+    # curating-design-systems/SKILL.md ("Check the tree after every change") and references/layout-rules.md.
     ("skills/product-design/building-html-prototypes/templates/tree-check.html",
      "skills/product-design/curating-design-systems/templates/tree-check.html"),
 )
