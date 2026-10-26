@@ -15,6 +15,10 @@ Marketplace releases are tagged `vX.Y.Z`. Every plugin release is also a marketp
 
 ## [Unreleased]
 
+### Added
+
+- Decision 0018 adds `curating-design-systems` to product-design as its seventh skill and extends decision 0006, which stays unchanged. Decision 0019 lets two skills ship the same template, with the validator keeping the copies identical.
+
 ## [0.3.3] - 2026-10-25
 
 ### Added
