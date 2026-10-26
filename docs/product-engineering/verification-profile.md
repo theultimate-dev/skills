@@ -1,6 +1,7 @@
 # Verification profile
 
 Confirmed: 2026-10-24 at commit f401cae
+Re-confirmed: 2026-10-25 at commit fc87115. Since f401cae, only `evaluations/` changed, adding the transcript scan and the `harbor-` fixtures listed below. The validator reported "0 errors, 0 warnings" in 0.09 s. Re-probed: Chrome 155.0.8059.85 headless (`file://` and HTTP DOM dumps, a screenshot, and the CSS parser's `replaceSync()`), `python3 -m http.server`, a Haiku subagent, and the transcript scan in both directions
 Re-check when these paths change: `scripts/validate.py`, `.github/workflows/`, `evaluations/`, the installed Chrome version
 
 Names only. A secret value never appears in this file. Mark anything not yet confirmed by a run as `unconfirmed`, and anything designed but not built as `planned`.
