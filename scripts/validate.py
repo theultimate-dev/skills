@@ -69,8 +69,10 @@ MAX_NAME, MAX_DESCRIPTION, MAX_LINES, WARN_LINES = 64, 1024, 500, 250
 # Templates two skills ship unchanged: (source, copy), relative to the repository root. A change to the source
 # changes the copy in the same commit (decisions/0019), and the text in each skill that describes it.
 MIRRORS = (
-    # Described in building-html-prototypes/references/design-tree-contract.md ("Check the tree") and in
-    # curating-design-systems/SKILL.md ("Check the tree after every change") and references/layout-rules.md.
+    # Described in skills/product-design/building-html-prototypes/references/design-tree-contract.md
+    # ("Check the tree"), skills/product-design/curating-design-systems/SKILL.md ("Check the tree after every
+    # change") and skills/product-design/curating-design-systems/references/layout-rules.md ("What the tree
+    # check cannot see").
     ("skills/product-design/building-html-prototypes/templates/tree-check.html",
      "skills/product-design/curating-design-systems/templates/tree-check.html"),
 )
