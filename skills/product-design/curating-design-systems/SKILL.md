@@ -16,7 +16,7 @@ Pages link the shared files instead of copying them, so a change to a foundation
 
 ## Read the home first
 
-Read the project instructions that apply, including `AGENTS.md` or `CLAUDE.md` when present, and the home's README. The README states the layout, its rules and the entry page. Do not require another skill or a particular input format.
+Read the project instructions that apply, including `AGENTS.md` or `CLAUDE.md` when present, and the home's README. The README states the layout, its rules, the entry page and every page that no link reaches. Do not require another skill or a particular input format.
 
 Find the home's root: the folder that holds the entry page, the foundations, and the platform and view folders, such as `design/`. Application source and the production theme stay outside it. Never link a page to the application's stylesheets, build or components.
 
@@ -39,7 +39,7 @@ Run the [design-tree check](templates/tree-check.html) after every change to the
 
 1. **Stage.** Create an empty staging folder outside the project. Copy the home, untouched, to `<staging>/a/b/`. The nested prefix stands in for a host that serves the files under a path. Copy `tree-check.html` to `<staging>/`, outside the home.
 2. **Serve.** Serve `<staging>/` from the server root with any static file server bound to the local machine, for example `python3 -m http.server 8000 --bind 127.0.0.1` run in `<staging>/`.
-3. **Open.** Open `http://127.0.0.1:<port>/tree-check.html?entry=<entry page>&pages=<pages no link reaches>`. Page paths are relative to the home's root and separated by commas. Instead of the query string, the entry page and the page list can be filled in at the top of the copied template.
+3. **Open.** Open `http://127.0.0.1:<port>/tree-check.html?entry=<entry page>&pages=<pages no link reaches>`. Page paths are relative to the home's root and separated by commas. Take the pages from the README. When it lists none, or the change added a page, pass every page in the home: a page that a link also reaches is checked once. Instead of the query string, the entry page and the page list can be filled in at the top of the copied template.
 4. **Read `#results`.**
    - There is one line per reference: `PASS <name>`, or `FAIL <name>: <detail>`.
    - A `FAIL` names the file, the attribute, the reference, and the reason: a remote host, an absolute URL, a root-absolute path, a path outside the home, a folder, or a missing file. The check also fails a page that isn't a full HTML document, a `base` element, a module script and a CSS `@import`.
