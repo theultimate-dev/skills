@@ -18,6 +18,9 @@ Releases are tagged `product-design--vX.Y.Z`.
     - pages link by relative path only.
   - It says where a requested change belongs when the change would break a rule, and changes a shared file only once you agree.
   - After every change, it runs the design-tree check. The skill carries its own copy of the check, identical to the one in `building-html-prototypes`.
+
+### Changed
+
 - `building-html-prototypes`: the design-tree check's instructions no longer refer to the prototype notes, so the same file reads correctly in both skills.
 
 ## [0.3.0] - 2026-10-25
