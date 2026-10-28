@@ -1,6 +1,6 @@
 # Product-design evaluations
 
-Fixtures and rerun commands for the checks that `building-html-prototypes` ships as templates, and for the agent trials of the native-surface variant across the product-design skills. The acceptance criteria they prove are in `docs/product-engineering/building-html-prototypes-design-trees/spec.md` and, for the `harbor-` fixtures, in `docs/product-engineering/exploring-visual-directions-native-surfaces/spec.md`. Every fixture is invented and links only local files; `example.com` appears only as a reference the checks must report without fetching.
+Fixtures and rerun commands for the checks that `building-html-prototypes` and `curating-design-systems` ship as templates, for the agent trials of the native-surface variant across the product-design skills, and for the design-home checks of `curating-design-systems`. The acceptance criteria they prove are in `docs/product-engineering/building-html-prototypes-design-trees/spec.md` and, for the `harbor-` fixtures, in `docs/product-engineering/exploring-visual-directions-native-surfaces/spec.md`, and, for the design-home rows below, in `docs/product-engineering/curating-design-systems/spec.md`. Every fixture is invented and links only local files; `example.com` appears only as a reference the checks must report without fetching.
 
 | Fixture | Used by | What it holds |
 |---|---|---|
@@ -101,6 +101,23 @@ Stage `native-scene` with `interaction-harness.html`, copy its checks to the sta
 - Negative control: on the same stage, dump `interaction-harness.html?checks=native-scene-checks.js&width=320&page=a/b/widens.html`, the same scene in a container that does not scroll. Pass: `FAIL no page scroll at 320: the page is 816 px wide, so it scrolls sideways at 320`, `FAIL scene scrolls in its container: the container's overflow-x is visible, so the scene does not scroll inside it` and `DONE 0/2`.
 - Dump `interaction-harness.html?checks=native-scene-checks.js` without the width. Pass: `FAIL no page scroll at 320: the frame is 1024 px wide; open the harness with width=320`, `FAIL scene scrolls in its container: the scene fits its 960 px container, so nothing scrolls in it` and `DONE 0/2`.
 - On a fresh stage, shrink the scene to fit, `python3 -c 'import sys; p = sys.argv[1]; s = open(p).read(); open(p, "w").write(s.replace("  </style>", "    .scene { transform: scale(0.35); transform-origin: 0 0; }\n  </style>"))' "$run/a/b/index.html"`, and dump the URL with `&width=320` again. Pass: `PASS no page scroll at 320`, `FAIL scene scrolls in its container: the scene is drawn 280 px wide, not at its 800 px scale` and `DONE 1/2`.
+
+## Mirrored tree check (curating-design-systems AC16)
+
+`curating-design-systems/templates/tree-check.html` is a byte-identical copy of `building-html-prototypes/templates/tree-check.html`, listed in `MIRRORS` in `scripts/validate.py`. To prove the rule catches drift, run it on a scratch worktree, never on a checkout with work in it:
+
+```sh
+wt=$(mktemp -d)/mirror && git worktree add --detach "$wt" HEAD
+copy="$wt/skills/product-design/curating-design-systems/templates/tree-check.html"
+printf ' ' >> "$copy" && python3 scripts/validate.py "$wt"      # 1. one byte appended
+rm "$copy" && python3 scripts/validate.py "$wt"                 # 2. copy deleted
+git -C "$wt" checkout -- "$copy" && python3 scripts/validate.py "$wt"   # 3. restored
+git worktree remove --force "$wt"
+```
+
+- Pass, step 1: `skills/product-design/curating-design-systems/templates/tree-check.html: differs from its source skills/product-design/building-html-prototypes/templates/tree-check.html; a mirror copy must be byte-identical`, `1 error, 0 warnings`, and exit 1.
+- Pass, step 2: `skills/product-design/curating-design-systems/templates/tree-check.html: mirror copy is missing; it must be a byte-identical copy of skills/product-design/building-html-prototypes/templates/tree-check.html`, and exit 1. The skill's link to the template breaks too, so the run also prints `skills/product-design/curating-design-systems/SKILL.md:38: link target 'templates/tree-check.html' does not exist` and ends `2 errors, 0 warnings`.
+- Pass, step 3: `0 errors, 0 warnings`, and exit 0.
 
 ## Agent trials (AC2, AC3)
 

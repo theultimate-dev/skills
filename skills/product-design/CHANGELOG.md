@@ -8,6 +8,21 @@ Releases are tagged `product-design--vX.Y.Z`.
 
 ## [Unreleased]
 
+### Added
+
+- `curating-design-systems`, a new skill that keeps a project's design home in order. A design home holds shared foundations, such as tokens and components, a folder for each platform and a folder for each view.
+  - It states the home's four layout rules:
+    - foundations hold no platform styles;
+    - a platform stylesheet draws only what the operating system draws;
+    - a view's own surfaces are styled once, and other views link to that stylesheet;
+    - pages link by relative path only.
+  - It says where a requested change belongs when the change would break a rule, and changes a shared file only once you agree.
+  - After every change, it runs the design-tree check. The skill carries its own copy of the check, identical to the one in `building-html-prototypes`.
+
+### Changed
+
+- `building-html-prototypes`: the design-tree check's instructions no longer refer to the prototype notes, so the same file reads correctly in both skills.
+
 ## [0.3.0] - 2026-10-25
 
 ### Added
