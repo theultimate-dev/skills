@@ -12,6 +12,10 @@ Releases are tagged `product-prototyping--vX.Y.Z`.
 
 - A README for the plugin, the page GitHub shows at `skills/product-prototyping/`: what each of the five skills does, how a bet moves between its two gates, the `context/` folder beside your code, when to use this plugin or `product-context`, and every install route.
 
+### Changed
+
+- The plugin's homepage in the marketplace opens this page instead of the repository.
+
 ## [0.1.0] - 2026-11-08
 
 ### Added
