@@ -50,7 +50,7 @@ Show the draft before writing it to disk when the decision is being made in this
 
 ### 4. Update the index
 
-Add a row to `decisions/README.md`: number linked to the file, title, status, one-line summary. Keep rows in numeric order. When the new record supersedes an older one: set the older record's status to `superseded`, add `- Superseded by: NNNN` under its date line, add `- Supersedes: MMMM` to the new record, and update both index rows.
+Add a row to `decisions/README.md`: number linked to the file, title, status, one-line summary. Keep rows in numeric order. When the new record supersedes an older one: set the older record's status to `superseded`, add `- Superseded by:` with a relative link to the new record directly under its Date line (before `- Deciders:`), give the new record `- Supersedes:` with a link in the same place, and update both index rows, the old summary gaining a clause that names its successor.
 
 ### 5. Make sure agents will find it
 

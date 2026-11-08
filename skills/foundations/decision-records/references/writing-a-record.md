@@ -20,7 +20,8 @@ Record decisions, not plans or tasks. "Migrate to Postgres by Q3" is a plan. "Us
 
 - File `NNNN-kebab-title.md`, next free number, four digits. Never reuse a number, even for a withdrawn proposal; mark that one deprecated instead.
 - Title as the decision itself: "Use Postgres for the event store", "Ship releases from tags on main". Not "Database", not "Release process".
-- Head lines: `- Status: accepted`, `- Date: YYYY-MM-DD` (the date the status was set). Add `- Supersedes: NNNN` or `- Superseded by: NNNN` only when they apply. `- Deciders:` is optional and useful when more than one person decided.
+- Head lines, in this order: `- Status: accepted`, `- Date: YYYY-MM-DD` (the date the status was set), then `- Supersedes:` or `- Superseded by:` only when they apply, then `- Deciders:`, which is optional and useful when more than one person decided. The supersession lines hold the other record's number as a relative link to its file, so a reader moves between the two records in one step.
+- A record written after the choice was already made, for example in the code, carries the date the person agreed to the decision, and one Consequences line says it was recorded after the fact, so the date is not read as the day the code changed.
 - One page; two at most. Longer means the Context is arguing or the Options are essays.
 - Plain sentences. No marketing, no hedging. The reader is technical and busy.
 
@@ -29,7 +30,7 @@ Record decisions, not plans or tasks. "Migrate to Postgres by Q3" is a plan. "Us
 - `proposed`: written, not yet agreed. Edit freely.
 - `accepted`: in force. The decision text is frozen from here on. Fix typos and dead links, nothing else.
 - `deprecated`: no longer applies and nothing replaces it (the feature was removed, the constraint disappeared). Add a dated line under the head saying why.
-- `superseded`: replaced by a newer record. The old record gets `- Superseded by: NNNN` and the new status; the new one gets `- Supersedes: MMMM` and, in its Context, one sentence on what changed since.
+- `superseded`: replaced by a newer record. The old record gets `- Superseded by:` with a link to the new one and the new status, and nothing else in it changes; the new one gets `- Supersedes:` with a link to the old one and, in its Context, one sentence on what changed since. In the index, the old row's status becomes `superseded` and its summary keeps its text with a clause naming the successor, such as "superseded by 0007".
 
 Every status change is mirrored in the index row.
 
