@@ -988,9 +988,8 @@ class Grader:
     def scenario_agnostic(self):
         root = self.work / self.SKILLS
         hits, links = [], []
-        for path in sorted(root.rglob("*.md")):
-            if path.name == "CHANGELOG.md":
-                continue
+        # Only the skill directories: the category's README and CHANGELOG are not part of any skill (decision 0015).
+        for path in sorted(root.glob("*/**/*.md")):
             text = path.read_text()
             rel = path.relative_to(self.work)
             for pattern, kind in self.FORBIDDEN:
