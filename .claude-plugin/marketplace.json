@@ -97,6 +97,23 @@
       ]
     },
     {
+      "name": "product-prototyping",
+      "description": "A prototype's context beside its code and a fast loop for each idea: frame it, shape it into a bet you approve, build it with self-verification and an independent review, then try it and keep it or remove it, with history in the app's changelog.",
+      "version": "0.0.0",
+      "source": "./",
+      "strict": false,
+      "license": "MIT",
+      "homepage": "https://github.com/theultimate-dev/skills",
+      "keywords": ["product-prototyping", "prototype", "bets", "shape-up", "requirements", "adr", "changelog", "self-verification", "agents"],
+      "skills": [
+        "./skills/product-prototyping/structuring-prototype-context",
+        "./skills/product-prototyping/framing-prototype-ideas",
+        "./skills/product-prototyping/shaping-prototype-bets",
+        "./skills/product-prototyping/building-prototype-bets",
+        "./skills/product-prototyping/closing-prototype-bets"
+      ]
+    },
+    {
       "name": "prompt-engineering",
       "description": "From a rough prompt to an engineered one: destination and gap diagnosis, a catalog of prompt and context engineering techniques with apply and reject criteria, dated model-family notes, and a copy-paste-ready result with the reasoning behind it.",
       "version": "0.4.0",

@@ -13,9 +13,10 @@ A skill is a set of instructions your agent follows with your permissions. Read 
 | `product-context` | [`structuring-product-context`](skills/product-context/structuring-product-context/SKILL.md) · [`curating-product-requirements`](skills/product-context/curating-product-requirements/SKILL.md) · [`designing-system-architecture`](skills/product-context/designing-system-architecture/SKILL.md) · [`planning-product-roadmaps`](skills/product-context/planning-product-roadmaps/SKILL.md) · [`shaping-bets`](skills/product-context/shaping-bets/SKILL.md) · [`reconciling-product-context`](skills/product-context/reconciling-product-context/SKILL.md) | A long-running product's whole context in a Markdown repository apart from the code: requirements with permanent IDs, a living architecture with shared contracts, decisions, and a roadmap cut into appetite-bounded bets that the `product-engineering` loop builds, then folded back into the documents. |
 | `product-design` | [`guiding-product-discovery`](skills/product-design/guiding-product-discovery/SKILL.md) · [`shaping-product-briefs`](skills/product-design/shaping-product-briefs/SKILL.md) · [`designing-ux-flows`](skills/product-design/designing-ux-flows/SKILL.md) · [`exploring-visual-directions`](skills/product-design/exploring-visual-directions/SKILL.md) · [`curating-design-systems`](skills/product-design/curating-design-systems/SKILL.md) · [`building-html-prototypes`](skills/product-design/building-html-prototypes/SKILL.md) · [`preparing-implementation-handoffs`](skills/product-design/preparing-implementation-handoffs/SKILL.md) | Rough ideas through product/design handoff: requirements, UX, contrasting visual sketches, and refined offline HTML prototypes, with user decisions at milestones. |
 | `product-engineering` | [`running-implementation-loops`](skills/product-engineering/running-implementation-loops/SKILL.md) · [`specifying-work-items`](skills/product-engineering/specifying-work-items/SKILL.md) · [`brainstorming-solutions`](skills/product-engineering/brainstorming-solutions/SKILL.md) · [`defining-verification`](skills/product-engineering/defining-verification/SKILL.md) · [`planning-implementation`](skills/product-engineering/planning-implementation/SKILL.md) · [`implementing-plans`](skills/product-engineering/implementing-plans/SKILL.md) · [`verifying-implementation`](skills/product-engineering/verifying-implementation/SKILL.md) · [`reviewing-code-changes`](skills/product-engineering/reviewing-code-changes/SKILL.md) · [`shipping-pull-requests`](skills/product-engineering/shipping-pull-requests/SKILL.md) | Specify by interview, brainstorm and pick an approach, agree how the agent verifies itself, approve the roadmap; then autonomous implementation, real verification in the running app, quick and five-lens review, and one PR per slice, merged by the agent when safe and authorized. |
+| `product-prototyping` | [`structuring-prototype-context`](skills/product-prototyping/structuring-prototype-context/SKILL.md) · [`framing-prototype-ideas`](skills/product-prototyping/framing-prototype-ideas/SKILL.md) · [`shaping-prototype-bets`](skills/product-prototyping/shaping-prototype-bets/SKILL.md) · [`building-prototype-bets`](skills/product-prototyping/building-prototype-bets/SKILL.md) · [`closing-prototype-bets`](skills/product-prototyping/closing-prototype-bets/SKILL.md) | A prototype's context beside its code, and a fast loop for each idea: frame it, shape it into a bet you approve, build it with self-verification and an independent review, then try it and keep it or remove it, with history in the app's changelog. |
 | `prompt-engineering` | [`improving-prompts`](skills/prompt-engineering/improving-prompts/SKILL.md) | A rough prompt to an engineered one: destination and gap diagnosis, a technique catalog with apply and reject criteria, dated model-family notes, and a copy-paste-ready result with the reasoning behind it. |
 
-Each category is a plugin with its own version and changelog: [`foundations`](skills/foundations/CHANGELOG.md) · [`harness-engineering`](skills/harness-engineering/CHANGELOG.md) · [`product-context`](skills/product-context/CHANGELOG.md) · [`product-design`](skills/product-design/CHANGELOG.md) · [`product-engineering`](skills/product-engineering/CHANGELOG.md) · [`prompt-engineering`](skills/prompt-engineering/CHANGELOG.md).
+Each category is a plugin with its own version and changelog: [`foundations`](skills/foundations/CHANGELOG.md) · [`harness-engineering`](skills/harness-engineering/CHANGELOG.md) · [`product-context`](skills/product-context/CHANGELOG.md) · [`product-design`](skills/product-design/CHANGELOG.md) · [`product-engineering`](skills/product-engineering/CHANGELOG.md) · [`product-prototyping`](skills/product-prototyping/CHANGELOG.md) · [`prompt-engineering`](skills/prompt-engineering/CHANGELOG.md).
 
 ## From an idea to a design handoff
 
@@ -173,6 +174,34 @@ Use shaping-bets to shape milestone 1.0 and hand the first ready bet to
 the code repository next door.
 
 Use reconciling-product-context: bet 04 is merged.
+```
+
+## From an idea to kept or removed
+
+`product-prototyping` is for a prototype: a product with no planned versions, where you try an idea, test it, and keep it or remove it. It keeps the discipline of `product-context` in far fewer steps (requirements with permanent IDs, decisions with reasons, bets with observable checks) and drops versions, milestones, the roadmap and the pull-request loop. The context sits in a `context/` folder beside the code, and each app's history lives in its Keep a Changelog file.
+
+| Step | Skill | What comes out | Your gate |
+|---|---|---|---|
+| Set up or adopt | `structuring-prototype-context` | `context/` in the prototype profile with its `AGENTS.md` map; your existing docs moved in by a map you approve | The map |
+| Frame | `framing-prototype-ideas` | A one-page note: the problem, the evidence, two or three options, a recommendation, and a verdict to shape, park or stop | |
+| Shape | `shaping-prototype-bets` | One bet of half a day to two days: an outcome, the requirement changes, checks that each say how they are proved, no-gos, and a keep-or-remove signal | Approve the bet and what the agent may do alone |
+| Build | `building-prototype-bets` | The code, proved check by check and reviewed against the bet's intent by a fresh reviewer, a changelog entry, and the steps to try it | |
+| Close | `closing-prototype-bets` | Kept: requirements and architecture marked built. Removed: the code reverted and the requirements dropped with the reason | Keep or remove |
+
+A decision record names the trigger that moves the context to `product-context`, such as a planned release or a second contributor; `structuring-product-context` then restructures it.
+
+Install with `claude plugin install product-prototyping@theultimate-dev` after marketplace setup, or `npx skills add theultimate-dev/skills/skills/product-prototyping`.
+
+```text
+Use structuring-prototype-context to set up context for this prototype.
+
+Use framing-prototype-ideas: should we try a weekly recap email?
+
+Use shaping-prototype-bets to turn that framing into a bet.
+
+Use building-prototype-bets: bet 03 is approved.
+
+Use closing-prototype-bets: I tried bet 03, keep it.
 ```
 
 ## Install

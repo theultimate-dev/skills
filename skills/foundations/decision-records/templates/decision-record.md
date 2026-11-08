@@ -3,7 +3,7 @@
 - Status: proposed
 - Date: YYYY-MM-DD
 
-<!-- Add "- Supersedes: NNNN" or "- Superseded by: NNNN" under Date only when they apply. Delete this comment. -->
+<!-- Add "- Supersedes: NNNN" or "- Superseded by: NNNN" directly under Date only when they apply, with the number as a relative link to that record's file, then "- Deciders:" if used. Delete this comment. -->
 
 ## Context
 

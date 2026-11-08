@@ -11,3 +11,6 @@ skills-lock.json
 .agents/
 .claude/skills/
 .claude/settings.local.json
+
+# untracked working notes: briefs, drafts, reviews
+specifications/

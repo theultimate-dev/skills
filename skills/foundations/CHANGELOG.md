@@ -8,6 +8,10 @@ Releases are tagged `foundations--vX.Y.Z`.
 
 ## [Unreleased]
 
+### Fixed
+
+- `decision-records` says where the supersession lines go in a record's head (after Date, before Deciders), writes them as links between the two records, adds a clause naming the successor to the old record's index summary, and dates a record written after the choice by the day the person agreed to it, with a line saying so.
+
 ## [0.2.1] - 2026-10-23
 
 ### Fixed

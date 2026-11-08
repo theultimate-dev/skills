@@ -8,6 +8,10 @@ Releases are tagged `product-context--vX.Y.Z`.
 
 ## [Unreleased]
 
+### Changed
+
+- `structuring-product-context` restructures a prototype context into the full profile when its graduation trigger fires: notes split into the registers, closed prototype bets kept under `roadmap/v0/`, built requirements and architecture given the version they shipped in.
+
 ## [0.1.0] - 2026-10-20
 
 ### Added
