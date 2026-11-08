@@ -1,7 +1,7 @@
 # Actors and use cases
 
 <!-- Actors are named, not numbered. Use cases are UC-NN, never reused.
-Every use case should be served by at least one requirement, and every capability should serve at least one use case. Delete this comment. -->
+Every use case should be served by at least one requirement, and every capability should serve at least one use case. Sections the sources do not fill follow adopting-into-the-profile.md, "Sections the sources do not fill". Delete this comment. -->
 
 ## Actors
 

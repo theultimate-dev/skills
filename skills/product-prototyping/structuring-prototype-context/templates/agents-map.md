@@ -1,6 +1,6 @@
 # AGENTS.md
 
-<!-- Copy to context/AGENTS.md. Keep it a table of contents of about 100 lines; never explain the product here. Delete this comment. -->
+<!-- Copy to context/AGENTS.md. Keep it a table of contents of about 100 lines; never explain the product here. When an agents map already exists, keep its project-specific columns and sections, fold a section the Map table already covers into its row (a separate Decisions section folds into the row that sends the reader to the index), add the columns the Code and changelogs table lacks, and list the file as restructure in the migration map. Delete this comment. -->
 
 This is the prototype context for [product]: [one sentence on what the product is]. It lives in `context/` beside the code and holds product, architecture, decisions, bets and notes in the prototype profile: ideas are framed, shaped into bets, built, tried, and then kept or removed. Read this file first; open the linked files only when the task needs them.
 
@@ -37,6 +37,8 @@ The profile in one sentence: a bet is read at the commit it was approved at, bui
 
 ## House rules
 
+<!-- Rule 9 copies house rule 9 of the prototype profile word for word (references/prototype-profile.md, House rules). -->
+
 1. One home per fact; everywhere else links to it by path or ID.
 2. Volatile files link to stable ones, never the reverse; a plain-text ID may record provenance, a link may not.
 3. IDs are permanent: never reuse or renumber; a dropped requirement stays, with its date and reason.
@@ -45,7 +47,7 @@ The profile in one sentence: a bet is read at the commit it was approved at, bui
 6. Research is evidence, not truth.
 7. Point at the code, never copy it.
 8. Markdown only, except prototypes under `design/`.
-9. A bet is read at the commit it was approved at, so its shaped fields cannot drift. While a bet is open, the files its Context pack and Architecture › Relies on name change only through that bet, or with the person's agreement as a reshape. Research notes, `notes.md` rows and derived indexes may change at any time. Building writes the code and, in the bet file, only its Status and Build log, and rebuilds the board when the Status changes; closing writes the Result and the catalogue.
+9. **A bet is read at the commit it was approved at, so what it reads stays still.** The approved bet's shaped fields cannot drift. While a bet is open, the files its Context pack and Architecture › Relies on name change only through that bet, or with the person's agreement as a reshape. From approval, building writes the code and, in the bet file, only its Status and Build log; closing writes the Result and the catalogue. Research notes, `notes.md` rows and derived indexes may change at any time. Before approval, shaping writes the bet, the board, the planned sections and `notes.md` rows.
 
 ## Code and changelogs
 

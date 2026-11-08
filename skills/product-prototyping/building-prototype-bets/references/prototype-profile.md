@@ -16,9 +16,10 @@ context/
 ├── README.md          for people: what it is, where to start, how work flows
 ├── product/
 │   ├── overview.md, glossary.md, actors-and-use-cases.md
-│   └── requirements/  README.md (derived), <capability>.md, non-functional.md, id-map.md
-├── architecture/      README.md, plus only the views that help: context.md, ecosystem.md,
-│                      contracts/, concepts/, runtime/
+│   └── requirements/  README.md (derived), <capability>.md, id-map.md, and non-functional.md
+│                      only when a target is stated
+├── architecture/      README.md, plus only the views that help: context.md, containers.md (when
+│                      there is more than one container), ecosystem.md, contracts/, concepts/, runtime/
 ├── decisions/         README.md (index), NNNN-title.md
 ├── bets/              README.md (derived board), NN-slug.md
 ├── notes.md           open questions (OQ-) and risks (RSK-), two tables
@@ -53,6 +54,8 @@ Omit what the prototype does not need. Keep the directory names; agents rely on 
 | Framing note | verdict `shape`, `park` or `stop` | The note's Verdict section |
 | Risk | `open`, `closed` | `notes.md` |
 | Open question | `open`, `resolved` with a link to the answer | `notes.md` |
+
+Architecture describes what is built. When a kept bet drops a requirement, closing deletes the sections that served only that requirement and narrows a shared one to what remains, as it already does for cut scope; the bet file and the decisions keep the history.
 
 A bet moves `shaped` to `approved` at Gate 1 (the person approves it, on a current, passing readiness check), `approved` to `building` when work starts, `building` to `built` when every check that is not a person's-eye check passes and the review has no blocking finding, and `built` to `kept` or `removed` at Gate 2 (the person decides after trying it). A `built` bet with an explicit in-scope repair request from the person goes back to `building` with its pin, base commit and consumed working time, within the remaining appetite, and returns to Gate 2 with a refreshed Try it block. A `stopped` bet, or a `building` bet paused because a contract or decision must change, is reshaped (back to `shaped`, then Gate 1 again) or closed as `removed`. Whether removal reverts anything is decided by the code commit list in the Build log, never by Status: a bet with no listed code commit closes with nothing to revert, through `closing-prototype-bets`.
 
@@ -110,15 +113,17 @@ The bet holds its requirement deltas (new rows with text, changed rows with the 
 
 ## Adoption keeps numbers
 
-`structuring-prototype-context` classifies adopted material against the code. Requirements are `built` only with evidence. Architecture is classified the same way: `built` needs evidence, and unbuilt architecture goes to a parked framing note unless a retained open bet introduces it, so every `planned` section has an open owning bet. A legacy bet parked at adoption keeps a numbered bet file with Status `removed` and the Result "parked at adoption: not tried, see <note>", so the board and the next bet number see it.
+`structuring-prototype-context` classifies adopted material against the code. Requirements are `built` only with evidence. Architecture is classified the same way: `built` needs evidence, and unbuilt architecture goes to a parked framing note unless a retained open bet introduces it, so every `planned` section has an open owning bet. A legacy bet parked at adoption keeps a numbered bet file with Status `removed` and the Result "parked at adoption: not tried, see <note>", so the board and the next bet number see it. A question withdrawn before it is written to `notes.md` leaves no row there: the migration map's History records the withdrawal, and its number is not reused.
 
 ## The changelog
 
-Building adds the bet's entry under `[Unreleased]` in the app's changelog, inside the bet's code commits. Removing a bet reverts those commits, which takes the entry with them. When a release already carries the entry, closing adds a `Removed` entry instead. Versions are cut only when the person asks, with `release-process` when it is installed.
+Building adds the bet's entry under `[Unreleased]` in the app's changelog, inside the bet's code commits. Removing a bet reverts those commits, which takes the entry with them. When a release already carries the entry, closing adds a `Removed` entry instead. Versions are cut only when the person asks, with `release-process` when it is installed. When the person wants a baseline for the behaviour already built, adoption writes one dated section under the label they give it, with one line per built capability and no tag; it omits the comparison links when the repository has no remote. A version number in the app's build settings is the person's to declare, as their own signal that the prototype phase is over, so adoption leaves it out of the map, the notes and the records: the changelog's sections are the only versions the context writes.
 
 ## Commits
 
 Keep code commits and context commits separate, so a remove can revert exactly the code. The Build log lists every code commit by SHA, oldest first, and names any context commit that sits between them; every code commit belongs to exactly one bet. Before any context commit, check the index for staged changes outside the approved paths and stop on them, then verify that the staged diff holds exactly the approved changes. Review the code with the context folder excluded, the app's changelog included: `git diff <base>..<head> -- . ':(exclude)context'`. Commit only as far as the bet's Autonomy line allows: code commits on its branch, context commits only when it says `yes`, a push only when it says `yes`, a revert on remove only when it says `yes`. Shaping recommends the branch the person works on, `yes`, `no`, `yes`, because a removed bet is undone by a revert on that branch, while a bet branch would need a merge to keep, which this loop does not have. Closing as removed reverts the listed code SHAs only, and a merge commit in the list stops for a reviewed plan. It makes the revert, with the `Removed` changelog line when the entry was released, as its one code commit, then writes the Result and the catalogue in a separate context commit.
+
+Adoption makes two commits back to back. The first holds `context/` and any new file beside it that `context/` links to, such as a new app changelog, so every link resolves at every commit; the second holds the edits to existing files beside the context.
 
 ## Graduation
 

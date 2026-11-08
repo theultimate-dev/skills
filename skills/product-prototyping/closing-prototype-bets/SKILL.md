@@ -53,7 +53,7 @@ If the person asks for changes before deciding, or a stale check has to be prove
 
 ### 3. Keep
 
-Follow [keep and remove](references/keep-and-remove.md), "Keep", which holds the ordered checklist. In short: write the Result with the person's words and the lesson; turn the requirement deltas into catalogue rows, honouring the cuts; promote what the code now has from `planned` to `built` and delete planned architecture that only cut scope introduced; record the decisions the build settled; update notes and glossary; check the changelog entry still tells the truth; set `Status: kept`; rebuild the indexes (step 6). Nothing is reverted.
+Follow [keep and remove](references/keep-and-remove.md), "Keep", which holds the ordered checklist. In short: write the Result with the person's words and the lesson; turn the requirement deltas into catalogue rows, honouring the cuts; promote what the code now has from `planned` to `built`; delete planned architecture that only cut scope introduced, and built sections that served only a requirement the bet drops, narrowing a shared one; record the decisions the build settled; update notes and glossary; check the changelog entry still tells the truth; set `Status: kept`; rebuild the indexes (step 6). Nothing is reverted.
 
 ### 4. Remove
 

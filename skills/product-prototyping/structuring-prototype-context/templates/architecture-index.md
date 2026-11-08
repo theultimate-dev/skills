@@ -29,7 +29,7 @@ Every section carries one line under its heading: `Status: built | planned`.
 | Section | File | Status |
 |---|---|---|
 | Context and scope | `architecture/context.md` | |
-| Building blocks | `architecture/containers.md` | |
+| Building blocks, when there is more than one container | `architecture/containers.md` | |
 | Runtime | `architecture/runtime/` | |
 | Cross-cutting concepts | `architecture/concepts/` | |
 | Decisions | `decisions/README.md` | |

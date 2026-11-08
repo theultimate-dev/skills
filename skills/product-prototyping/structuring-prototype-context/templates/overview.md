@@ -1,7 +1,7 @@
 # [Product name]
 
 <!-- The stable "why" of the product. It changes rarely and only with the owner's words.
-Link to stable files only: the glossary, actors and use cases, the requirements index, decisions. Never link to bets. Delete this comment. -->
+Link to stable files only: the glossary, actors and use cases, the requirements index, decisions. Never link to bets. Sections the sources do not fill follow adopting-into-the-profile.md, "Sections the sources do not fill". Delete this comment. -->
 
 [One paragraph: what the product is, for whom, and the change it makes for them. Quill, for example, is a single-user web app that tracks daily writing streaks, so that a writer sees at a glance whether today's words are written.]
 
