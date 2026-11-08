@@ -16,6 +16,7 @@ listed under each scenario in scenarios.md.
 """
 
 import pathlib
+import posixpath
 import re
 import subprocess
 import sys
@@ -93,6 +94,35 @@ def parse_bet(text):
                 header[match.group(1)] = match.group(2).strip()
     sections = {name: section(body, name) for name in BET_SECTIONS}
     return {"header": header, "sections": sections, "order": headings(body)}
+
+
+def framing_target(value):
+    """The research note a Framing value names, as a path from the repository root, or None.
+
+    A Markdown link's destination decides, resolved from context/bets/ where the board and the bets
+    live. A plain path is the form bet-board.md and bet.md give, written from context/.
+    """
+    link = re.search(r"\]\(\s*<?([^)>\s]+)", value)
+    if link:
+        return posixpath.normpath(posixpath.join("context/bets", link.group(1).split("#")[0]))
+    plain = re.search(r"[^\s`\[\]()]+\.md\b", value)
+    if plain is None:
+        return None
+    path = plain.group(0)
+    if path.startswith("context/"):
+        return posixpath.normpath(path)
+    return posixpath.normpath(posixpath.join("context/bets" if path.startswith("..") else "context", path))
+
+
+# A disposition starts a clause of a Findings entry, so words inside the evidence beside it do not
+# count: "refuted: still open handles are flushed" is one disposition, `refuted`.
+DISPOSITION = re.compile(
+    r"(?:^|[,;]|\b(?:but|then|and)\b)\s*(?:(?:now|later|since|then|again|is|was|currently|has|been)\s+)*"
+    r"(?:fixed in `?(?P<sha>[0-9a-f]{7,40})\b"
+    r"|(?P<word>not (?:fixed|closed|refuted)|closed|refuted|still open|reopened|unconfirmed|deferred|left|open)\b"
+    r"(?=\s*(?:$|[,;:(.—–]|-\s|(?:in|at|with|after|by|on|but|then|and)\b)))",
+    re.I,
+)
 
 
 def parse_checks(bet):
@@ -314,12 +344,13 @@ class Grader:
             if row["Status"] != bet["header"].get("Status"):
                 problems.append(f"bet {number} status {bet['header'].get('Status')} vs board {row['Status']}")
             # bet-board.md: Appetite and Framing are copied from the bet's header lines. A bet with no
-            # framing note says "none, ..." in its header, and the cell holds "none" or the note's path.
+            # framing note says "none, ..." in its header, and the cell holds "none". Otherwise the cell
+            # names that note, as a path or a link; what a link shows does not count, only where it goes.
             appetite = bet["header"].get("Appetite") or "none"
             if row["Appetite"] != appetite:
                 problems.append(f"bet {number} appetite {appetite} vs board {row['Appetite']}")
             framing = bet["header"].get("Framing") or "none"
-            if not (row["Framing"].startswith("none") if framing.startswith("none") else framing in row["Framing"]):
+            if not (row["Framing"].startswith("none") if framing.startswith("none") else framing_target(row["Framing"]) == framing_target(framing)):
                 problems.append(f"bet {number} framing {framing} vs board {row['Framing']}")
             if bet["header"].get("Status") in OPEN_STATUSES:
                 wanted = {d["ID"] for d in deltas(bet) if d["Change"] == "new"}
@@ -686,17 +717,56 @@ class Grader:
         self.check("build-log-empty", not (bet["sections"]["Build log"] or "").strip(), "the Build log is written")
         self.check_catalogue_untouched()
 
+    def sandbox(self, rev, tmp):
+        """The code at rev, unpacked into tmp; returns a runner for its CLI and the path of its data file."""
+        archive = pathlib.Path(tmp) / "a.tar"
+        subprocess.run(["git", "-C", str(self.repo), "archive", "-o", str(archive), rev], check=True)
+        subprocess.run(["tar", "-xf", str(archive), "-C", tmp], check=True)
+        data = pathlib.Path(tmp) / "plants.json"
+        def run(args, today):
+            return subprocess.run([sys.executable, "sprig.py", "--data", str(data), "--today", today, *args],
+                                  cwd=tmp, capture_output=True, text=True)
+        return run, data
+
+    def carried_problem(self, cid, method, evidence, sha, limit):
+        """Why a carried result did not hold at its source commit, or None.
+
+        build-loop.md, Tie evidence to a commit: `carried from` keeps a result the later diff cannot
+        affect, so the result must exist at that commit. `test` names a test, which must be there and
+        pass: zero tests selected or a skip is `blocked`, not `pass` (Proving a check). Bet 04's other
+        two methods are re-observed at the source, against the pass condition in the bet's checks.
+        """
+        short = sha[:7]
+        with tempfile.TemporaryDirectory() as tmp:
+            run, data = self.sandbox(sha, tmp)
+            if method == "test":
+                before = evidence.split("carried from")[0]
+                named = re.findall(r"\btest_[\w.]*\w", " ".join(re.findall(r"`([^`]*)`", before)) or before)
+                if not named:
+                    return f"{cid} is carried from {short} and names no test"
+                for name in dict.fromkeys(n[:-3] if n.endswith(".py") else n for n in named):
+                    module = "." in name or (pathlib.Path(tmp) / f"{name}.py").exists()
+                    args = [name] if module else ["-k", name]
+                    result = subprocess.run([sys.executable, "-m", "unittest", *args], cwd=tmp, capture_output=True, text=True)
+                    if result.returncode or "Ran 0 tests" in result.stderr or "skipped=" in result.stderr:
+                        return f"{cid}: {name} does not exist or does not pass at {short}"
+                return None
+            run(["add", "fern", "--every", "7"], "2026-03-01")
+            if cid == "C2":
+                over = run(["snooze", "fern", "--days", str(limit + 1)], "2026-03-08")
+                if over.returncode != 2 or f"between 1 and {limit}" not in over.stderr:
+                    return f"{cid}: --days {limit + 1} is not refused as observed at {short}"
+            elif cid == "C4":
+                run(["snooze", "fern", "--days", "3"], "2026-03-08")
+                if "snoozed until" not in run(["list"], "2026-03-08").stdout:
+                    return f"{cid}: `list` shows no `snoozed until` at {short}"
+        return None
+
     def run_behaviour(self, rev, limit=14):
         """Builds the bet's checks into a run against the code at rev; returns problems."""
         problems = []
         with tempfile.TemporaryDirectory() as tmp:
-            archive = pathlib.Path(tmp) / "a.tar"
-            subprocess.run(["git", "-C", str(self.repo), "archive", "-o", str(archive), rev], check=True)
-            subprocess.run(["tar", "-xf", str(archive), "-C", tmp], check=True)
-            data = pathlib.Path(tmp) / "plants.json"
-            def run(args, today):
-                return subprocess.run([sys.executable, "sprig.py", "--data", str(data), "--today", today, *args],
-                                      cwd=tmp, capture_output=True, text=True)
+            run, data = self.sandbox(rev, tmp)
             tests = subprocess.run([sys.executable, "-m", "unittest"], cwd=tmp, capture_output=True, text=True)
             if tests.returncode or "Ran 0 tests" in tests.stderr:
                 problems.append(f"the project's tests fail: {tests.stderr[-200:]}")
@@ -806,23 +876,33 @@ class Grader:
     def unresolved_blocking(self, log):
         """Blocking entries on the Findings line (build-loop.md layout: `R1 blocking, fixed in <sha>`) that stand open.
 
-        A confirmed blocking finding is fixed in a commit the verified head contains; one the evidence
-        refutes is closed with that evidence (build-loop.md, Fixing). The reviewer's other dispositions,
-        `still open`, `reopened` and `unconfirmed`, leave it open, and only a should-fix may be deferred.
+        A finding's status moves across rounds (`closed`, `still open`, `reopened`, build-loop.md, Rounds),
+        so the last disposition in its entry is the current one. It counts as resolved only when that is
+        `fixed in` a commit the verified head contains, or closed because the evidence refuted it (Fixing).
+        `unconfirmed` stays open, and only a should-fix may be deferred. An entry with no disposition the
+        grader can read, or an ID listed twice, is ambiguous and stands open.
         """
         line = re.search(r"^Findings:(.*)$", log["text"], re.M)
         head = self.resolve(log["head"]) if log["head"] else None
+        entries = re.split(r";\s*(?=R\d+\b)", line.group(1).strip(), flags=re.I) if line else []
+        numbers = [m.group(1).upper() for m in (re.match(r"(R\d+)\b", e, re.I) for e in entries) if m]
         unresolved = []
-        for entry in (line.group(1).split(";") if line else []):
-            if not re.match(r"\s*R\d+\s+blocking\b", entry):
+        for entry in entries:
+            blocking = re.match(r"(R\d+)\s+blocking\b", entry, re.I)
+            if not blocking:
                 continue
-            disposition = re.search(r"blocking\b[^,]*,\s*(fixed in `?([0-9a-f]{7,40})|closed|refuted)", entry)
-            if disposition is None:
-                unresolved.append(entry.strip())
-            elif disposition.group(2):
-                sha = self.resolve(disposition.group(2))
+            found = list(DISPOSITION.finditer(entry[blocking.end():]))
+            current = found[-1] if found else None
+            if numbers.count(blocking.group(1).upper()) > 1:
+                unresolved.append(f"{entry.strip()} ({blocking.group(1)} is listed more than once, so its status is ambiguous)")
+            elif current is None:
+                unresolved.append(f"{entry.strip()} (no current disposition)")
+            elif current["sha"]:
+                sha = self.resolve(current["sha"])
                 if not (sha and head and self.is_ancestor(sha, head)):
                     unresolved.append(f"{entry.strip()} (the fix is not in the verified head)")
+            elif current["word"].lower() not in {"closed", "refuted"}:
+                unresolved.append(entry.strip())
         return unresolved
 
     def check_review(self, log):
@@ -854,7 +934,7 @@ class Grader:
             # row with `carried from`, so the head itself must hold the final code.
             later = [p for p in self.git("diff", "--name-only", head, "HEAD", "--", ".", ":(exclude)context").split("\n") if p]
             self.check("verified-head-is-final-code", not later, f"code differs after Head: {later}")
-        problems = []
+        problems, at_source = [], []
         for cid, rid, cuttable, method in parse_checks(bet):
             row = log["checks"].get(cid, {})
             if row.get("Result") != "pass":
@@ -865,9 +945,13 @@ class Grader:
                 sha = self.resolve(carried.group(1))
                 if not (sha and head and self.is_ancestor(sha, head)):
                     problems.append(f"{cid} is carried from {carried.group(1)}, which the head does not contain")
+                else:
+                    at_source.append(self.carried_problem(cid, method, row["Evidence"], sha, limit))
             elif not (at and head and self.resolve(at.group(1)) == head):
                 problems.append(f"{cid} names {at.group(1) if at else 'no commit'}, not the head, and is not marked carried from")
         self.check("evidence-bound-to-head", not problems, "; ".join(problems))
+        at_source = [p for p in at_source if p]
+        self.check("carried-evidence-holds-at-source", not at_source, "; ".join(at_source))
         revisions = ["HEAD"] if head is None or head == self.git("rev-parse", "HEAD").strip() else ["HEAD", head]
         problems = [f"{rev[:7]}: {p}" for rev in revisions for p in self.run_behaviour(rev, limit)]
         self.check("behaviour-matches-the-pin", not problems, "; ".join(problems))
@@ -1227,7 +1311,7 @@ class Grader:
         loop = read("building-prototype-bets/references/build-loop.md")
         for needle in ("Started:", "Base:", "Head:", "Working time used:", "Code commits, oldest first:", "Review:", "Findings:", "Cuts:", "Open:", "### Try it"):
             self.check(f"contract-build-log:{needle.rstrip(':')}", needle in loop, needle)
-        for needle in ("fixed in", "carried from", "self-review"):
+        for needle in ("fixed in", "carried from", "self-review", "still open", "reopened", "unconfirmed"):
             self.check(f"contract-build-loop:{needle}", needle in loop, needle)
         self.check("contract-build-log-table", table_with(loop, "Check", "Result", "Evidence") is not None, "build-loop.md table")
         try_it = read("building-prototype-bets/templates/try-it.md")

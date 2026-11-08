@@ -617,6 +617,26 @@ def fault_carried_from_unknown(w):
     w.commit("docs(context): carry a result forward", BET)
 
 
+def set_findings_only(text):
+    def change(w):
+        set_findings(w, text)
+    return change
+
+
+def fault_carried_before_the_test(w):
+    # C1 claims a result from the first commit of the repository, where the test does not exist.
+    origin = w.git("rev-list", "--max-parents=0", "HEAD").strip()
+    w.sub(BET, r"^(\| C1 \(WAT-07\) .*), at [0-9a-f]+ \|$", rf"\g<1>, carried from {origin[:7]} |")
+    w.commit("docs(context): carry a result forward", BET)
+
+
+def fault_carried_before_the_limit(w):
+    # C2 claims the refusal from the first code commit, which has no limit yet.
+    first = w.grade_file("bet-code-commits").split()[0]
+    w.sub(BET, r"^(\| C2 \(WAT-08\) .*), at [0-9a-f]+ \|$", rf"\g<1>, carried from {first[:7]} |")
+    w.commit("docs(context): carry a result forward", BET)
+
+
 def fault_board_cell(column, value):
     index = ["Bet", "Status", "Appetite", "Reserved IDs", "Framing"].index(column)
 
@@ -760,12 +780,22 @@ CONTROLS = [
     ("build-blocking-fixed+", "build", "built", "approved", None, blocking_fixed, None),
     ("build-blocking-open", "build", "built", "approved", None, fault_blocking_open, "blocking-findings-resolved"),
     ("build-blocking-fix-unknown", "build", "built", "approved", None, fault_blocking_fix_unknown, "blocking-findings-resolved"),
+    ("build-blocking-closed+", "build", "built", "approved", None, set_findings_only("R1 blocking, closed: observed test_snooze shows the data loss cannot occur"), None),
+    ("build-blocking-refuted+", "build", "built", "approved", None, set_findings_only("R1 blocking, refuted: still open handles are flushed on exit, observed in test_snooze"), None),
+    ("build-blocking-reclosed+", "build", "built", "approved", None, set_findings_only("R1 blocking, closed in round 1, reopened in round 2, closed in round 3: observed in test_snooze"), None),
+    ("build-blocking-reopened", "build", "built", "approved", None, set_findings_only("R1 blocking, closed in round 1, reopened in round 2: data loss still occurs"), "blocking-findings-resolved"),
+    ("build-blocking-unconfirmed", "build", "built", "approved", None, set_findings_only("R1 blocking, closed in round 1, but unconfirmed in round 2"), "blocking-findings-resolved"),
+    ("build-blocking-listed-twice", "build", "built", "approved", None, set_findings_only("R1 blocking, closed; R1 blocking, still open"), "blocking-findings-resolved"),
     ("build-stale-head", "build", "built", "approved", None, fault_stale_head, "verified-head-is-final-code"),
     ("build-evidence-elsewhere", "build", "built", "approved", None, fault_evidence_elsewhere, "evidence-bound-to-head"),
     ("build-carried-forward+", "build", "built", "approved", None, carried_forward, None),
     ("build-carried-from-unknown", "build", "built", "approved", None, fault_carried_from_unknown, "evidence-bound-to-head"),
+    ("build-carried-before-the-test", "build", "built", "approved", None, fault_carried_before_the_test, "carried-evidence-holds-at-source"),
+    ("build-carried-before-the-limit", "build", "built", "approved", None, fault_carried_before_the_limit, "carried-evidence-holds-at-source"),
     ("build-board-appetite", "build", "built", "approved", None, fault_board_cell("Appetite", "2 days"), "board-rebuilt"),
     ("build-board-framing", "build", "built", "approved", None, fault_board_cell("Framing", "research/2026-10-12-email-reminders.md"), "board-rebuilt"),
+    ("build-board-framing-wrong-target", "build", "built", "approved", None, fault_board_cell("Framing", "[research/2026-11-02-snooze-while-away.md](../research/2026-10-12-email-reminders.md)"), "board-rebuilt"),
+    ("build-board-framing-link+", "build", "built", "approved", None, fault_board_cell("Framing", "[the snooze note](../research/2026-11-02-snooze-while-away.md)"), None),
     ("build-board-duplicate-row", "build", "built", "approved", None, fault_board_duplicate_row, "board-rebuilt"),
     ("build-board-missing-row", "build", "built", "approved", None, fault_board_missing_row, "board-rebuilt"),
     ("build-self-review-with-capability+", "build", "built", "approved", None, self_review_with_capability, None),
