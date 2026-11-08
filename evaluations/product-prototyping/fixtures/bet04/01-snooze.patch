@@ -1,0 +1,81 @@
+diff --git a/sprig.py b/sprig.py
+index 6c0a974..fb263e7 100644
+--- a/sprig.py
++++ b/sprig.py
+@@ -30,6 +30,9 @@ def next_watering(plant):
+ 
+ 
+ def is_due(plant, today):
++    until = plant.get("snoozed_until")
++    if until and day(until) > today:
++        return False
+     return next_watering(plant) <= today
+ 
+ 
+@@ -45,6 +48,9 @@ def parser():
+     water.add_argument("name")
+     remove = sub.add_parser("remove")
+     remove.add_argument("name")
++    snooze = sub.add_parser("snooze")
++    snooze.add_argument("name")
++    snooze.add_argument("--days", type=int, required=True, help="days to hide the plant from due")
+     sub.add_parser("due")
+     sub.add_parser("list")
+     return p
+@@ -67,6 +73,14 @@ def main(argv=None):
+             print(f"water: unknown plant {name}", file=sys.stderr)
+             return 3
+         plants[name]["last"] = today.isoformat()
++        plants[name].pop("snoozed_until", None)
++    elif args.command == "snooze":
++        name = key(args.name)
++        if name not in plants:
++            print(f"snooze: unknown plant {name}", file=sys.stderr)
++            return 3
++        until = today + dt.timedelta(days=args.days)
++        plants[name]["snoozed_until"] = until.isoformat()
+     elif args.command == "remove":
+         name = key(args.name)
+         if name not in plants:
+diff --git a/test_snooze.py b/test_snooze.py
+new file mode 100644
+index 0000000..daa02c4
+--- /dev/null
++++ b/test_snooze.py
+@@ -0,0 +1,36 @@
++import contextlib
++import io
++import pathlib
++import tempfile
++import unittest
++
++import sprig
++
++
++class SnoozeTest(unittest.TestCase):
++    def setUp(self):
++        self.tmp = tempfile.TemporaryDirectory()
++        self.addCleanup(self.tmp.cleanup)
++        self.data = str(pathlib.Path(self.tmp.name) / "sprig.json")
++
++    def run_sprig(self, *args, today="2026-03-01"):
++        out = io.StringIO()
++        with contextlib.redirect_stdout(out), contextlib.redirect_stderr(io.StringIO()):
++            code = sprig.main(["--data", self.data, "--today", today, *args])
++        return code, out.getvalue()
++
++    def test_snooze_hides_until_the_last_day(self):
++        self.run_sprig("add", "fern", "--every", "7")
++        self.run_sprig("snooze", "fern", "--days", "3", today="2026-03-08")
++        self.assertEqual(self.run_sprig("due", today="2026-03-10")[1], "")
++        self.assertEqual(self.run_sprig("due", today="2026-03-11")[1], "fern\n")
++
++    def test_water_clears_the_snooze(self):
++        self.run_sprig("add", "fern", "--every", "7")
++        self.run_sprig("snooze", "fern", "--days", "14", today="2026-03-08")
++        self.run_sprig("water", "fern", today="2026-03-09")
++        self.assertEqual(self.run_sprig("due", today="2026-03-16")[1], "fern\n")
++
++
++if __name__ == "__main__":
++    unittest.main()
