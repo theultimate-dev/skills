@@ -60,6 +60,8 @@ Read [adopting documents](references/adopting-documents.md) before the first ste
 
 Treat the misplaced files as sources and run adopt steps 1 to 9 on them. Typical moves: rationale out of requirement tables into decision records, a hand-edited index back to derived, a version-specific architecture file merged into the living description with `Since:` tags, duplicated risks merged into the register. Restructure moves content to the right place; finding broken links, stale indexes, reused IDs and facts kept twice is the drift audit of `reconciling-product-context`, which hands structural findings back here.
 
+**From a prototype profile.** A context kept in the prototype profile of `product-prototyping` (requirements only built or dropped, bets kept or removed, `notes.md`, a changelog per app) moves to this profile when the trigger in its decision record fires. Treat it as a restructure: split `notes.md` into `roadmap/risks.md` and `roadmap/open-questions.md`; move the closed bets to `roadmap/v0/bets/` with their numbers, a kept bet as `done` and a removed one as `dropped`, and write `roadmap/v0/README.md` as a shipped version named for the prototype; give each `built` requirement and architecture section the version the app's changelog shipped it in, or `V0`, as `Since:` tags and target versions; keep the changelogs where they are. Record the move as a new decision that supersedes the profile record.
+
 ## Make it findable for agents
 
 - `AGENTS.md` is a table of contents of about 100 lines: the map, the reading order per task, the house rules, and the code repositories that build the product, by name and remote. It never explains the product.
