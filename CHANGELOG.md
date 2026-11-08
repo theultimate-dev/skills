@@ -16,6 +16,8 @@ Marketplace releases are tagged `vX.Y.Z`. Every plugin release is also a marketp
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-11-08
+
 ### Added
 
 - Decision 0018 adds `curating-design-systems` to product-design as its seventh skill and extends decision 0006, which stays unchanged. Decision 0019 lets two skills ship the same template, with the validator keeping the copies identical.
@@ -26,6 +28,10 @@ Marketplace releases are tagged `vX.Y.Z`. Every plugin release is also a marketp
 ### Changed
 
 - Working notes in `specifications/` stay out of git.
+- Plugins released with this version:
+  - `foundations` [0.2.2](https://github.com/theultimate-dev/skills/releases/tag/foundations--v0.2.2): `decision-records` places and links the supersession lines in a record's head, and dates a record written after the choice by the day it was agreed.
+  - `product-context` [0.2.0](https://github.com/theultimate-dev/skills/releases/tag/product-context--v0.2.0): `structuring-product-context` restructures a prototype context into the full profile when its graduation trigger fires.
+  - `product-prototyping` [0.1.0](https://github.com/theultimate-dev/skills/releases/tag/product-prototyping--v0.1.0): first release, with five skills for a prototype's context beside its code and a loop that frames an idea, shapes a bet, builds it, and keeps or removes it.
 
 ## [0.3.3] - 2026-10-25
 
@@ -155,7 +161,8 @@ Marketplace releases are tagged `vX.Y.Z`. Every plugin release is also a marketp
 - Published releases are immutable: their archives, `checksums.txt` and tag cannot change after publication.
 - The CI and release workflows run `actions/checkout` pinned to a full commit SHA, and Dependabot proposes updates to it weekly.
 
-[Unreleased]: https://github.com/theultimate-dev/skills/compare/v0.3.3...HEAD
+[Unreleased]: https://github.com/theultimate-dev/skills/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/theultimate-dev/skills/compare/v0.3.3...v0.4.0
 [0.3.3]: https://github.com/theultimate-dev/skills/compare/v0.3.2...v0.3.3
 [0.3.2]: https://github.com/theultimate-dev/skills/compare/v0.3.1...v0.3.2
 [0.3.1]: https://github.com/theultimate-dev/skills/compare/v0.3.0...v0.3.1

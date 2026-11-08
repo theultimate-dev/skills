@@ -8,6 +8,8 @@ Releases are tagged `foundations--vX.Y.Z`.
 
 ## [Unreleased]
 
+## [0.2.2] - 2026-11-08
+
 ### Fixed
 
 - `decision-records` says where the supersession lines go in a record's head (after Date, before Deciders), writes them as links between the two records, adds a clause naming the successor to the old record's index summary, and dates a record written after the choice by the day the person agreed to it, with a line saying so.
@@ -38,7 +40,8 @@ Releases are tagged `foundations--vX.Y.Z`.
 - Two skills: `decision-records` keeps a project's decision log, `release-process` keeps its changelog and cuts tagged releases.
 - `release-process` also handles repositories whose components, such as packages or plugins, are versioned independently. Each component gets its own changelog and `name--vX.Y.Z` tags, and one release commit can release several components. A second workflow template releases both root `vX.Y.Z` tags and component tags, and can be run by hand for a tag GitHub skipped.
 
-[Unreleased]: https://github.com/theultimate-dev/skills/compare/foundations--v0.2.1...HEAD
+[Unreleased]: https://github.com/theultimate-dev/skills/compare/foundations--v0.2.2...HEAD
+[0.2.2]: https://github.com/theultimate-dev/skills/compare/foundations--v0.2.1...foundations--v0.2.2
 [0.2.1]: https://github.com/theultimate-dev/skills/compare/foundations--v0.2.0...foundations--v0.2.1
 [0.2.0]: https://github.com/theultimate-dev/skills/compare/foundations--v0.1.1...foundations--v0.2.0
 [0.1.1]: https://github.com/theultimate-dev/skills/compare/foundations--v0.1.0...foundations--v0.1.1
