@@ -16,6 +16,13 @@ Marketplace releases are tagged `vX.Y.Z`. Every plugin release is also a marketp
 
 ## [Unreleased]
 
+## [0.4.1] - 2026-11-08
+
+### Changed
+
+- Plugins released with this version:
+  - `product-design` [0.4.0](https://github.com/theultimate-dev/skills/releases/tag/product-design--v0.4.0): `curating-design-systems` keeps a project's design home to four layout rules and checks that every page's references resolve inside it.
+
 ## [0.4.0] - 2026-11-08
 
 ### Added
@@ -161,7 +168,8 @@ Marketplace releases are tagged `vX.Y.Z`. Every plugin release is also a marketp
 - Published releases are immutable: their archives, `checksums.txt` and tag cannot change after publication.
 - The CI and release workflows run `actions/checkout` pinned to a full commit SHA, and Dependabot proposes updates to it weekly.
 
-[Unreleased]: https://github.com/theultimate-dev/skills/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/theultimate-dev/skills/compare/v0.4.1...HEAD
+[0.4.1]: https://github.com/theultimate-dev/skills/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/theultimate-dev/skills/compare/v0.3.3...v0.4.0
 [0.3.3]: https://github.com/theultimate-dev/skills/compare/v0.3.2...v0.3.3
 [0.3.2]: https://github.com/theultimate-dev/skills/compare/v0.3.1...v0.3.2
