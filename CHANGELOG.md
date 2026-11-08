@@ -7,6 +7,7 @@ All notable changes to the `theultimate-dev` marketplace and the repository arou
 - [`product-context`](skills/product-context/CHANGELOG.md)
 - [`product-design`](skills/product-design/CHANGELOG.md)
 - [`product-engineering`](skills/product-engineering/CHANGELOG.md)
+- [`product-prototyping`](skills/product-prototyping/CHANGELOG.md)
 - [`prompt-engineering`](skills/prompt-engineering/CHANGELOG.md)
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/2.0.0/),
@@ -20,6 +21,7 @@ Marketplace releases are tagged `vX.Y.Z`. Every plugin release is also a marketp
 - Decision 0018 adds `curating-design-systems` to product-design as its seventh skill and extends decision 0006, which stays unchanged. Decision 0019 lets two skills ship the same template, with the validator keeping the copies identical.
 - The validator checks mirrored templates: a file listed in its mirror list must have a byte-identical copy in the other skill, and both files must exist. The first pair is the design-tree check that `building-html-prototypes` and `curating-design-systems` ship. `AGENTS.md` asks a change to a mirrored template to update each skill's description of it in the same commit.
 - Decision 0020 packages the prototype loop as a category of its own, `product-prototyping`, and lets mirrored templates cross plugins.
+- The `product-prototyping` plugin, for prototypes that try ideas and keep or remove them, with five skills from setting up the context to closing a bet. Its mirrored templates, some shared with `product-context`, are listed in the validator's mirror list.
 
 ### Changed
 

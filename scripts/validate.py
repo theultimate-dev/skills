@@ -75,6 +75,52 @@ MIRRORS = (
     # check cannot see").
     ("skills/product-design/building-html-prototypes/templates/tree-check.html",
      "skills/product-design/curating-design-systems/templates/tree-check.html"),
+    # Described in the opening paragraph and the References table of skills/product-prototyping/<skill>/SKILL.md for
+    # framing-prototype-ideas, shaping-prototype-bets, building-prototype-bets and closing-prototype-bets, and in
+    # "Choose the mode" and "References" of skills/product-prototyping/structuring-prototype-context/SKILL.md.
+    ("skills/product-prototyping/structuring-prototype-context/references/prototype-profile.md",
+     "skills/product-prototyping/framing-prototype-ideas/references/prototype-profile.md"),
+    ("skills/product-prototyping/structuring-prototype-context/references/prototype-profile.md",
+     "skills/product-prototyping/shaping-prototype-bets/references/prototype-profile.md"),
+    ("skills/product-prototyping/structuring-prototype-context/references/prototype-profile.md",
+     "skills/product-prototyping/building-prototype-bets/references/prototype-profile.md"),
+    ("skills/product-prototyping/structuring-prototype-context/references/prototype-profile.md",
+     "skills/product-prototyping/closing-prototype-bets/references/prototype-profile.md"),
+    # Described in skills/product-prototyping/shaping-prototype-bets/SKILL.md ("Shape a bet" and "References") and
+    # skills/product-prototyping/closing-prototype-bets/SKILL.md ("References").
+    ("skills/product-prototyping/shaping-prototype-bets/templates/bet.md",
+     "skills/product-prototyping/closing-prototype-bets/templates/bet.md"),
+    # Described in skills/product-prototyping/shaping-prototype-bets/SKILL.md ("Shape a bet" and "References"),
+    # skills/product-prototyping/closing-prototype-bets/SKILL.md ("6. Rebuild the derived indexes" and "References")
+    # and skills/product-prototyping/structuring-prototype-context/SKILL.md ("Create" and "References").
+    ("skills/product-prototyping/shaping-prototype-bets/templates/bet-board.md",
+     "skills/product-prototyping/closing-prototype-bets/templates/bet-board.md"),
+    ("skills/product-prototyping/shaping-prototype-bets/templates/bet-board.md",
+     "skills/product-prototyping/structuring-prototype-context/templates/bet-board.md"),
+    # Described in skills/product-prototyping/structuring-prototype-context/SKILL.md ("Create" and "References").
+    ("skills/product-context/curating-product-requirements/templates/glossary.md",
+     "skills/product-prototyping/structuring-prototype-context/templates/glossary.md"),
+    # Described in skills/product-prototyping/framing-prototype-ideas/SKILL.md ("Frame an idea" and "References"),
+    # skills/product-prototyping/closing-prototype-bets/SKILL.md ("6. Rebuild the derived indexes" and "References")
+    # and skills/product-prototyping/structuring-prototype-context/SKILL.md ("Create" and "References").
+    ("skills/product-context/structuring-product-context/templates/folder-index.md",
+     "skills/product-prototyping/structuring-prototype-context/templates/folder-index.md"),
+    ("skills/product-context/structuring-product-context/templates/folder-index.md",
+     "skills/product-prototyping/closing-prototype-bets/templates/folder-index.md"),
+    ("skills/product-context/structuring-product-context/templates/folder-index.md",
+     "skills/product-prototyping/framing-prototype-ideas/templates/folder-index.md"),
+    # Described in skills/product-prototyping/closing-prototype-bets/SKILL.md ("6. Rebuild the derived indexes" and
+    # "References") and skills/product-prototyping/structuring-prototype-context/SKILL.md ("Create" and "References").
+    ("skills/product-prototyping/structuring-prototype-context/templates/requirements-index.md",
+     "skills/product-prototyping/closing-prototype-bets/templates/requirements-index.md"),
+    # Described in skills/product-prototyping/closing-prototype-bets/SKILL.md ("6. Rebuild the derived indexes" and
+    # "References") and skills/product-prototyping/structuring-prototype-context/SKILL.md ("Create" and "References").
+    ("skills/product-prototyping/structuring-prototype-context/templates/architecture-index.md",
+     "skills/product-prototyping/closing-prototype-bets/templates/architecture-index.md"),
+    # Described in skills/product-prototyping/closing-prototype-bets/SKILL.md ("3. Keep" and "References") and
+    # skills/product-prototyping/structuring-prototype-context/SKILL.md ("Create" and "References").
+    ("skills/product-prototyping/structuring-prototype-context/templates/capability-requirements.md",
+     "skills/product-prototyping/closing-prototype-bets/templates/capability-requirements.md"),
 )
 EXTRA_KEYS_NOTE = ("only name, description and license are allowed here; spec fields such as compatibility,"
                    " metadata and allowed-tools, and Claude-only fields, are not permitted")
