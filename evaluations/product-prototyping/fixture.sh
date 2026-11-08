@@ -51,6 +51,9 @@ record_baseline() { # record_baseline NAME: snapshots the workspace when NAME is
 }
 
 mkdir -p "$work/grade"
+# The host's review capability, read by the grader: `fresh` when it can run a subagent or a separate
+# headless session, `none` when it can do neither. Set per trial; see scenarios.md.
+echo fresh > "$work/grade/review-capability"
 git init -q --bare -b main "$work/origin.git"
 mkdir "$work/sprig"
 cd "$work/sprig"

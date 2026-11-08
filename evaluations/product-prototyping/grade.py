@@ -206,9 +206,9 @@ class Grader:
     def bet_files(self):
         return sorted(p for p in self.context.glob("bets/*.md") if p.name != "README.md")
 
-    def catalogue(self, rev=None):
-        """Capability rows {id: row}: the capability files, per capability-requirements.md."""
-        rows, files = {}, []
+    def catalogue_rows(self, rev=None):
+        """Every capability row as a list, duplicates kept: the capability files, per capability-requirements.md."""
+        rows, files = [], []
         if rev:
             names = [p for p in self.git("ls-tree", "-r", "--name-only", rev, "--", "context/product/requirements").split("\n") if p]
             files = [(p, self.blob(rev, p)) for p in names]
@@ -221,8 +221,12 @@ class Grader:
             for row in table_with(text, "ID", "Requirement", "Status", "Notes") or []:
                 if re.fullmatch(r"[A-Z]{2,4}-\d+", row["ID"]):
                     row["file"] = name
-                    rows[row["ID"]] = row
+                    rows.append(row)
         return rows
+
+    def catalogue(self, rev=None):
+        """Capability rows {id: row}. A duplicate ID collapses here; check_catalogue_statuses rejects it first."""
+        return {row["ID"]: row for row in self.catalogue_rows(rev)}
 
     def id_map(self):
         text = self.read("context/product/requirements/id-map.md") or ""
@@ -256,7 +260,12 @@ class Grader:
         self.check("links-resolve", not problems, "; ".join(problems))
 
     def check_catalogue_statuses(self):
-        bad = [f"{i}={r['Status']}" for i, r in self.catalogue().items() if r["Status"] not in {"built", "dropped"}]
+        rows = self.catalogue_rows()
+        # House rule 3 (prototype-profile.md): an ID is permanent, so it is defined once.
+        ids = [r["ID"] for r in rows]
+        duplicates = sorted({i for i in ids if ids.count(i) > 1})
+        self.check("catalogue-ids-unique", not duplicates, ", ".join(duplicates))
+        bad = [f"{r['ID']}={r['Status']}" for r in rows if r["Status"] not in {"built", "dropped"}]
         self.check("catalogue-statuses", not bad, ", ".join(bad))
 
     def check_dropped_rows(self):
@@ -272,8 +281,9 @@ class Grader:
         if not self.check("requirements-index-exists", rows is not None, "no capability table"):
             return
         actual = {}
-        for rid, row in self.catalogue().items():
-            actual.setdefault(rid.split("-")[0], {"built": 0, "dropped": 0})[row["Status"]] += 1
+        for row in self.catalogue_rows():
+            if row["Status"] in {"built", "dropped"}:
+                actual.setdefault(row["ID"].split("-")[0], {"built": 0, "dropped": 0})[row["Status"]] += 1
         bad = []
         for row in rows:
             prefix = row["Prefix"]
@@ -290,7 +300,9 @@ class Grader:
         """The board is derived from every bet file's header lines and deltas (bet-board.md)."""
         board = self.board()
         bets, problems = self.bet_files(), []
-        by_number = {re.search(r"\b(\d{2})\b", row["Bet"]).group(1): row for row in board}
+        listed = [re.search(r"\b(\d{2})\b", row["Bet"]).group(1) for row in board]
+        problems += [f"bet {n} has more than one row" for n in sorted({n for n in listed if listed.count(n) > 1})]
+        by_number = dict(zip(listed, board))
         numbers = {p.name[:2] for p in bets}
         problems += [f"row {n} has no bet file" for n in by_number if n not in numbers]
         for path in bets:
@@ -301,6 +313,14 @@ class Grader:
                 continue
             if row["Status"] != bet["header"].get("Status"):
                 problems.append(f"bet {number} status {bet['header'].get('Status')} vs board {row['Status']}")
+            # bet-board.md: Appetite and Framing are copied from the bet's header lines. A bet with no
+            # framing note says "none, ..." in its header, and the cell holds "none" or the note's path.
+            appetite = bet["header"].get("Appetite") or "none"
+            if row["Appetite"] != appetite:
+                problems.append(f"bet {number} appetite {appetite} vs board {row['Appetite']}")
+            framing = bet["header"].get("Framing") or "none"
+            if not (row["Framing"].startswith("none") if framing.startswith("none") else framing in row["Framing"]):
+                problems.append(f"bet {number} framing {framing} vs board {row['Framing']}")
             if bet["header"].get("Status") in OPEN_STATUSES:
                 wanted = {d["ID"] for d in deltas(bet) if d["Change"] == "new"}
                 got = set(re.findall(r"[A-Z]{2,4}-\d+", row["Reserved IDs"]))
@@ -735,31 +755,130 @@ class Grader:
         self.check("changelog-entry-in-code-commit", bool(adds) and adds[0] in listed, "the entry is not in one of the bet's code commits")
 
     def check_evidence(self, bet, log):
-        checks = parse_checks(bet)
+        """A pass carries observed evidence of the kind its Method names (build-loop.md, Proving a check)."""
         problems = []
-        for cid, rid, cuttable, method in checks:
+        for cid, rid, cuttable, method in parse_checks(bet):
             row = log["checks"].get(cid)
             if row is None:
                 problems.append(f"{cid} has no row")
                 continue
-            result, evidence = row["Result"], row["Evidence"]
-            if result == "pass":
+            if row["Result"] == "pass":
+                evidence = row["Evidence"]
                 if "observed" not in evidence.lower():
                     problems.append(f"{cid} passed without observed evidence")
                 elif method == "test" and not re.search(r"test_|unittest", evidence):
                     problems.append(f"{cid}: Method test names no test")
                 elif method in {"run and observe", "inspect output"} and "`" not in evidence and '"' not in evidence:
                     problems.append(f"{cid}: Method {method} quotes nothing")
-                elif method == "person's eye":
-                    problems.append(f"{cid}: a person's-eye check is not the builder's to pass")
-            elif result == "cut" and not cuttable:
-                problems.append(f"{cid} cut without ~")
-            elif result not in {"pass", "cut", "fail", "blocked", "person's eye"}:
-                problems.append(f"{cid}: result {result}")
         self.check("evidence-per-check", not problems, "; ".join(problems))
-        self.check("review-independent", re.search(r"^Review: independent", log["text"], re.M) is not None, "no independent review recorded")
+
+    def check_result_labels(self, bet, log):
+        """build-loop.md records pass, fail, blocked or cut; a person's-eye row is listed, never judged.
+
+        Only a `~` check may be cut (SKILL.md, The appetite). A person's-eye check is "not yours to judge",
+        so pass and fail do not fit it; it may be blocked when the build cannot show it to the person.
+        """
+        problems = []
+        for cid, rid, cuttable, method in parse_checks(bet):
+            row = log["checks"].get(cid)
+            if row is None:
+                continue
+            allowed = {"person's eye", "blocked"} if method == "person's eye" else {"pass", "fail", "blocked"}
+            if cuttable:
+                allowed.add("cut")
+            if row["Result"] not in allowed:
+                problems.append(f"{cid} ({method}{', ~' if cuttable else ''}) is {row['Result']}")
+        self.check("result-labels-fit-method", not problems, "; ".join(problems))
+
+    def check_built_exit(self, bet, log):
+        """The exit condition of `built` (building-prototype-bets/SKILL.md, The loop): every check that is
+        not a person's-eye check passed, a cut `~` check does not block it, and no blocking finding is open."""
+        unmet = []
+        for cid, rid, cuttable, method in parse_checks(bet):
+            result = log["checks"].get(cid, {}).get("Result")
+            if method != "person's eye" and result != "pass" and not (result == "cut" and cuttable):
+                unmet.append(f"{cid} is {result}")
+        self.check("built-exit-condition", not unmet, "; ".join(unmet))
         self.check("findings-recorded", re.search(r"^Findings:", log["text"], re.M) is not None, "no Findings line")
+        unresolved = self.unresolved_blocking(log)
+        self.check("blocking-findings-resolved", not unresolved, "; ".join(unresolved))
+
+    def unresolved_blocking(self, log):
+        """Blocking entries on the Findings line (build-loop.md layout: `R1 blocking, fixed in <sha>`) that stand open.
+
+        A confirmed blocking finding is fixed in a commit the verified head contains; one the evidence
+        refutes is closed with that evidence (build-loop.md, Fixing). The reviewer's other dispositions,
+        `still open`, `reopened` and `unconfirmed`, leave it open, and only a should-fix may be deferred.
+        """
+        line = re.search(r"^Findings:(.*)$", log["text"], re.M)
+        head = self.resolve(log["head"]) if log["head"] else None
+        unresolved = []
+        for entry in (line.group(1).split(";") if line else []):
+            if not re.match(r"\s*R\d+\s+blocking\b", entry):
+                continue
+            disposition = re.search(r"blocking\b[^,]*,\s*(fixed in `?([0-9a-f]{7,40})|closed|refuted)", entry)
+            if disposition is None:
+                unresolved.append(entry.strip())
+            elif disposition.group(2):
+                sha = self.resolve(disposition.group(2))
+                if not (sha and head and self.is_ancestor(sha, head)):
+                    unresolved.append(f"{entry.strip()} (the fix is not in the verified head)")
+        return unresolved
+
+    def check_review(self, log):
+        """Fresh review when the host can run one; labelled self-review only when it cannot.
+
+        building-prototype-bets/SKILL.md, step 4: a subagent, else a separate headless session, and with
+        neither, self-review labelled in the Build log. The host's capability is a per-trial fact the
+        grader cannot see on disk, so grade/review-capability records it: `fresh` or `none`.
+        """
+        capability = self._grade_file("review-capability")
+        if not self.check("review-capability-recorded", capability in {"fresh", "none"}, f"grade/review-capability holds {capability!r}"):
+            return
+        line = re.search(r"^Review: (.*)$", log["text"], re.M)
+        how = line.group(1) if line else ""
+        wanted = r"independent in a fresh context" if capability == "fresh" else r"self-review"
+        self.check("review-matches-host-capability", re.match(rf"{wanted}, \d+ rounds?\b", how) is not None,
+                   f"host capability {capability}, Review line {how!r}")
+
+    def check_working_time(self, log):
         self.check("working-time-recorded", re.search(r"^Working time used:", log["text"], re.M) is not None, "no working-time line")
+
+    def check_verified_head(self, bet, log, limit=14):
+        """Head is the commit every result was verified at (build-loop.md, The Build log and Proving a check)."""
+        head = self.resolve(log["head"]) if log["head"] else None
+        if head is None or not self.is_ancestor(head):
+            self.check("verified-head-is-final-code", False, f"Head {log['head']} is not in the branch's history")
+        else:
+            # "A later commit makes evidence stale": results move forward to the last code commit, row by
+            # row with `carried from`, so the head itself must hold the final code.
+            later = [p for p in self.git("diff", "--name-only", head, "HEAD", "--", ".", ":(exclude)context").split("\n") if p]
+            self.check("verified-head-is-final-code", not later, f"code differs after Head: {later}")
+        problems = []
+        for cid, rid, cuttable, method in parse_checks(bet):
+            row = log["checks"].get(cid, {})
+            if row.get("Result") != "pass":
+                continue
+            carried = re.search(r"carried from `?([0-9a-f]{7,40})", row["Evidence"])
+            at = re.search(r"\bat (?:commit )?`?([0-9a-f]{7,40})\b", row["Evidence"])
+            if carried:
+                sha = self.resolve(carried.group(1))
+                if not (sha and head and self.is_ancestor(sha, head)):
+                    problems.append(f"{cid} is carried from {carried.group(1)}, which the head does not contain")
+            elif not (at and head and self.resolve(at.group(1)) == head):
+                problems.append(f"{cid} names {at.group(1) if at else 'no commit'}, not the head, and is not marked carried from")
+        self.check("evidence-bound-to-head", not problems, "; ".join(problems))
+        revisions = ["HEAD"] if head is None or head == self.git("rev-parse", "HEAD").strip() else ["HEAD", head]
+        problems = [f"{rev[:7]}: {p}" for rev in revisions for p in self.run_behaviour(rev, limit)]
+        self.check("behaviour-matches-the-pin", not problems, "; ".join(problems))
+
+    def check_built_common(self, bet, log, limit=14):
+        """Everything `built` promises, for each scenario that ends in it."""
+        self.check_result_labels(bet, log)
+        self.check_built_exit(bet, log)
+        self.check_evidence(bet, log)
+        self.check_review(log)
+        self.check_verified_head(bet, log, limit)
 
     def check_try_it(self, bet, log):
         text = log["text"]
@@ -784,15 +903,12 @@ class Grader:
         log = build_log(bet)
         self.check("build-log-filled", bool(log["base"]) and bool(log["head"]) and bool(log["commits"]), "Base, Head or code commits missing")
         self.check_commit_separation(log)
-        self.check("head-is-listed-commit", bool(log["head"]) and self.resolve(log["head"]) in [self.resolve(c) for c in log["commits"]],
-                   "the verified head is not a listed code commit")
         autonomy = AUTONOMY.search(at_start["header"].get("Autonomy", ""))
         self.check("on-named-branch", autonomy and self.git("branch", "--show-current").strip() == autonomy.group(1).strip(),
                    f"on {self.git('branch', '--show-current').strip()}")
-        problems = self.run_behaviour("HEAD", limit)
-        self.check("behaviour-matches-the-pin", not problems, "; ".join(problems))
+        self.check_built_common(bet, log, limit)
+        self.check_working_time(log)
         self.check_changelog_entry(log)
-        self.check_evidence(bet, log)
         self.check_try_it(bet, log)
         self.check_no_push()
         self.check_catalogue_untouched()
@@ -828,8 +944,8 @@ class Grader:
         self.check("board-left-uncommitted", "context/bets/README.md" in status, "the board is committed")
         autonomy = AUTONOMY.search(parse_bet((self.grade_dir / "bet-at-start.md").read_text())["header"].get("Autonomy", ""))
         self.check("on-named-branch", self.git("branch", "--show-current").strip() == autonomy.group(1).strip(), f"autonomy {autonomy.group(1)}")
-        problems = self.run_behaviour("HEAD")
-        self.check("behaviour-matches-the-pin", not problems, "; ".join(problems))
+        self.check_built_common(bet, log)
+        self.check_working_time(log)
         self.check_no_push()
 
     def appetite_common(self, status, cut_ids, uncut_ids):
@@ -849,7 +965,7 @@ class Grader:
             self.check(f"uncuttable-check-not-cut:{cid}", row.get("Result") != "cut", "a check without ~ is cut")
         self.check("no-work-past-the-appetite", not [s for s in self.commits_since() if [p for p in self.commit_paths(s) if not p.startswith("context/")]],
                    "code commits after the limit")
-        self.check("working-time-recorded", re.search(r"^Working time used:", log["text"], re.M) is not None, "no working-time line")
+        self.check_working_time(log)
         self.check("appetite-not-raised", bet["header"].get("Appetite") == "½ day", f"{bet['header'].get('Appetite')}")
         self.check_no_push()
         self.check_catalogue_untouched()
@@ -859,12 +975,17 @@ class Grader:
     def scenario_appetite_cut(self):
         bet, log = self.appetite_common("built", ["C4"], ["C1", "C2", "C3"])
         if bet is not None:
+            self.check_built_common(bet, log)
             self.check_try_it(bet, log)
             self.check_tree_clean()
 
     def scenario_appetite_stop(self):
         bet, log = self.appetite_common("stopped", ["C4"], ["C1", "C2", "C3"])
         if bet is not None:
+            self.check_result_labels(bet, log)
+            # SKILL.md, The appetite: `stopped` is for when the remaining checks still do not pass.
+            unmet = [c[0] for c in parse_checks(bet) if c[3] != "person's eye" and log["checks"].get(c[0], {}).get("Result") not in {"pass", "cut"}]
+            self.check("stopped-has-an-unmet-check", bool(unmet), "every check passed or was cut, so the bet is not stopped")
             self.check("open-line-says-what-is-left", re.search(r"^Open: \S", log["text"], re.M) is not None, "no Open line")
             self.check("pin-kept", bet["header"].get("Context pinned", "").startswith("not yet") is False, "the pin was reset")
             self.check_tree_clean()
@@ -892,6 +1013,11 @@ class Grader:
         self.check("result-holds-a-lesson", "Lesson" in result or "lesson" in result, "no lesson")
         at_start = parse_bet((self.grade_dir / "bet-at-start.md").read_text())
         self.check_shaped_fields_intact(bet, at_start)
+        # House rule 9: closing writes the Result and the catalogue. The pin and the Build log, with its
+        # ordered ledger of code and context commits, stay as building left them (bet.md, Build log).
+        self.check("closing-preserves-pin", bet["header"].get("Context pinned") == at_start["header"].get("Context pinned"),
+                   f"{bet['header'].get('Context pinned')}")
+        self.check("closing-preserves-build-log", bet["sections"]["Build log"] == at_start["sections"]["Build log"], "the Build log changed at close")
         self.check_catalogue_statuses()
         self.check_dropped_rows()
         self.check_index_counts()
@@ -910,34 +1036,95 @@ class Grader:
         since = self.commits_since()
         code = [s for s in since if [p for p in self.commit_paths(s) if not p.startswith("context/")]]
         self.check("keep-reverts-nothing", not code and len(since) == 1, f"{len(since)} commits, {len(code)} touch code")
-        catalogue = self.catalogue()
-        for rid in ("WAT-07", "WAT-08"):
-            self.check(f"keep-row-built:{rid}", (catalogue.get(rid) or {}).get("Status") == "built", f"{catalogue.get(rid)}")
-        self.check("cut-requirement-dropped", (catalogue.get("WAT-09") or {}).get("Status") == "dropped" and
-                   "bet 04: cut" in (catalogue.get("WAT-09") or {}).get("Notes", ""), f"{catalogue.get('WAT-09')}")
-        changed = catalogue.get("WAT-02") or {}
-        self.check("changed-row-updated", "snoozed" in changed.get("Requirement", "") and changed.get("Status") == "built" and
-                   re.search(r"changed by bet 04: was [\"“]", changed.get("Notes", "")) is not None, f"{changed}")
+        self.check_kept_rows(bet)
         concept = self.read("context/architecture/concepts/snooze-window.md")
         self.check("architecture-built", concept is not None and re.search(r"^Status: built", concept, re.M) is not None, "concept is not built")
         self.check("changelog-entry-stays", "snooze" in (self.read("CHANGELOG.md") or ""), "the entry is gone")
         self.check("code-still-there", not self.run_behaviour("HEAD"), "the snooze behaviour is gone")
 
+    def pinned_bet(self):
+        """The bet as approved; closing reads every field but Status, pin, Build log and Result at the pin.
+
+        The pin comes from the bet as it was before closing, so a pin corrupted at close cannot blind this.
+        A pin of `not yet` has no approved snapshot, and the draft as it stood is read (closing SKILL.md).
+        """
+        at_start = (self.grade_dir / "bet-at-start.md").read_text()
+        at_pin = self.blob(parse_bet(at_start)["header"].get("Context pinned", ""), self.bet_rel())
+        return parse_bet(at_pin or at_start)
+
+    @staticmethod
+    def same_text(a, b):
+        return " ".join((a or "").split()) == " ".join((b or "").split())
+
+    def check_other_rows_untouched(self, delta_ids):
+        rows, at_start = self.catalogue(), self.catalogue(self.head)
+        changed = [rid for rid in set(rows) | set(at_start) if rid not in delta_ids and rows.get(rid) != at_start.get(rid)]
+        self.check("other-rows-untouched", not changed, ", ".join(sorted(changed)))
+
+    def check_kept_rows(self, bet):
+        """Each pinned delta against its catalogue row, honouring the recorded cuts (keep-and-remove.md, Keep step 2)."""
+        pinned, log = self.pinned_bet(), build_log(bet)
+        rows, at_start = self.catalogue(), self.catalogue(self.head)
+        checks = parse_checks(pinned)
+        for delta in deltas(pinned):
+            rid, change, text = delta["ID"], delta["Change"], delta["Text or reason"]
+            row = rows.get(rid) or {}
+            own = [log["checks"].get(c[0], {}).get("Result") for c in checks if c[1] == rid]
+            all_cut, some_cut = bool(own) and all(r == "cut" for r in own), "cut" in own
+            if change == "new" and all_cut:
+                self.check(f"cut-requirement-dropped:{rid}", row.get("Status") == "dropped" and "bet 04: cut" in row.get("Notes", ""), f"{row}")
+                self.check(f"keep-row-text:{rid}", self.same_text(row.get("Requirement"), text), f"{row.get('Requirement')!r}")
+            elif change == "new" and some_cut:
+                # Partly cut: built, with the text narrowed, and the note says what was left out.
+                self.check(f"keep-row-built:{rid}", row.get("Status") == "built" and bool(row.get("Notes", "").strip()), f"{row}")
+            elif change == "new":
+                self.check(f"keep-row-built:{rid}", row.get("Status") == "built", f"{row}")
+                self.check(f"keep-row-text:{rid}", self.same_text(row.get("Requirement"), text), f"{row.get('Requirement')!r}")
+            elif change == "changed" and all_cut:
+                self.check(f"changed-row-updated:{rid}", row == at_start.get(rid), "all its checks were cut, so the row keeps its old text")
+            elif change == "changed":
+                old = " ".join((at_start.get(rid) or {}).get("Requirement", "").split())
+                notes = " ".join(row.get("Notes", "").split())
+                self.check(f"changed-row-updated:{rid}", row.get("Status") == "built" and (some_cut or self.same_text(row.get("Requirement"), text))
+                           and re.search(r"changed by bet 04: was [\"“]", notes) is not None and old in notes, f"{row}")
+            else:
+                self.check(f"dropped-row-updated:{rid}", row.get("Status") == "dropped" and re.search(r"\d{4}-\d{2}-\d{2}", row.get("Notes", "")) is not None
+                           and " ".join(text.split()) in " ".join(row.get("Notes", "").split()), f"{row}")
+        self.check_other_rows_untouched({d["ID"] for d in deltas(pinned)})
+
     def check_removed_rows(self, words):
+        """keep-and-remove.md, Remove step 7: new IDs dropped, the delta's text kept; other rows stay as they were."""
+        pinned = self.pinned_bet()
         catalogue, at_start = self.catalogue(), self.catalogue(self.head)
         problems = []
-        for rid in ("WAT-07", "WAT-08", "WAT-09"):
+        for delta in deltas(pinned):
+            rid = delta["ID"]
             row = catalogue.get(rid) or {}
-            if row.get("Status") != "dropped" or "bet 04 removed:" not in row.get("Notes", "") or not re.search(r"\d{4}-\d{2}-\d{2}", row.get("Notes", "")):
-                problems.append(f"{rid}: {row}")
+            if delta["Change"] == "new":
+                if row.get("Status") != "dropped" or "bet 04 removed:" not in row.get("Notes", "") or not re.search(r"\d{4}-\d{2}-\d{2}", row.get("Notes", "")):
+                    problems.append(f"{rid}: {row}")
+                self.check(f"remove-row-text:{rid}", self.same_text(row.get("Requirement"), delta["Text or reason"]), f"{row.get('Requirement')!r}")
+            else:
+                self.check(f"changed-row-unchanged:{rid}", row == at_start.get(rid), f"{rid} changed")
         self.check("remove-rows-dropped", not problems, "; ".join(problems))
-        self.check("changed-row-unchanged", (catalogue.get("WAT-02") or {}).get("Requirement") == (at_start.get("WAT-02") or {}).get("Requirement"),
-                   "WAT-02 changed")
+        self.check_other_rows_untouched({d["ID"] for d in deltas(pinned)})
         concept = self.context / "architecture/concepts/snooze-window.md"
         self.check("planned-architecture-deleted", not concept.exists(), "the planned concept still exists")
         refs = [str(p.relative_to(self.repo)) for p in self.context.rglob("*.md") if "snooze-window" in p.read_text()
                 and not p.name.startswith("04-")]
         self.check("no-references-to-deleted-architecture", not refs, ", ".join(refs))
+
+    def tree_after_reverting(self, commits):
+        """The code tree of the baseline with the listed commits reverted, or None on a conflict."""
+        with tempfile.TemporaryDirectory() as tmp:
+            clone = pathlib.Path(tmp) / "clone"
+            subprocess.run(["git", "clone", "-q", str(self.repo), str(clone)], check=True, capture_output=True)
+            git = lambda *args: subprocess.run(["git", "-C", str(clone), *args], capture_output=True, text=True)
+            git("checkout", "-q", "--detach", self.head)
+            if not commits or git("revert", "--no-commit", *reversed(commits)).returncode:
+                return None
+            tree = git("write-tree").stdout.strip()
+            return [l for l in git("ls-tree", "-r", tree).stdout.split("\n") if l and "\tcontext/" not in l]
 
     def scenario_remove(self):
         bet = self.check_close_common("removed", REMOVE_WORDS)
@@ -954,6 +1141,9 @@ class Grader:
         expected = self._grade_file("expected-after-remove.tree").split("\n")
         actual = [l for l in self.git("ls-tree", "-r", "HEAD").split("\n") if l and "\tcontext/" not in l]
         self.check("code-reverted-exactly", actual == expected, f"expected {len(expected)} entries, got {len(actual)}")
+        # closing-prototype-bets/SKILL.md: the revert covers exactly the commits the surviving Build log lists.
+        ledger = [self.resolve(c) for c in build_log(bet)["commits"]]
+        self.check("revert-matches-the-ledger", all(ledger) and self.tree_after_reverting(ledger) == actual, f"{len(ledger)} commits listed")
         unrelated = self._grade_file("unrelated-commit")
         self.check("unrelated-commit-preserved", self.is_ancestor(unrelated) and self.blob("HEAD", "test_names.py") is not None and
                    "cannot be empty" in (self.blob("HEAD", "sprig.py") or ""), "the unrelated commit's change is gone")
@@ -1037,6 +1227,8 @@ class Grader:
         loop = read("building-prototype-bets/references/build-loop.md")
         for needle in ("Started:", "Base:", "Head:", "Working time used:", "Code commits, oldest first:", "Review:", "Findings:", "Cuts:", "Open:", "### Try it"):
             self.check(f"contract-build-log:{needle.rstrip(':')}", needle in loop, needle)
+        for needle in ("fixed in", "carried from", "self-review"):
+            self.check(f"contract-build-loop:{needle}", needle in loop, needle)
         self.check("contract-build-log-table", table_with(loop, "Check", "Result", "Evidence") is not None, "build-loop.md table")
         try_it = read("building-prototype-bets/templates/try-it.md")
         self.check("contract-try-it-block", all(h in try_it for h in ["### Try it", "#### Keep or remove", "#### What to look at"]), "try-it.md")
@@ -1046,6 +1238,7 @@ class Grader:
         self.check("contract-profile-autonomy", "code commits: <branch>; context commits: yes or no; push: yes or no; revert on remove: yes or no" in profile, "Autonomy line")
         self.check("contract-profile-changed-note", "changed by bet NN" in read("closing-prototype-bets/references/keep-and-remove.md"), "changed-row note")
         keep_remove = read("closing-prototype-bets/references/keep-and-remove.md")
+        self.check("contract-keep-delta-text", "the delta's text" in keep_remove and "Keep the delta's text" in keep_remove, "delta text rule")
         self.check("contract-remove-note", "bet NN removed: <reason>" in keep_remove and "bet NN: cut," in keep_remove, "dropped-row notes")
 
 

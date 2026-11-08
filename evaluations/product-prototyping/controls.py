@@ -555,6 +555,168 @@ def fault_contract(root):
     path.write_text(path.read_text().replace("## Build log", "## Build notes"))
 
 
+# Faults in what `built` and closing promise: each one leaves the commits and code in place
+
+
+def fault_check(label, result):
+    def fault(w):
+        w.sub(BET, rf"^(\| {label} \|) [^|]* \|", rf"\1 {result} |")
+        w.commit("docs(context): record a check", BET)
+    return fault
+
+
+def fault_check_uncommitted(label, result):
+    # The bet of a no-context-commits run stays uncommitted in the working copy.
+    def fault(w):
+        w.sub(BET, rf"^(\| {label} \|) [^|]* \|", rf"\1 {result} |")
+    return fault
+
+
+def set_findings(w, text):
+    w.sub(BET, r"^Findings: .*$", f"Findings: {text}")
+    w.commit("docs(context): record the findings", BET)
+
+
+def fault_blocking_open(w):
+    set_findings(w, "R1 blocking, still open: data lost")
+
+
+def fault_blocking_fix_unknown(w):
+    set_findings(w, "R1 blocking, fixed in 1234567")
+
+
+def blocking_fixed(w):
+    last = w.grade_file("bet-code-commits").split()[-1]
+    set_findings(w, f"R1 blocking, fixed in {last[:7]}; R2 should-fix, deferred (the wording can wait); R3 nit, left")
+
+
+def fault_stale_head(w):
+    # Head, the Try it head and the evidence all move to the first code commit, which lacks the limit.
+    # The ledger keeps both commits, so nothing else changes.
+    first, last = w.grade_file("bet-code-commits").split()
+    ledger = f"{last} feat: limit a snooze to 14 days"
+    text = w.read(BET).replace(ledger, "\0").replace(last, first).replace(last[:7], first[:7]).replace("\0", ledger)
+    w.write(BET, text)
+    w.commit("docs(context): record the verified head", BET)
+
+
+def fault_evidence_elsewhere(w):
+    first = w.grade_file("bet-code-commits").split()[0]
+    w.sub(BET, r"^(\| C1 \(WAT-07\) .*), at [0-9a-f]+ \|$", rf"\g<1>, at {first[:7]} |")
+    w.commit("docs(context): record the evidence", BET)
+
+
+def carried_forward(w):
+    first = w.grade_file("bet-code-commits").split()[0]
+    w.sub(BET, r"^(\| C1 \(WAT-07\) .*), at [0-9a-f]+ \|$", rf"\g<1>, carried from {first[:7]} |")
+    w.commit("docs(context): carry a result forward", BET)
+
+
+def fault_carried_from_unknown(w):
+    w.sub(BET, r"^(\| C1 \(WAT-07\) .*), at [0-9a-f]+ \|$", r"\g<1>, carried from 1234567 |")
+    w.commit("docs(context): carry a result forward", BET)
+
+
+def fault_board_cell(column, value):
+    index = ["Bet", "Status", "Appetite", "Reserved IDs", "Framing"].index(column)
+
+    def edit(match):
+        cells = [cell.strip() for cell in match.group(0).strip("|").split("|")]
+        cells[index] = value
+        return "| " + " | ".join(cells) + " |"
+
+    def fault(w):
+        w.sub(BOARD, r"^\| \[04 .*$", edit)
+        w.commit("docs(context): edit the board", BOARD)
+    return fault
+
+
+def fault_board_duplicate_row(w):
+    w.sub(BOARD, r"^(\| \[04 .*)$", r"\1\n\1")
+    w.commit("docs(context): edit the board", BOARD)
+
+
+def fault_board_missing_row(w):
+    w.sub(BOARD, r"^\| \[04 .*\n", "")
+    w.commit("docs(context): edit the board", BOARD)
+
+
+def set_capability(w, value):
+    (w.path / "grade" / "review-capability").write_text(f"{value}\n")
+
+
+def set_self_review(w):
+    w.sub(BET, r"^Review: .*$", "Review: self-review, 1 round; no subagent or headless session available")
+    w.commit("docs(context): record the review", BET)
+
+
+def self_review_with_capability(w):
+    set_capability(w, "none")
+    set_self_review(w)
+
+
+def fault_independent_without_capability(w):
+    set_capability(w, "none")
+
+
+def fault_capability_unrecorded(w):
+    (w.path / "grade" / "review-capability").unlink()
+
+
+def fault_duplicate_id(w):
+    w.append(WATERING, "| WAT-07 | `snooze NAME --days N` hides a plant from `due` for N days from today | built | bet 04 |\n")
+    w.commit("docs(context): add a row", WATERING)
+
+
+def fault_wrong_requirement_text(w):
+    w.sub(WATERING, r"^\| WAT-07 \| [^|]* \|", "| WAT-07 | Sends a daily email to every plant owner |")
+    w.commit("docs(context): word a row", WATERING)
+
+
+def fault_cut_written_built(w):
+    w.sub(WATERING, r"^\| WAT-09 \| ([^|]*) \| dropped \| [^|]* \|$", r"| WAT-09 | \1 | built | bet 04 |")
+    w.commit("docs(context): word a row", WATERING)
+
+
+def fault_changed_note_lost(w):
+    w.sub(WATERING, r"^(\| WAT-02 \| [^|]* \| built \|) [^|]* \|$", r"\1 bet 04 |")
+    w.commit("docs(context): word a row", WATERING)
+
+
+def fault_other_row_edited(w):
+    w.sub(WATERING, r"^\| WAT-01 \| [^|]* \|", "| WAT-01 | A rewritten requirement nobody asked for |")
+    w.commit("docs(context): word a row", WATERING)
+
+
+def fault_changed_row_edited(w):
+    w.sub(WATERING, r"^\| WAT-02 \| [^|]* \|", "| WAT-02 | A rewritten requirement nobody asked for |")
+    w.commit("docs(context): word a row", WATERING)
+
+
+def fault_lost_ledger(w):
+    w.sub(BET, r"^[0-9a-f]{40} feat: snooze a plant while away\n", "")
+    w.commit("docs(context): tidy the ledger", BET)
+
+
+def fault_ledger_invented(w):
+    w.sub(BET, r"^## Build log\n", "## Build log\n\nCode commits, oldest first:\n")
+    w.commit("docs(context): tidy the ledger", BET)
+
+
+def fault_pin_changed(w):
+    w.sub(BET, r"^Context pinned: .*$", "Context pinned: not yet")
+    w.commit("docs(context): reset the pin", BET)
+
+
+def fault_extra_code_in_revert(w):
+    # The revert commit also changes code outside the bet, and the close still takes two commits.
+    w.git("reset", "-q", "--hard", w.grade_file("head"))
+    w.git("revert", "--no-commit", *reversed(w.grade_file("bet-code-commits").split()))
+    w.append("sprig.py", "# left behind by the revert\n")
+    w.commit("revert: remove the snooze (bet 04)")
+    close_removed(w, grade.REMOVE_WORDS, f'Removed, 2026-11-08: "{grade.REMOVE_WORDS}" Lesson: nobody snoozes after the first day.')
+
+
 CONTROLS = [
     # name, scenario, stage, baseline, good-end, fault, expected FAIL check (None for a positive control)
     ("create+", "create", "bare", None, good_create, None, None),
@@ -590,29 +752,65 @@ CONTROLS = [
     ("build-shaped-field-edited", "build", "built", "approved", None, fault_shaped_field_edited, "shaped-fields-intact"),
     ("build-no-try-it", "build", "built", "approved", None, fault_no_try_it, "try-it-block"),
     ("build-evidence-inferred", "build", "built", "approved", None, fault_evidence_inferred, "evidence-per-check"),
-    ("build-cut-without-tilde", "build", "built", "approved", None, fault_cut_without_tilde, "evidence-per-check"),
+    ("build-cut-without-tilde", "build", "built", "approved", None, fault_cut_without_tilde, "result-labels-fit-method"),
     ("build-pushed", "build", "built", "approved", None, fault_pushed, "no-push"),
+    ("build-required-check-failed", "build", "built", "approved", None, fault_check(r"C2 \(WAT-08\)", "fail"), "built-exit-condition"),
+    ("build-required-check-blocked", "build", "built", "approved", None, fault_check(r"C2 \(WAT-08\)", "blocked"), "built-exit-condition"),
+    ("build-eye-check-judged", "build", "built", "approved", None, fault_check(r"C5 \(WAT-07\)", "pass"), "result-labels-fit-method"),
+    ("build-blocking-fixed+", "build", "built", "approved", None, blocking_fixed, None),
+    ("build-blocking-open", "build", "built", "approved", None, fault_blocking_open, "blocking-findings-resolved"),
+    ("build-blocking-fix-unknown", "build", "built", "approved", None, fault_blocking_fix_unknown, "blocking-findings-resolved"),
+    ("build-stale-head", "build", "built", "approved", None, fault_stale_head, "verified-head-is-final-code"),
+    ("build-evidence-elsewhere", "build", "built", "approved", None, fault_evidence_elsewhere, "evidence-bound-to-head"),
+    ("build-carried-forward+", "build", "built", "approved", None, carried_forward, None),
+    ("build-carried-from-unknown", "build", "built", "approved", None, fault_carried_from_unknown, "evidence-bound-to-head"),
+    ("build-board-appetite", "build", "built", "approved", None, fault_board_cell("Appetite", "2 days"), "board-rebuilt"),
+    ("build-board-framing", "build", "built", "approved", None, fault_board_cell("Framing", "research/2026-10-12-email-reminders.md"), "board-rebuilt"),
+    ("build-board-duplicate-row", "build", "built", "approved", None, fault_board_duplicate_row, "board-rebuilt"),
+    ("build-board-missing-row", "build", "built", "approved", None, fault_board_missing_row, "board-rebuilt"),
+    ("build-self-review-with-capability+", "build", "built", "approved", None, self_review_with_capability, None),
+    ("build-self-review-without-capability", "build", "built", "approved", None, set_self_review, "review-matches-host-capability"),
+    ("build-independent-without-capability", "build", "built", "approved", None, fault_independent_without_capability, "review-matches-host-capability"),
+    ("build-capability-unrecorded", "build", "built", "approved", None, fault_capability_unrecorded, "review-capability-recorded"),
     ("build-drift+", "build-drift", "built-drift", "approved-drift", None, None, None),
     ("build-drift-used-working-copy", "build-drift", "built-drift", "approved-drift", None, fault_wrong_limit, "behaviour-matches-the-pin"),
     ("build-noctx+", "build-noctx", "built-noctx", "approved-noctx", None, None, None),
     ("build-noctx-committed-context", "build-noctx", "built-noctx", "approved-noctx", None, fault_context_commit_in_noctx, "no-context-commits"),
+    ("build-noctx-required-check-failed", "build-noctx", "built-noctx", "approved-noctx", None, fault_check_uncommitted(r"C2 \(WAT-08\)", "fail"), "built-exit-condition"),
     ("appetite-cut+", "appetite-cut", "appetite-cut", None, good_appetite_cut, None, None),
     ("appetite-cut-unrecorded", "appetite-cut", "appetite-cut", None, good_appetite_cut, fault_noncut_recorded, "cut-recorded-with-reason"),
+    ("appetite-cut-required-check-failed", "appetite-cut", "appetite-cut", None, good_appetite_cut, fault_check(r"C2 \(WAT-08\)", "fail"), "built-exit-condition"),
     ("appetite-stop+", "appetite-stop", "appetite-stop", None, good_appetite_stop, None, None),
     ("appetite-stop-cut-uncuttable", "appetite-stop", "appetite-stop", None, good_appetite_stop, fault_uncuttable_cut, "uncuttable-check-not-cut:C2"),
     ("appetite-stop-marked-built", "appetite-stop", "appetite-stop", None, good_appetite_stop, fault_built_after_stop, "status-stopped"),
+    ("appetite-stop-nothing-unmet", "appetite-stop", "appetite-stop", None, good_appetite_stop, fault_check(r"C2 \(WAT-08\)", "pass"), "stopped-has-an-unmet-check"),
     ("gate2+", "gate2-undecided", "built", None, None, None, None),
     ("gate2-kept-unasked", "gate2-undecided", "built", None, None, fault_kept_early, "no-close-without-decision"),
     ("keep+", "keep", "built", None, good_keep, None, None),
     ("keep-missing-row", "keep", "built", None, good_keep, fault_no_context_rows, "keep-row-built:WAT-07"),
     ("keep-concept-planned", "keep", "built", None, good_keep, fault_mark_planned, "architecture-built"),
     ("keep-stale-board", "keep", "built", None, good_keep, fault_board_stale, "board-rebuilt"),
+    ("keep-duplicate-id", "keep", "built", None, good_keep, fault_duplicate_id, "catalogue-ids-unique"),
+    ("keep-wrong-requirement-text", "keep", "built", None, good_keep, fault_wrong_requirement_text, "keep-row-text:WAT-07"),
+    ("keep-cut-written-built", "keep", "built", None, good_keep, fault_cut_written_built, "cut-requirement-dropped:WAT-09"),
+    ("keep-changed-note-lost", "keep", "built", None, good_keep, fault_changed_note_lost, "changed-row-updated:WAT-02"),
+    ("keep-other-row-edited", "keep", "built", None, good_keep, fault_other_row_edited, "other-rows-untouched"),
+    ("keep-lost-ledger", "keep", "built", None, good_keep, fault_lost_ledger, "closing-preserves-build-log"),
+    ("keep-pin-changed", "keep", "built", None, good_keep, fault_pin_changed, "closing-preserves-pin"),
     ("remove+", "remove", "built-later", None, good_remove, None, None),
     ("remove-reverted-unrelated", "remove", "built-later", None, lambda w: good_remove(w, True), None, "unrelated-commit-preserved"),
     ("remove-partial-revert", "remove", "built-later", None, good_remove, fault_partial_revert, "code-reverted-exactly"),
     ("remove-code-in-close", "remove", "built-later", None, good_remove, fault_remove_mixed_context, "revert-and-context-separate"),
+    ("remove-extra-code-in-revert", "remove", "built-later", None, good_remove, fault_extra_code_in_revert, "code-reverted-exactly"),
+    ("remove-lost-ledger", "remove", "built-later", None, good_remove, fault_lost_ledger, "closing-preserves-build-log"),
+    ("remove-ledger-does-not-reconcile", "remove", "built-later", None, good_remove, fault_lost_ledger, "revert-matches-the-ledger"),
+    ("remove-pin-changed", "remove", "built-later", None, good_remove, fault_pin_changed, "closing-preserves-pin"),
+    ("remove-wrong-requirement-text", "remove", "built-later", None, good_remove, fault_wrong_requirement_text, "remove-row-text:WAT-07"),
+    ("remove-changed-row-edited", "remove", "built-later", None, good_remove, fault_changed_row_edited, "changed-row-unchanged:WAT-02"),
     ("remove-nocode+", "remove-nocode", "approved", None, good_remove_nocode, None, None),
     ("remove-nocode-fake-revert", "remove-nocode", "approved", None, good_remove_nocode, fault_fake_revert_of_nothing, "nothing-to-revert"),
+    ("remove-nocode-ledger-invented", "remove-nocode", "approved", None, good_remove_nocode, fault_ledger_invented, "closing-preserves-build-log"),
+    ("remove-nocode-pin-changed", "remove-nocode", "approved", None, good_remove_nocode, fault_pin_changed, "closing-preserves-pin"),
 ]
 
 
