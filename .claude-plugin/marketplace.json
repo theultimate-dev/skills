@@ -8,13 +8,13 @@
   },
   "metadata": {
     "description": "The Ultimate Dev skills catalog",
-    "version": "0.3.3"
+    "version": "0.4.0"
   },
   "plugins": [
     {
       "name": "foundations",
       "description": "What every project needs regardless of stack: decision records that people and agents can read, and releases with a changelog and a tag on main.",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "source": "./",
       "strict": false,
       "license": "MIT",
@@ -41,7 +41,7 @@
     {
       "name": "product-context",
       "description": "A long-running product's whole context in a Markdown repository kept apart from the code: requirements with permanent IDs, a living architecture with shared contracts, decisions, and a roadmap cut into appetite-bounded bets that the product-engineering loop builds, folded back into the documents after every bet.",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "source": "./",
       "strict": false,
       "license": "MIT",
@@ -99,7 +99,7 @@
     {
       "name": "product-prototyping",
       "description": "A prototype's context beside its code and a fast loop for each idea: frame it, shape it into a bet you approve, build it with self-verification and an independent review, then try it and keep it or remove it, with history in the app's changelog.",
-      "version": "0.0.0",
+      "version": "0.1.0",
       "source": "./",
       "strict": false,
       "license": "MIT",
