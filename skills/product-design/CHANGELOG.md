@@ -8,6 +8,8 @@ Releases are tagged `product-design--vX.Y.Z`.
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-11-08
+
 ### Added
 
 - `curating-design-systems`, a new skill that keeps a project's design home in order. A design home holds shared foundations, such as tokens and components, a folder for each platform and a folder for each view.
@@ -75,7 +77,8 @@ Releases are tagged `product-design--vX.Y.Z`.
 
 - Six stack-neutral skills for guided discovery, product briefs, UX flows, visual direction exploration, offline HTML prototypes, and product/design handoffs. Includes copyable templates, fictional worked examples, typography and spacing guidance, and checkpoints for user decisions.
 
-[Unreleased]: https://github.com/theultimate-dev/skills/compare/product-design--v0.3.0...HEAD
+[Unreleased]: https://github.com/theultimate-dev/skills/compare/product-design--v0.4.0...HEAD
+[0.4.0]: https://github.com/theultimate-dev/skills/compare/product-design--v0.3.0...product-design--v0.4.0
 [0.3.0]: https://github.com/theultimate-dev/skills/compare/product-design--v0.2.0...product-design--v0.3.0
 [0.2.0]: https://github.com/theultimate-dev/skills/compare/product-design--v0.1.0...product-design--v0.2.0
 [0.1.0]: https://github.com/theultimate-dev/skills/releases/tag/product-design--v0.1.0
