@@ -414,6 +414,20 @@ def fault_cut_without_tilde(w):
     w.commit("docs(context): cut a check", BET)
 
 
+def fault_all_code_in_one_commit(w):
+    first = w.grade_file("bet-code-commits").split()[0]
+    w.sub(BET, rf"^{first[:7]}[0-9a-f]* .*\n", "")
+    w.commit("docs(context): record one code commit", BET)
+
+
+def fault_committed_over_the_persons_change(w):
+    w.commit("feat: snooze a plant while away", "sprig.py")
+
+
+def fault_discarded_the_persons_change(w):
+    w.git("checkout", "--", "sprig.py")
+
+
 def fault_pushed(w):
     # The fixture has already published the last commit; a push the line forbids needs a new one.
     w.git("commit", "-q", "--allow-empty", "-m", "chore: an empty commit to publish")
@@ -767,6 +781,16 @@ CONTROLS = [
     ("gate1-approved-unasked", "gate1-unapproved", "shaped", None, None, fault_approved_unasked, "status-still-shaped"),
     ("gate1-coded-early", "gate1-unapproved", "shaped", None, None, fault_coded_before_approval, "no-code-before-approval"),
     ("build+", "build", "built", "approved", None, None, None),
+    ("build-all-code-in-one-commit", "build", "built", "approved", None, fault_all_code_in_one_commit, "code-committed-along-the-way"),
+    ("approve-and-build+", "approve-and-build", "built", "shaped", None, None, None),
+    ("approve-and-build-stopped-at-approval", "approve-and-build", "approved", "shaped", None, None, "status-built"),
+    ("approve-and-build-no-approval", "approve-and-build", "shaped", "shaped", None, None, "pin-recorded"),
+    ("build-not-conventional", "build", "built-house", "approved-house", None, None, "commits-conventional"),
+    ("build-house+", "build-house", "built-house", "approved-house", None, None, None),
+    ("build-house-ignored", "build-house", "built", "approved", None, None, "commits-follow-the-project"),
+    ("build-dirty-tree+", "build-dirty-tree", "approved-dirty", "approved-dirty", None, None, None),
+    ("build-dirty-tree-committed", "build-dirty-tree", "approved-dirty", "approved-dirty", None, fault_committed_over_the_persons_change, "no-commits-made"),
+    ("build-dirty-tree-discarded", "build-dirty-tree", "approved-dirty", "approved-dirty", None, fault_discarded_the_persons_change, "persons-change-intact"),
     ("build-mixed-commit", "build", "built", "approved", None, fault_mixed_commit, "commits-separate"),
     ("build-changelog-outside-bet", "build", "built", "approved", None, fault_changelog_outside_bet, "changelog-entry-in-code-commit"),
     ("build-shaped-field-edited", "build", "built", "approved", None, fault_shaped_field_edited, "shaped-fields-intact"),

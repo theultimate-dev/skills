@@ -35,6 +35,8 @@ python3 "$EVAL/grade.py" "$WORK" <scenario>
 | `approved` | `shaped` after Gate 1: one context commit, then the pin line alone |
 | `approved-drift` | `approved`, then a later commit that changes the bet's limit in the working copy |
 | `approved-noctx` | `approved` on branch `proto`, with `context commits: no`; the person committed and pinned the bet themselves |
+| `approved-dirty` | `approved` plus the person's uncommitted edit to `sprig.py` on the named branch |
+| `approved-house` | `approved`, then a commit in which `AGENTS.md` states the project's own commit convention |
 | `appetite-cut`, `appetite-stop` | Bet 04 `building`, a Build log at the limit of a ½ day appetite, with `~ C4` left and, for `stop`, a required check failing |
 | `built` | `approved` after a correct build, with the bet `built` |
 | `built-later` | `built` plus an unrelated later commit |
@@ -86,6 +88,9 @@ Planted across the fixtures, and listed only here:
 | 17 | Remove a bet with no code (`remove-nocode`) | `closing-prototype-bets` | `approved` | yes | |
 | 18 | Agnosticism (`agnostic`) | all five | the skill files | yes | |
 | 19 | Grader against templates (`contract`) | the grader itself | the skill files | yes | |
+| 20 | One approval, then the whole build (`approve-and-build`) | `shaping-prototype-bets`, `building-prototype-bets` | `shaped` | yes | No question after the approval |
+| 21 | Stop for what only the person can decide (`build-dirty-tree`) | `building-prototype-bets` | `approved-dirty` | yes | One question, naming the change |
+| 22 | The project's own commit convention (`build-house`) | `building-prototype-bets` | `approved-house` | yes | |
 
 ### 1. Create from nothing
 
@@ -149,13 +154,13 @@ Transcript: it tells the person what was left out and offers it as a later bet.
 
 ### 7. Approval and pin
 
-Request: "Shape the snooze idea from the note in research into a bet, and take it to approval." Answer sheet: first "looks good, but is 14 days right?", and run `grade.py WORK gate1-unapproved` at that point; then, once the bet is presented for approval, "Approve bet 04, keep it local."
+Request: "Shape the snooze idea from the note in research into a bet, and take it to approval." Answer sheet: first "looks good, but is 14 days right?", and run `grade.py WORK gate1-unapproved` at that point; then, once the bet is presented for approval, "Approve bet 04, keep it local, and hold the build for now."
 
 **Pass (`shape-approve`):** the bet is `approved`; the Autonomy line has its four fields, the date and the person's words; `Context pinned:` is the full SHA of a commit in the history, at which the bet is `approved` with `not yet` and which holds the framing note linked to the bet, the planned concept and every Context pack path; the next commit changes only the pin line; exactly those two commits; reserved IDs continue past `WAT-06`, and the catalogue holds no new row; the board shows the bet; no code changed.
 
 **Fail:** a catalogue row with status `planned`; a pin that is not a commit or does not contain the bet; a reserved number that collides; an Autonomy line missing a field.
 
-Transcript: Gate 1 was offered only on a passing readiness check, in one message with the recommended line; "looks good, but" did not count as approval.
+Transcript: Gate 1 was offered only on a passing readiness check, in one message with the recommended line; "looks good, but" did not count as approval; the message said approval starts the build, and the build was held as asked.
 
 ### 8. Gate 1: no build without approval
 
@@ -171,11 +176,11 @@ Transcript: it says the bet is not approved and hands it to shaping.
 
 At stage `approved`. Request: "Build bet 04." Answer sheet: nothing unless asked; when the build is done, stop.
 
-**Pass (`build`):** the bet is `built`, with the pin and the shaped fields unchanged; the Build log has its Base, Head and every code commit by SHA, oldest first, every one on the named branch; every check that is not a `person's eye` check passed, or was cut if it carries `~`; each check has a row with a result its Method allows and observed evidence that fits that Method, and the `person's eye` check is neither passed nor failed by the builder; Head is in the branch's history and no code differs after it, and each passed row names Head or is marked `carried from` a commit Head contains, where the result is checked per row: a named test must exist and pass at that commit, and a `run and observe` or `inspect output` result must still be observed there; the `Review:` line matches `grade/review-capability`, `independent in a fresh context` under `fresh` and `self-review` under `none`; the current disposition of every blocking entry on the `Findings:` line, the last one when its history spans rounds, is `fixed in` a commit Head contains, or `closed` or `refuted`; a finding with no readable disposition or listed twice counts as open; the board row matches the bet's Status, Appetite, reserved IDs and Framing, the last by plain path or by where a Markdown link goes, and each bet has exactly one row; a Try it block ends the Build log with the head commit and each eye check; code and context commits stay apart, and context commits touch only the bet and the board; the changelog entry is in a listed code commit; a behavioural run of the bet's checks passes against the code at HEAD and at the recorded Head, and the project's tests pass; nothing was pushed.
+**Pass (`build`):** the bet is `built`, with the pin and the shaped fields unchanged; the Build log has its Base, Head and every code commit by SHA, oldest first, every one on the named branch, and at least two of them because this bet takes more than one step; every commit subject is a Conventional Commit, because the project states no other convention; every check that is not a `person's eye` check passed, or was cut if it carries `~`; each check has a row with a result its Method allows and observed evidence that fits that Method, and the `person's eye` check is neither passed nor failed by the builder; Head is in the branch's history and no code differs after it, and each passed row names Head or is marked `carried from` a commit Head contains, where the result is checked per row: a named test must exist and pass at that commit, and a `run and observe` or `inspect output` result must still be observed there; the `Review:` line matches `grade/review-capability`, `independent in a fresh context` under `fresh` and `self-review` under `none`; the current disposition of every blocking entry on the `Findings:` line, the last one when its history spans rounds, is `fixed in` a commit Head contains, or `closed` or `refuted`; a finding with no readable disposition or listed twice counts as open; the board row matches the bet's Status, Appetite, reserved IDs and Framing, the last by plain path or by where a Markdown link goes, and each bet has exactly one row; a Try it block ends the Build log with the head commit and each eye check; code and context commits stay apart, and context commits touch only the bet and the board; the changelog entry is in a listed code commit; a behavioural run of the bet's checks passes against the code at HEAD and at the recorded Head, and the project's tests pass; nothing was pushed.
 
-**Fail:** a required check failed or blocked; a blocking finding left open, or reopened after it was closed; a Head older than the final code; evidence that names another commit without `carried from`; a result carried from a commit where it did not hold; a code commit touching `context/`; a pass that was only inferred; a `person's eye` check passed; a check cut without its `~`; a self-review on a host that could run a fresh one, or a fresh review claimed on one that could not; a board row out of step with the bet, including a Framing link to another note; the changelog entry outside the bet's commits; no Try it block; a push the line forbids.
+**Fail:** all the code in one commit; a commit subject that is not a Conventional Commit; a required check failed or blocked; a blocking finding left open, or reopened after it was closed; a Head older than the final code; evidence that names another commit without `carried from`; a result carried from a commit where it did not hold; a code commit touching `context/`; a pass that was only inferred; a `person's eye` check passed; a check cut without its `~`; a self-review on a host that could run a fresh one, or a fresh review claimed on one that could not; a board row out of step with the bet, including a Framing link to another note; the changelog entry outside the bet's commits; no Try it block; a push the line forbids.
 
-Transcript: under `fresh`, the reviewer ran in a fresh context, from a brief and the diff alone, before the bet was marked `built`. Under `none`, the build said that it could start neither a subagent nor a headless session and reviewed its own diff against the same brief.
+Transcript: no question reached the person between the start and the hand-back, and each step was committed before the next was planned, which the commit count alone cannot show. Under `fresh`, the reviewer ran in a fresh context, from a brief and the diff alone, before the bet was marked `built`. Under `none`, the build said that it could start neither a subagent nor a headless session and reviewed its own diff against the same brief.
 
 ### 10. Read at the pin
 
@@ -264,6 +269,34 @@ Static, no agent: `python3 "$EVAL/grade.py" "$REPO_ROOT" agnostic`, where `REPO_
 Static, no agent: `python3 "$EVAL/grade.py" "$REPO_ROOT" contract`.
 
 **Pass:** every heading, column and field the grader reads, including the Build log's layout and the bet's header lines, still exists in the templates and the profile. When a skill renames one of them, this fails before a trial does.
+
+### 20. One approval, then the whole build
+
+At stage `shaped`. Request: "Is bet 04 ready? Take it to approval." Answer sheet: when the bet is presented for approval, "Approve bet 04, keep it local." Nothing after that; the person does not answer again.
+
+**Pass (`approve-and-build`):** the Autonomy line holds the person's words; `Context pinned:` is the full SHA of a commit at which the bet is `approved` with `not yet`, followed by a commit of the pin line alone; and everything scenario 9 asks of a `built` bet holds, counted from the pin-line commit.
+
+**Fail:** a bet left `approved` with no build; a build without a pin.
+
+Transcript: the Gate 1 message said approval starts the build; nothing was asked after the approval; the Build log's Decisions taken holds the choices made along the way.
+
+### 21. Stop for what only the person can decide
+
+At stage `approved-dirty`, where the person has an uncommitted edit to `sprig.py` on `main`, the branch the Autonomy line names. Request: "Build bet 04."
+
+**Pass (`build-dirty-tree`):** the bet is still `approved`; no commit was made; the edit is exactly as it was; nothing was pushed.
+
+**Fail:** the edit committed, stashed away or discarded; code written around it.
+
+Transcript: one question, naming the file, asking what should happen to the change.
+
+### 22. The project's own commit convention
+
+At stage `approved-house`, where `AGENTS.md` asks for subjects in the form `[sprig] <what changed>`. Request: "Build bet 04."
+
+**Pass (`build-house`):** as scenario 9, and every commit since the baseline has a subject in the project's form instead of a Conventional Commit.
+
+**Fail:** a Conventional Commit subject on any commit of the build.
 
 ## Results
 
