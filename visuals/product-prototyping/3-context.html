@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Product prototyping: the context folder beside the code</title>
+<script>document.documentElement.dataset.theme = new URLSearchParams(location.search).get("theme") || "dark";</script>
+<link rel="stylesheet" href="../brand.css">
+<style>
+  .headline { margin-top: 20px; font-size: 44px; }
+  .grid { display: grid; grid-template-columns: 492px 1fr; gap: 56px; margin-top: 36px; align-items: start; }
+  .caption { margin: 0 0 14px; }
+  .panel { margin: 0; padding: 0; list-style: none; background: var(--bg-raised); border: 1px solid var(--border); border-radius: var(--radius); }
+  .tree li { display: grid; grid-template-columns: 204px 1fr; align-items: baseline; gap: 12px; padding: 7px 20px; }
+  .tree li:first-child { padding-top: 14px; }
+  .tree li:last-child { padding-bottom: 14px; }
+  .tree .name { font-family: var(--mono); font-size: 22px; white-space: nowrap; }
+  .tree .in { padding-left: 24px; }
+  .tree .what { font-size: 22px; color: var(--text-secondary); white-space: nowrap; }
+  .log li { display: grid; grid-template-columns: 104px 1fr; align-items: baseline; gap: 12px; padding: 11px 20px; border-top: 1px solid var(--border); }
+  .log li:first-child { border-top: 0; }
+  .log .kind { font-family: var(--mono); font-size: 22px; color: var(--text-secondary); }
+  .log .what { font-size: 22px; line-height: 1.35; }
+  .log .pin { color: var(--accent); }
+  .fork { margin: 14px 0 0; padding: 0; list-style: none; }
+  .fork li { font-size: 22px; line-height: 1.35; color: var(--text-secondary); }
+  .fork li + li { margin-top: 10px; }
+  .fork b { font-weight: 600; color: var(--text); }
+</style>
+</head>
+<body>
+<div class="canvas">
+  <p class="kicker">The context/ folder beside your code</p>
+  <h1 class="headline">One repository, one history.<br>A removed bet is a&nbsp;revert.</h1>
+  <div class="grid">
+    <div>
+      <p class="kicker caption">Your repository</p>
+      <ul class="panel tree">
+        <li><span class="name">context/</span></li>
+        <li><span class="name in">AGENTS.md</span><span class="what">the map for agents</span></li>
+        <li><span class="name in">product/</span><span class="what">requirements with IDs</span></li>
+        <li><span class="name in">architecture/</span><span class="what">built or planned</span></li>
+        <li><span class="name in">decisions/</span><span class="what">why it is this way</span></li>
+        <li><span class="name in">bets/</span><span class="what">one file per bet</span></li>
+        <li><span class="name in">research/</span><span class="what">framing notes</span></li>
+        <li><span class="name in">notes.md</span><span class="what">questions and risks</span></li>
+        <li><span class="name">CHANGELOG.md</span><span class="what">the app's history</span></li>
+        <li><span class="name">src/</span><span class="what">your code</span></li>
+      </ul>
+    </div>
+    <div>
+      <p class="kicker caption">One bet in its log</p>
+      <ul class="panel log">
+        <li><span class="kind">context</span><span class="what">Bet approved <span class="pin">· pinned here</span></span></li>
+        <li><span class="kind">code</span><span class="what">A step of the bet</span></li>
+        <li><span class="kind">code</span><span class="what">Its changelog entry</span></li>
+        <li><span class="kind">context</span><span class="what">Build log, status built</span></li>
+      </ul>
+      <ul class="fork">
+        <li><b>Keep:</b> nothing is reverted. Requirements and architecture become built.</li>
+        <li><b>Remove:</b> exactly the code commits are reverted, the changelog entry with them. A context commit records the drop and the lesson.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+</body>
+</html>

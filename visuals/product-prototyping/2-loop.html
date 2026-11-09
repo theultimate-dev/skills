@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Product prototyping: from an idea to kept or removed</title>
+<script>document.documentElement.dataset.theme = new URLSearchParams(location.search).get("theme") || "dark";</script>
+<link rel="stylesheet" href="../brand.css">
+<style>
+  .headline { margin-top: 20px; font-size: 44px; }
+  .steps { display: grid; grid-template-columns: 1fr 40px 1fr 40px 1fr; }
+  .steps.first { margin-top: 36px; }
+  .step { box-sizing: border-box; padding: 20px 22px 22px; background: var(--bg-raised); border: 1px solid var(--border); border-radius: var(--radius); }
+  .step.gate { border-color: var(--accent); }
+  .step .n { margin: 0; font-family: var(--mono); font-size: 22px; color: var(--text-secondary); }
+  .step.gate .n { color: var(--accent); }
+  .step h2 { margin: 6px 0 10px; font-size: 26px; font-weight: 600; line-height: 1.2; letter-spacing: -0.01em; }
+  .step ul { margin: 0; padding: 0; list-style: none; }
+  .step li { font-size: 22px; line-height: 1.35; color: var(--text-secondary); }
+  .step li + li { margin-top: 8px; }
+  .step li b { font-weight: 600; color: var(--text); }
+  .arrow { display: flex; align-items: center; justify-content: center; font-size: 28px; color: var(--text-secondary); }
+  .turn { display: block; width: 100%; height: 44px; overflow: visible; }
+  .turn path { fill: none; stroke: var(--text-secondary); stroke-width: 2; }
+  .outcomes { margin: 24px 0 0; text-align: center; font-size: 22px; color: var(--text-secondary); }
+  .outcomes b { font-weight: 600; color: var(--text); }
+</style>
+</head>
+<body>
+<div class="canvas">
+  <p class="kicker">From an idea to kept or removed</p>
+  <h1 class="headline">Two gates are yours:<br>approve the bet, then keep or remove&nbsp;it.</h1>
+  <div class="steps first">
+    <div class="step">
+      <p class="n">01 · agent</p>
+      <h2>Frame</h2>
+      <ul><li>reads the context and code</li><li>two or three options</li><li>a one-page note: shape, park or stop</li></ul>
+    </div>
+    <div class="arrow">→</div>
+    <div class="step">
+      <p class="n">02 · agent</p>
+      <h2>Shape</h2>
+      <ul><li>one bet, ½ day to 2 days</li><li>checks that say how they are proved</li><li>no-gos, a keep-or-remove signal</li></ul>
+    </div>
+    <div class="arrow">→</div>
+    <div class="step gate">
+      <p class="n">Gate 1 · you</p>
+      <h2>Approve</h2>
+      <ul><li>the bet</li><li>what the agent may do alone</li><li>the commit becomes its pin</li></ul>
+    </div>
+  </div>
+  <!-- The turn runs from the centre of the third column back to the centre of the first. -->
+  <svg class="turn" viewBox="0 0 1072 44" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M907,0 V12 Q907,22 897,22 H175 Q165,22 165,32 V42"/>
+    <path d="M156,33 L165,43 L174,33"/>
+  </svg>
+  <div class="steps">
+    <div class="step">
+      <p class="n">03 · agent</p>
+      <h2>Build</h2>
+      <ul><li>plan, implement, prove, review, fix, repeat</li><li>a changelog entry</li><li>steps for you to try</li></ul>
+    </div>
+    <div class="arrow">→</div>
+    <div class="step">
+      <p class="n">04 · you</p>
+      <h2>Try</h2>
+      <ul><li>run the steps it left you</li><li>judge what needs your eye</li><li>ask for an in-scope repair</li></ul>
+    </div>
+    <div class="arrow">→</div>
+    <div class="step gate">
+      <p class="n">Gate 2 · you</p>
+      <h2>Keep or remove</h2>
+      <ul><li><b>Keep:</b> requirements and architecture marked built</li><li><b>Remove:</b> code reverted, requirements dropped with your reason</li></ul>
+    </div>
+  </div>
+  <p class="outcomes"><b>appetite runs out</b> → cut what may be cut, or stop &nbsp;·&nbsp; <b>stopped</b> → reshape or remove</p>
+</div>
+</body>
+</html>

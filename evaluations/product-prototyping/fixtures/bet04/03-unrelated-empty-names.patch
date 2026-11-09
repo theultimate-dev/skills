@@ -1,0 +1,43 @@
+diff --git a/sprig.py b/sprig.py
+index b44da1b..624b61f 100644
+--- a/sprig.py
++++ b/sprig.py
+@@ -22,7 +22,11 @@ def day(text):
+ 
+ 
+ def key(name):
+-    return name.strip().lower()
++    name = name.strip().lower()
++    if not name:
++        print("sprig: a plant name cannot be empty", file=sys.stderr)
++        sys.exit(2)
++    return name
+ 
+ 
+ def next_watering(plant):
+diff --git a/test_names.py b/test_names.py
+new file mode 100644
+index 0000000..8e3bed4
+--- /dev/null
++++ b/test_names.py
+@@ -0,0 +1,20 @@
++import contextlib
++import io
++import pathlib
++import tempfile
++import unittest
++
++import sprig
++
++
++class NameTest(unittest.TestCase):
++    def test_empty_name_is_rejected(self):
++        with tempfile.TemporaryDirectory() as tmp:
++            data = str(pathlib.Path(tmp) / "sprig.json")
++            with self.assertRaises(SystemExit) as caught, contextlib.redirect_stderr(io.StringIO()):
++                sprig.main(["--data", data, "add", "   ", "--every", "7"])
++            self.assertEqual(caught.exception.code, 2)
++
++
++if __name__ == "__main__":
++    unittest.main()

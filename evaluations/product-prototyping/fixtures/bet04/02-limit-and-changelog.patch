@@ -1,0 +1,45 @@
+diff --git a/CHANGELOG.md b/CHANGELOG.md
+index 8e764a8..53fe683 100644
+--- a/CHANGELOG.md
++++ b/CHANGELOG.md
+@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
+ 
+ ## [Unreleased]
+ 
++### Added
++
++- `snooze` hides a plant from the due list for 1 to 14 days while you are away.
++
+ ## [Baseline] - 2026-10-01
+ 
+ ### Added
+diff --git a/sprig.py b/sprig.py
+index fb263e7..b44da1b 100644
+--- a/sprig.py
++++ b/sprig.py
+@@ -79,6 +79,9 @@ def main(argv=None):
+         if name not in plants:
+             print(f"snooze: unknown plant {name}", file=sys.stderr)
+             return 3
++        if not 1 <= args.days <= 14:
++            print("snooze: days must be between 1 and 14", file=sys.stderr)
++            return 2
+         until = today + dt.timedelta(days=args.days)
+         plants[name]["snoozed_until"] = until.isoformat()
+     elif args.command == "remove":
+diff --git a/test_snooze.py b/test_snooze.py
+index daa02c4..b863c90 100644
+--- a/test_snooze.py
++++ b/test_snooze.py
+@@ -31,6 +31,11 @@ class SnoozeTest(unittest.TestCase):
+         self.run_sprig("water", "fern", today="2026-03-09")
+         self.assertEqual(self.run_sprig("due", today="2026-03-16")[1], "fern\n")
+ 
++    def test_snooze_limit_is_fourteen_days(self):
++        self.run_sprig("add", "fern", "--every", "7")
++        self.assertEqual(self.run_sprig("snooze", "fern", "--days", "15")[0], 2)
++        self.assertEqual(self.run_sprig("snooze", "fern", "--days", "14")[0], 0)
++
+ 
+ if __name__ == "__main__":
+     unittest.main()

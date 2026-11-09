@@ -103,7 +103,7 @@
       "source": "./",
       "strict": false,
       "license": "MIT",
-      "homepage": "https://github.com/theultimate-dev/skills",
+      "homepage": "https://github.com/theultimate-dev/skills/tree/main/skills/product-prototyping",
       "keywords": ["product-prototyping", "prototype", "bets", "shape-up", "requirements", "adr", "changelog", "self-verification", "agents"],
       "skills": [
         "./skills/product-prototyping/structuring-prototype-context",

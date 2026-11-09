@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Product prototyping: what the plugin is</title>
+<script>document.documentElement.dataset.theme = new URLSearchParams(location.search).get("theme") || "dark";</script>
+<link rel="stylesheet" href="../brand.css">
+<style>
+  .top { display: flex; align-items: center; gap: 24px; }
+  .headline { margin-top: 28px; font-size: 48px; }
+  .lede { margin: 16px 0 0; font-size: 24px; line-height: 1.45; color: var(--text-secondary); }
+  .skills { margin: 32px 0 0; padding: 0; list-style: none; background: var(--bg-raised); border: 1px solid var(--border); border-radius: var(--radius); }
+  .skills li { display: grid; grid-template-columns: 436px 1fr 96px; align-items: center; gap: 16px; padding: 13px 22px; border-top: 1px solid var(--border); }
+  .skills li:first-child { border-top: 0; }
+  .skills .name { font-family: var(--mono); font-size: 24px; font-weight: 500; white-space: nowrap; }
+  .skills .what { font-size: 22px; color: var(--text-secondary); }
+  .skills .gate { justify-self: end; padding: 3px 10px; font-family: var(--mono); font-size: 22px; color: var(--accent); border: 1px solid var(--accent); border-radius: var(--radius); white-space: nowrap; }
+</style>
+</head>
+<body>
+<div class="canvas">
+  <div class="top">
+    <svg class="mark" viewBox="0 0 304 166" role="img" aria-label="The Ultimate Dev">
+      <path class="u" d="M0,0 H38 V102 L64,128 H76 L102,102 V0 H140 V118 L92,166 H48 L0,118 Z"/>
+      <path class="d" d="M164,0 H256 L304,48 V118 L256,166 H164 Z M202,38 V128 H240 L266,102 V64 L240,38 Z"/>
+    </svg>
+    <p class="kicker">product-prototyping plugin</p>
+  </div>
+  <h1 class="headline">Try an idea. Then keep it or remove&nbsp;it.</h1>
+  <p class="lede">Five skills for a product with no planned versions, in small bets beside its code.</p>
+  <ul class="skills">
+    <li><span class="name">structuring-prototype-context</span><span class="what">Sets up context/ beside your code</span></li>
+    <li><span class="name">framing-prototype-ideas</span><span class="what">One page: shape, park or stop</span></li>
+    <li><span class="name">shaping-prototype-bets</span><span class="what">One bet, half a day to two days</span><span class="gate">Gate 1</span></li>
+    <li><span class="name">building-prototype-bets</span><span class="what">Builds the bet and proves its checks</span></li>
+    <li><span class="name">closing-prototype-bets</span><span class="what">You try it, then keep or remove it</span><span class="gate">Gate 2</span></li>
+  </ul>
+</div>
+</body>
+</html>

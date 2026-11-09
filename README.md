@@ -190,7 +190,7 @@ Use reconciling-product-context: bet 04 is merged.
 
 A decision record names the trigger that moves the context to `product-context`, such as a planned release or a second contributor; `structuring-product-context` then restructures it.
 
-Install with `claude plugin install product-prototyping@theultimate-dev` after marketplace setup, or `npx skills add theultimate-dev/skills/skills/product-prototyping`.
+Install with `claude plugin install product-prototyping@theultimate-dev` after marketplace setup, or `npx skills add theultimate-dev/skills/skills/product-prototyping`. The [plugin's own page](skills/product-prototyping/README.md) shows how a bet moves between its two gates and when to use `product-context` instead.
 
 ```text
 Use structuring-prototype-context to set up context for this prototype.
