@@ -15,6 +15,7 @@ Releases are tagged `product-prototyping--vX.Y.Z`.
 ### Changed
 
 - The plugin's homepage in the marketplace opens this page instead of the repository.
+- Approving a bet now starts its build, and the build runs on its own until you have something to try. It decides what stays inside the bet and records those choices for you to read at Gate 2, and it comes back early only for what only you can answer, such as a credential, a decision the bet relies on or anything a revert cannot undo. Say so when you approve if you want the build held.
 
 ## [0.1.0] - 2026-11-08
 

@@ -1,6 +1,6 @@
 ---
 name: shaping-prototype-bets
-description: "Shapes one prototype bet from a framed idea: an observable outcome, an appetite of half a day to two days, requirement deltas with reserved permanent IDs, acceptance checks that each name how they are verified, no-gos, rabbit holes, cuttable scope, a keep-or-remove signal, a context pack, and an autonomy line. Checks readiness, gets the person's approval at Gate 1, and records the commit the bet was approved at. Also reshapes a stopped bet, or a bet paused for a contract or decision change. Use when the user says shape this, turn this into a bet, size this, is the bet ready, approve bet N, or reshape bet N. Not for planned versions and milestones (shaping-bets)."
+description: "Shapes one prototype bet from a framed idea: an observable outcome, an appetite of half a day to two days, requirement deltas with reserved permanent IDs, acceptance checks that each name how they are verified, no-gos, rabbit holes, cuttable scope, a keep-or-remove signal, a context pack, and an autonomy line. Checks readiness, gets the person's approval at Gate 1, records the commit the bet was approved at, and starts the build. Also reshapes a stopped bet, or a bet paused for a contract or decision change. Use when the user says shape this, turn this into a bet, size this, is the bet ready, approve bet N, or reshape bet N. Not for planned versions and milestones (shaping-bets)."
 license: MIT
 ---
 
@@ -59,6 +59,8 @@ Read [sizing and readiness](references/sizing-and-readiness.md) before step 3 an
 
 Offer approval only on a readiness check made now, on the bet as it stands, that passes every row; when anything it reads has changed since the last check, check again before presenting and again before recording an approval. When a row fails, report the blockers and stop with the bet `shaped`. Otherwise present the bet in one message: the outcome, the appetite, the requirement deltas with their reserved IDs, the checks with their methods and which are the person's eye, the boundaries, the keep-or-remove signal, what the bet introduces, the readiness result, and a recommended Autonomy line. Recommend `code commits: <the branch the person works on>; context commits: yes; push: no; revert on remove: yes`, because a removed bet is undone by a revert on that branch, while a bet branch would need a merge to keep, which this loop does not have. The person may change any part of it.
 
+Say in the same message that approval starts the build at once and that it runs without them until there is something to try, stopping only for what only they can decide, so this yes is the last input the build needs. Run `git status --porcelain` and name any change that is not this bet's, because an unrelated change on the branch would stop the build before it starts, and settle it here. When the person chooses `context commits: no`, tell them the build then waits until they commit and pin the bet themselves.
+
 Only explicit approval counts, given after readiness passes: the person says to approve or go ahead. Silence, a question, praise or "looks good, but" does not. A request for changes means revise and present again.
 
 On approval:
@@ -66,6 +68,7 @@ On approval:
 1. Set `Status: approved`. Replace Autonomy with the approved line and the person's words, as in [writing a prototype bet](references/writing-a-prototype-bet.md). Rebuild the board.
 2. When the approved line says `context commits: yes`, commit the bet, the board, the planned sections, any `notes.md` row, and the whole framing note with the research index in one context commit, with the project's commit convention. Before staging, check the index for changes outside those paths and stop on any; after staging, check that the staged diff holds exactly those paths ([sizing and readiness](references/sizing-and-readiness.md) gives the commands). Keep context commits apart from code commits.
 3. Check that every Context pack path exists in that commit, then take its full SHA and write it as `Context pinned`. Commit that line alone, with the same index checks: a commit cannot contain its own SHA, and building reads Status, Context pinned, the Build log and the Result from the working copy and everything else at the pin.
+4. Start the build. Go straight on to `building-prototype-bets` on this bet in the same session, because the approval was the go-ahead for it. When the person asked to hold it, as in "approve it, but wait", stop here with the bet `approved` and pinned.
 
 When the approved line says `context commits: no`, stop with the bet `approved` and `Context pinned: not yet`; `building-prototype-bets` needs a pin and will say so.
 
@@ -92,7 +95,7 @@ A bet that is `shaped`, `approved` or `stopped` and that the person no longer wa
 
 ## Hand back
 
-Report: the bet written or changed with its path and status, the reserved IDs, the readiness result and what blocks the bet when it is not ready, the planned sections written, the pin when there is one. Name the next step: `building-prototype-bets` on bet N, once it is `approved` and pinned. Commit, push and revert only as the person agreed in the current request or the bet's Autonomy line allows.
+Report: the bet written or changed with its path and status, the reserved IDs, the readiness result and what blocks the bet when it is not ready, the planned sections written, the pin when there is one. After an approval that reached a pin, keep this report to a few lines and carry on into the build. Otherwise name the next step: `building-prototype-bets` on bet N, once it is `approved` and pinned. Commit, push and revert only as the person agreed in the current request or the bet's Autonomy line allows.
 
 ## When a sibling skill is missing
 
@@ -100,6 +103,7 @@ Name the missing skill in one line, then do only its small essential outcome you
 
 - `framing-prototype-ideas` missing: shape from the person's idea and ask the framing questions in Inputs.
 - `decision-records` missing: a relied-on decision that is not `accepted` blocks readiness; name it, never invent one.
+- `building-prototype-bets` missing: stop with the bet `approved` and pinned, and tell the person the build has not started.
 - `structuring-prototype-context` missing and no `context/` folder: there is nothing to pin the bet to; say so and recommend it.
 - No file access: return the bet and the board as complete Markdown, say that nothing was written, and do not report a bet as approved or pinned.
 
