@@ -17,6 +17,7 @@ Releases are tagged `product-prototyping--vX.Y.Z`.
 - The plugin's homepage in the marketplace opens this page instead of the repository.
 - Approving a bet now starts its build, and the build runs on its own until you have something to try. It decides what stays inside the bet and records those choices for you to read at Gate 2, and it comes back early only for what only you can answer, such as a credential, a decision the bet relies on or anything a revert cannot undo. Say so when you approve if you want the build held.
 - A build now commits each step as soon as its checks pass, before planning the next, rather than leaving the work for commits at the end.
+- Commit messages in a bet are Conventional Commits by default. When your project's instructions, contributing guide or commit tooling state another convention, the agent follows that one.
 
 ## [0.1.0] - 2026-11-08
 

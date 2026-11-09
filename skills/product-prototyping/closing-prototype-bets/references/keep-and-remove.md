@@ -127,7 +127,7 @@ Code first, as one commit; then the context, as another.
    - Search for the bet's own identifiers (a new function name, a route, a table, a translation key). Nothing should match outside `context/` and the changelog's `Removed` entry, if one was added.
    - Run the project's build and tests as the Build log names them. A failure means the revert cut too much or too little: show it, do not patch around it.
 
-   Then make one commit, the revert and the changelog line together, with the project's commit convention and its sign-off rule, naming the bet: for Quill, `revert: remove the weekly recap page (bet 03)`.
+   Then make one commit, the revert and the changelog line together, with the commit convention the profile's Commits section sets and the project's sign-off rule, naming the bet: for Quill, `revert: remove the weekly recap page (bet 03)`.
 7. **Context close.** Now write, and commit apart from the code when `context commits: yes`:
    - **Result.** Fill `## Result`: `Removed`, the date, the person's words, and the lesson. Then set `Status: removed`.
    - **Requirements.** Each new ID in Requirement deltas is written as a row in its capability file with Status `dropped`, the date, and `bet NN removed: <reason>`. Keep the delta's text so the row says what was dropped. Create the capability file from the capability template (`templates/capability-requirements.md` in this skill) when the prefix is new. Rows the bet changed or dropped stay as they were; the revert restored the behaviour they describe. The reserved numbers stay used, so the next bet continues after them.
