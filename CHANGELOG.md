@@ -16,10 +16,17 @@ Marketplace releases are tagged `vX.Y.Z`. Every plugin release is also a marketp
 
 ## [Unreleased]
 
+## [0.4.2] - 2026-11-09
+
 ### Added
 
 - Evaluations for the `product-prototyping` plugin under `evaluations/product-prototyping/`: a scenario catalog for the five skills and the two gates, a script that builds reproducible workspaces with real git history for one invented app, and a grader that checks files, IDs, statuses and commits on disk. A controls command proves the grader tells a good end state from one with a named fault. No agent trials have run yet.
 - The `product-prototyping` evaluations also grade that a build commits step by step in the right commit convention, that one approval carries through to a finished build, and that a build stops for an uncommitted change only the person can settle.
+
+### Changed
+
+- Plugins released with this version:
+  - `product-prototyping` [0.2.0](https://github.com/theultimate-dev/skills/releases/tag/product-prototyping--v0.2.0): approving a bet now starts its build, which runs on its own and commits each step until there is something to try.
 
 ## [0.4.1] - 2026-11-08
 
@@ -173,7 +180,8 @@ Marketplace releases are tagged `vX.Y.Z`. Every plugin release is also a marketp
 - Published releases are immutable: their archives, `checksums.txt` and tag cannot change after publication.
 - The CI and release workflows run `actions/checkout` pinned to a full commit SHA, and Dependabot proposes updates to it weekly.
 
-[Unreleased]: https://github.com/theultimate-dev/skills/compare/v0.4.1...HEAD
+[Unreleased]: https://github.com/theultimate-dev/skills/compare/v0.4.2...HEAD
+[0.4.2]: https://github.com/theultimate-dev/skills/compare/v0.4.1...v0.4.2
 [0.4.1]: https://github.com/theultimate-dev/skills/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/theultimate-dev/skills/compare/v0.3.3...v0.4.0
 [0.3.3]: https://github.com/theultimate-dev/skills/compare/v0.3.2...v0.3.3
