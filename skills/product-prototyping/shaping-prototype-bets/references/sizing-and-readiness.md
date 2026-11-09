@@ -74,7 +74,7 @@ git diff --cached --name-only                          # must be empty, or only 
 git status --porcelain -- <every path the bet names>   # only the pending shaping artifacts
 git add <the bet, the board, the planned sections, notes.md, the framing note, research/README.md>
 git diff --cached --name-only                          # exactly those paths, nothing else
-git commit -m "<the project's convention, for shaping bet NN>"
+git commit -m "<the profile's commit convention, for shaping bet NN>"
 git rev-parse HEAD                                     # the commit: the full SHA
 git cat-file -e <sha>:context/<path>                   # for every Context pack path
 ```

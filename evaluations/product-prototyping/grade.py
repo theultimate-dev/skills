@@ -40,6 +40,9 @@ OPEN_STATUSES = {"shaped", "approved", "building", "built", "stopped"}
 TREATMENTS = {"move", "split", "merge", "convert", "derive", "drop"}
 AUTONOMY = re.compile(
     r"code commits: ([^;]+); context commits: (yes|no); push: (yes|no); revert on remove: (yes|no)")
+# The default commit convention, and the one the `approved-house` stage's AGENTS.md states instead (profile, Commits).
+CONVENTIONAL = re.compile(r"^[a-z]+(\([^)]+\))?!?: \S")
+HOUSE = re.compile(r"^\[sprig\] \S")
 
 
 def clean(text):
@@ -787,9 +790,9 @@ class Grader:
                 problems.append("watering does not clear the snooze")
         return problems
 
-    def check_commit_separation(self, log, allow_context=True):
+    def check_commit_separation(self, log, allow_context=True, base=None):
         """Code and context commits stay separate, and the Build log lists the code ones (profile, Commits)."""
-        since = self.commits_since()
+        since = self.commits_since(base)
         mixed, code, context_only = [], [], []
         for sha in since:
             paths = self.commit_paths(sha)
@@ -814,6 +817,17 @@ class Grader:
             self.check("context-commit-between-named", all(s in named for s in between),
                        f"{len(between)} between, {len(named)} named")
         return code
+
+    def check_committed_along_the_way(self, log):
+        """Bet 04 takes more than one step, and each step gets its own commit (building SKILL.md, The loop).
+
+        A count cannot tell commits made along the way from one batch split at the end; the transcript judges that.
+        """
+        self.check("code-committed-along-the-way", len(log["commits"]) >= 2, f"{len(log['commits'])} code commit(s) listed")
+
+    def check_commit_convention(self, base=None, pattern=CONVENTIONAL, name="commits-conventional"):
+        odd = [self.subject(s) for s in self.commits_since(base) if not pattern.match(self.subject(s))]
+        self.check(name, not odd, "; ".join(odd))
 
     def check_changelog_entry(self, log):
         text = self.read("CHANGELOG.md") or ""
@@ -976,17 +990,20 @@ class Grader:
         self.check("try-it-lists-eye-checks", not missing, ", ".join(missing))
         self.check("try-it-keep-or-remove", "Keep or remove" in block and "Signal" in block, "no keep-or-remove section")
 
-    def check_build_common(self, limit=14):
+    def check_build_common(self, limit=14, at_start=None, base=None, convention=CONVENTIONAL, convention_check="commits-conventional"):
         bet = self.bet()
         if not self.check("bet-exists", bet is not None, "no bet 04"):
             return None, None
         self.check("status-built", bet["header"].get("Status") == "built", f"{bet['header'].get('Status')}")
-        at_start = parse_bet((self.grade_dir / "bet-at-start.md").read_text())
-        self.check("pin-unchanged", bet["header"].get("Context pinned") == at_start["header"].get("Context pinned"), "the pin moved")
+        if at_start is None:
+            at_start = parse_bet((self.grade_dir / "bet-at-start.md").read_text())
+            self.check("pin-unchanged", bet["header"].get("Context pinned") == at_start["header"].get("Context pinned"), "the pin moved")
         self.check_shaped_fields_intact(bet, at_start)
         log = build_log(bet)
         self.check("build-log-filled", bool(log["base"]) and bool(log["head"]) and bool(log["commits"]), "Base, Head or code commits missing")
-        self.check_commit_separation(log)
+        self.check_commit_separation(log, base=base)
+        self.check_committed_along_the_way(log)
+        self.check_commit_convention(base, convention, convention_check)
         autonomy = AUTONOMY.search(at_start["header"].get("Autonomy", ""))
         self.check("on-named-branch", autonomy and self.git("branch", "--show-current").strip() == autonomy.group(1).strip(),
                    f"on {self.git('branch', '--show-current').strip()}")
@@ -1012,6 +1029,48 @@ class Grader:
             self.check_board("built")
             self.check_tree_clean()
 
+    def scenario_approve_and_build(self):
+        """One approval, and the build ran to `built` with no further word from the person (shaping, Gate 1 step 4)."""
+        bet = self.bet()
+        if not self.check("bet-exists", bet is not None, "no bet 04"):
+            return
+        autonomy = bet["header"].get("Autonomy", "")
+        self.check("autonomy-approved-words", re.search(r"Approved \d{4}-\d{2}-\d{2}: [\"“]", autonomy) is not None, autonomy)
+        pin = bet["header"].get("Context pinned", "")
+        if not self.check("pin-recorded", re.fullmatch(r"[0-9a-f]{40}", pin) is not None and self.resolve(pin) == pin, f"pin is {pin!r}"):
+            return
+        since = self.commits_since()
+        if not self.check("pin-in-history", pin in since[:-1], f"{pin} is not followed by the pin-line commit"):
+            return
+        at_pin = self.blob(pin, self.bet_rel())
+        if not self.check("bet-at-pin", at_pin is not None, "bet is not in the pinned commit"):
+            return
+        pinned = parse_bet(at_pin)
+        self.check("pin-holds-approved-bet", pinned["header"].get("Status") == "approved" and
+                   pinned["header"].get("Context pinned") == "not yet", f"{pinned['header']}")
+        pin_line_commit = since[since.index(pin) + 1]
+        self.check("pin-commit-is-pin-line-only", self.commit_paths(pin_line_commit) == [self.bet_rel()], "second commit is more than the pin line")
+        if self.check_build_common(at_start=pinned, base=pin_line_commit)[0] is not None:
+            self.check_board("built")
+            self.check_tree_clean()
+
+    def scenario_build_house(self):
+        # The project's AGENTS.md states its own convention, which replaces the default.
+        if self.check_build_common(convention=HOUSE, convention_check="commits-follow-the-project")[0] is not None:
+            self.check_board("built")
+            self.check_tree_clean()
+
+    def scenario_build_dirty_tree(self):
+        """The person's uncommitted change is on the named branch: only they can say what happens to it."""
+        bet = self.bet()
+        if not self.check("bet-exists", bet is not None, "no bet 04"):
+            return
+        self.check("status-still-approved", bet["header"].get("Status") == "approved", f"{bet['header'].get('Status')}")
+        self.check("no-commits-made", not self.commits_since(), f"{len(self.commits_since())} commits since the baseline")
+        expected = (self.grade_dir / "persons-change.diff").read_text()
+        self.check("persons-change-intact", self.git("diff", "--", "sprig.py") == expected, "the uncommitted change differs")
+        self.check_no_push()
+
     def scenario_build_noctx(self):
         bet = self.bet()
         if not self.check("bet-exists", bet is not None, "no bet 04"):
@@ -1028,6 +1087,8 @@ class Grader:
         self.check("board-left-uncommitted", "context/bets/README.md" in status, "the board is committed")
         autonomy = AUTONOMY.search(parse_bet((self.grade_dir / "bet-at-start.md").read_text())["header"].get("Autonomy", ""))
         self.check("on-named-branch", self.git("branch", "--show-current").strip() == autonomy.group(1).strip(), f"autonomy {autonomy.group(1)}")
+        self.check_committed_along_the_way(log)
+        self.check_commit_convention()
         self.check_built_common(bet, log)
         self.check_working_time(log)
         self.check_no_push()
@@ -1320,6 +1381,7 @@ class Grader:
         self.check("contract-profile-statuses", all(w in profile for w in ["`shaped`", "`approved`", "`building`", "`built`", "`kept`", "`removed`", "`stopped`"]), "bet statuses")
         self.check("contract-profile-methods", all(f"`{m}`" in profile for m in METHODS), "Method values")
         self.check("contract-profile-autonomy", "code commits: <branch>; context commits: yes or no; push: yes or no; revert on remove: yes or no" in profile, "Autonomy line")
+        self.check("contract-profile-convention", "Conventional Commits" in profile and "state another convention" in profile, "commit convention")
         self.check("contract-profile-changed-note", "changed by bet NN" in read("closing-prototype-bets/references/keep-and-remove.md"), "changed-row note")
         keep_remove = read("closing-prototype-bets/references/keep-and-remove.md")
         self.check("contract-keep-delta-text", "the delta's text" in keep_remove and "Keep the delta's text" in keep_remove, "delta text rule")

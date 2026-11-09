@@ -1,6 +1,6 @@
 ---
 name: building-prototype-bets
-description: "Builds an approved prototype bet in a loop until intent and result match: reads the bet at the commit it was approved at, plans, implements in small commits within the autonomy line, verifies every acceptance check by its named method with quoted evidence, has an independent reviewer in a fresh context compare the result with the bet's intent, fixes, and repeats. Cuts cuttable scope or stops when the appetite runs out. Adds the changelog entry, fills the bet's Build log and prepares what the person needs to try the result. Use when the user says build bet N, start the bet, continue the bet, repair the built bet, or the bet is approved. Not for a product's planned delivery loop (running-implementation-loops)."
+description: "Builds an approved prototype bet in a loop until intent and result match: reads the bet at the commit it was approved at, plans, implements and commits each step as it finishes within the autonomy line, verifies every acceptance check by its named method with quoted evidence, has an independent reviewer in a fresh context compare the result with the bet's intent, fixes, and repeats. Starts as soon as the bet is approved and runs without the person until the result is ready to try, stopping only for what only they can decide. Cuts cuttable scope or stops when the appetite runs out. Adds the changelog entry, fills the bet's Build log and prepares what the person needs to try the result. Use when the user says build bet N, start the bet, continue the bet, repair the built bet, or the bet is approved. Not for a product's planned delivery loop (running-implementation-loops)."
 license: MIT
 ---
 
@@ -9,6 +9,14 @@ license: MIT
 Build one approved bet inside its appetite, then hand it to the person to try. The bet says what must be true when you finish: an outcome, acceptance checks that each name how they are proved, boundaries, and an autonomy line. You build until every check that does not need the person's eye passes on the code you committed, and an independent reviewer who has not seen your reasoning agrees that the result matches the bet's intent. The person then tries the build and decides at Gate 2, which belongs to `closing-prototype-bets`. This skill has no gate of its own: Gate 1 already approved the bet, and the autonomy line is the permission you work under.
 
 Read [the prototype profile](references/prototype-profile.md) first for the bet's fields, statuses, the read-at-pin rule and the commit rules. Read [the build loop](references/build-loop.md) before the first step for the working folder, briefs, evidence, the reviewer and the Build log layout.
+
+## Work on your own from approval to hand-back
+
+The person's approval at Gate 1 is their one go-ahead for the whole build, and their direct request for the commits the autonomy line names. Carry the build through to the hand-back in one run, so the person's next touch is trying the result.
+
+- **Decide whatever stays inside the bet and another commit can undo:** names, file layout, the order of steps, how to use what the project already has, how to fix a failure your own change caused. Take the option that best serves the Outcome and write it with its reason under Decisions taken in the Build log, where the person sees it at Gate 2.
+- **Keep the record in `LOG.md`,** so the person can look in whenever they like and nothing waits for them.
+- **Bring the person only what "Stop and ask" lists.** Everything else has its answer in the bet, the context or the code.
 
 ## Where to start
 
@@ -30,22 +38,22 @@ Find the bet's `Status:` line in the latest bet file and act on it.
 1. **A pin.** `Context pinned:`, read from the working copy, holds a full SHA that exists in the history (`git cat-file -e <sha>`). `not yet` means Gate 1 has not passed: stop.
 2. **Read the bet at its pin**, so later edits cannot change what was approved: `git show <sha>:context/bets/NN-slug.md`. Read the shaped fields from that copy and Status, Context pinned, the Build log and the Result from the working copy, reporting any uncommitted state (`git status --short -- context/bets/NN-slug.md`). Then read the Context pack in order, each file at the same pin. When the shaped fields differ between the pin and the working copy, build from the pin and tell the person what differs.
 3. **The autonomy line.** Quote it as recorded. Four things come from it: the branch your code commits go on, whether you commit context, whether you push, and whether closing may revert your commits. Anything it does not say you do not do. When it names no branch for code commits, ask before the first one, because every check's evidence is tied to a commit. A continuation works under the autonomy line of its latest approval.
-4. **A clean tree.** Run `git status --porcelain`. Changes you did not make stay untouched: ask what to do with them, or work in a separate worktree.
+4. **A clean tree.** Run `git status --porcelain`. Changes you did not make stay untouched, and evidence has to come from commits alone, so work in a separate worktree of the named branch when git allows it. When the branch is checked out here, a worktree cannot hold it and only the person can say what happens to their changes: stop and ask before the clock starts.
 5. **The working folder.** Working notes go in an untracked folder that the project ignores (`git check-ignore -q <folder>`). Take the name from the project's instructions; when none is ignored, use a temporary folder outside the repository and record its absolute path in the Build log. Ask the person only when neither works, and write nowhere tracked until they answer.
 6. **The way to prove things.** Find the commands for tests, build and run in the project's instructions, scripts and CI configuration. Run the targeted checks once before you change anything, so failures that were already there stay distinguishable from yours. When a `run and observe` check has no way to start the app or no tool to drive it, say so now: that check is blocked, and blocked is not a pass.
 7. **Start the clock, or keep it.** Run `git rev-parse HEAD` for the base, then set `Status: building` and rebuild the board in the same context change (see "Context commits" in [the build loop](references/build-loop.md)). Make sure the Build log has an approval line for the current pin. A start also records the start time and the base commit and opens `LOG.md`. A continuation keeps the original start, base and commit ledger, and adds the approval line for the new pin: the time already used stays used, and the remaining appetite is the approved total minus it. The appetite counts from the first start.
 
 ## The loop
 
-Repeat until the exit condition holds. An iteration is a coherent increment, not a commit; a half-day bet may need only two.
+Repeat until the exit condition holds. An iteration is a coherent increment and holds one or more committed steps; a half-day bet may need only two iterations.
 
 1. **Plan the next step.** Pick the smallest increment that moves one or more checks toward passing, riskiest first: a named rabbit hole is worth hitting early, while there is still appetite to patch it. Write the step into `LOG.md` with the checks it targets.
-2. **Implement.** When the harness has subagents, delegate bounded steps with a brief written to a file, drafted with `improving-prompts` when it is installed, and give each worker disjoint files. Otherwise implement inline. Match the project's conventions and look for an existing utility before writing a helper. When a check's method is `test`, write the test first and watch it fail for the right reason. Commit per logical step on the branch the autonomy line names, in the project's commit convention, with code and context in separate commits. Stage by path, so uncommitted context changes never enter a code commit. Commit context only when the line says `context commits: yes`, and push only when it says `push: yes`.
+2. **Implement the step, then commit it.** When the harness has subagents, delegate bounded steps with a brief written to a file, drafted with `improving-prompts` when it is installed, and give each worker disjoint files. Otherwise implement inline. Match the project's conventions and look for an existing utility before writing a helper. When a check's method is `test`, write the test first and watch it fail for the right reason. As soon as the step's targeted checks pass, commit it, before you plan the next one, on the branch the autonomy line names, as a Conventional Commit unless the project states another convention (the profile's Commits section), and add its SHA to `LOG.md`. One logical change is one commit, so the history grows as the work does: every result ties to a commit, a resumed session continues from the last one, and a bad step is undone without losing the rest. Keep code and context in separate commits. Stage by path, so uncommitted context changes never enter a code commit. Commit context only when the line says `context commits: yes`, and push only when it says `push: yes`.
 3. **Prove each check by its Method**, on the commit you made, as [the build loop](references/build-loop.md) lays out under "Proving a check", and quote what you saw. Record each check as `pass`, `fail`, `blocked` or `cut`, and say which evidence was observed and which only inferred: reading code never makes a check pass. A later commit makes earlier evidence stale for any check the new diff can touch: run it again. A `person's eye` check is not yours to judge; make sure the build lets the person see it and list it for the Try it block.
 4. **Review independently** once the iteration's checks have passed, not after every commit. Fill [the review brief](templates/review-brief.md) with the bet at its pin, the diff range, the cuts made so far with their reasons, and the evidence, and run a reviewer in a fresh context with no sight of your reasoning, preferably on a different model. The reviewer writes a findings file; each finding is rated `blocking`, `should-fix` or `nit`. Without subagents, start a separate headless agent session if the harness offers one; with neither, review it yourself against the pinned bet and label the result self-review in the Build log.
 5. **Fix.** Confirm each finding by reading the code and running a check, then fix every confirmed `blocking` and `should-fix` finding, or defer a `should-fix` with a reason in the Build log. A `nit` is optional. Refer to the finding's ID in the commit and add a check that fails without the fix. Dispute a finding only with counterevidence, and never weaken a check to get past it. The reviewer's follow-up pass runs in the same session; a later pass runs fresh. When a blocking finding survives the third review round, stop and bring it to the person.
 
-Exit when every check that is not a person's-eye check has passed on the current head, and the latest review round holds no open `blocking` finding. A cut check does not block the exit, but it is recorded, and the reviewer is told about it.
+Exit when every check that is not a person's-eye check has passed on the current head, every code change is committed, and the latest review round holds no open `blocking` finding. A cut check does not block the exit, but it is recorded, and the reviewer is told about it.
 
 ## The appetite
 
@@ -58,13 +66,18 @@ At the limit:
 
 ## Stop and ask
 
-Stop when any of these holds. Leave the work as it is and bring the person the evidence, what you tried and the one decision you need, through the harness's structured-question tool when it has one:
+Once the preconditions hold, stop only when one of these does, because each needs something the bet, the context and the code cannot give you:
 
-- the work would cross a No-go, or a named rabbit hole survives two attempts that changed the approach between them;
+- the only way to the Outcome crosses a No-go, or a named rabbit hole survives two attempts that changed the approach between them;
 - an accepted decision or a contract the bet relies on has to change: the person decides, and `shaping-prototype-bets` records it;
 - a check cannot be observed as written, or two checks contradict each other;
-- the next action is beyond the autonomy line, such as a push the line does not allow;
-- something outside the bet breaks and would need a change the bet does not name.
+- the build needs what only the person has: a credential, an account, a paid service, or a fact about the product that the context and the code do not settle;
+- the next action cannot be undone by a revert, such as deleting data someone relies on or reaching a production system or real users;
+- the bet cannot finish without an action beyond the autonomy line. An action it can finish without, such as a push the line does not allow, stays undone and goes in the hand-back;
+- something outside the bet breaks, blocks a check, and would need a change the bet does not name. When it blocks nothing, record it under Open and carry on;
+- a blocking finding is still open after the third review round.
+
+Commit what already passes, finish any work the answer cannot change, and log `wait start`. Then bring the person the evidence, what you tried and the one decision you need, through the harness's structured-question tool when it has one. When the answer comes, log `wait end` and carry on without being told to.
 
 The status stays `building` in these cases; only an exhausted appetite makes it `stopped`. When the person decides to change a decision or a contract, `shaping-prototype-bets` supersedes or versions it and runs readiness and Gate 1 again; the bet then comes back `approved` with its Build log, and you continue it.
 

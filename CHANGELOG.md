@@ -19,6 +19,7 @@ Marketplace releases are tagged `vX.Y.Z`. Every plugin release is also a marketp
 ### Added
 
 - Evaluations for the `product-prototyping` plugin under `evaluations/product-prototyping/`: a scenario catalog for the five skills and the two gates, a script that builds reproducible workspaces with real git history for one invented app, and a grader that checks files, IDs, statuses and commits on disk. A controls command proves the grader tells a good end state from one with a named fault. No agent trials have run yet.
+- The `product-prototyping` evaluations also grade that a build commits step by step in the right commit convention, that one approval carries through to a finished build, and that a build stops for an uncommitted change only the person can settle.
 
 ## [0.4.1] - 2026-11-08
 

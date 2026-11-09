@@ -129,4 +129,4 @@ Autonomy: code commits: main-proto; context commits: yes; push: no; revert on re
 - Weak: "Autonomy: full." Better: the four fields, each decided.
 - Weak: paraphrasing the person ("the owner agreed"). Better: their words in quotation marks, with the date.
 
-If the person approves the bet but changes the line, record their line. Anything the line does not allow, the builder asks for.
+If the person approves the bet but changes the line, record their line. What the line does not allow, the builder leaves undone and reports, and it asks only when the bet cannot finish without it.

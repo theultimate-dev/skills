@@ -34,7 +34,7 @@ Working notes are untracked, so a remove reverts code and nothing else, and draf
 
 Hand work between agents through files, never through the conversation. A worker or reviewer starts with an empty context, so the file has to carry everything it needs, and the file stays as a record of what it was asked.
 
-A step brief holds: the goal in one sentence; the parts of the bet it serves (outcome, the checks it targets, the boundaries that apply), copied from `bet-at-pin.md`; the files it may change and the files it must leave alone; the commands to run and the result that counts as done; what to return (changed files, commands run with their results, anything it could not do). Name one owner for each shared file (a lockfile, a schema, a fixture). When the harness has subagents and the steps touch disjoint files, run them in parallel; otherwise run them in turn. Workers edit and run targeted checks; the builder integrates, runs the checks again on the combined result, and commits, because isolated green is not combined green. Write the briefs with `improving-prompts` when it is installed.
+A step brief holds: the goal in one sentence; the parts of the bet it serves (outcome, the checks it targets, the boundaries that apply), copied from `bet-at-pin.md`; the files it may change and the files it must leave alone; the commands to run and the result that counts as done; what to return (changed files, commands run with their results, anything it could not do). Name one owner for each shared file (a lockfile, a schema, a fixture). When the harness has subagents and the steps touch disjoint files, run them in parallel; otherwise run them in turn. Workers edit and run targeted checks; the builder integrates one finished step at a time, runs the checks again on the combined result, and commits that step before integrating the next, because isolated green is not combined green and steps batched into one commit cannot be tied to their evidence or reverted apart. Write the briefs with `improving-prompts` when it is installed.
 
 ## Proving a check
 
@@ -89,7 +89,7 @@ The bet file and the board change together whenever building changes the bet's S
 
 ## Recording the code commits
 
-Before the first code commit of a bet, run `git rev-parse HEAD` and record it as the base. A continuation or a repair keeps that base, so the review diff still holds every code commit the bet owns. After each code commit, append its short SHA and subject to `LOG.md`. At the end, the Build log lists every code commit by SHA, oldest first, never a range, and a continuation appends to the earlier list instead of replacing it. A context commit that sits between them is named as such, so that closing reverts exactly the code. Commits that touched only `context/` are never listed as code commits.
+Commit each step when its targeted checks pass and before you plan the next, so the code commits accumulate as the work does. Before the first code commit of a bet, run `git rev-parse HEAD` and record it as the base. A continuation or a repair keeps that base, so the review diff still holds every code commit the bet owns. After each code commit, append its short SHA and subject to `LOG.md`. At the end, the Build log lists every code commit by SHA, oldest first, never a range, and a continuation appends to the earlier list instead of replacing it. A context commit that sits between them is named as such, so that closing reverts exactly the code. Commits that touched only `context/` are never listed as code commits.
 
 ## The Build log
 
