@@ -4,7 +4,7 @@ Status: planned
 
 Spec: `spec.md` · Roadmap: `roadmap.md`
 Requirements: R1 to R40
-Acceptance criteria that pass in this plan: AC1 to AC37
+Acceptance criteria that pass in this plan: AC1 to AC38
 Depends on: none
 PR slices: whole plan
 Branch: feat/software-architecture
@@ -37,11 +37,12 @@ A person can install `software-architecture` and ask an agent, in any repository
 - Tasks:
   1. Check each of the five names again on skills.sh and in the ten packs' repository trees, and keep the output as evidence. A collision goes to Igor before the affected skill is written.
   2. Write `templates/architecture.html` from the lab prototype `research/viz-lab/poc/viewer.html`: source blocks between marker lines, the pinned Mermaid address on one line, formatted prose with tables, lists and links, the switcher in two groups, pan, zoom, fit, full screen, light and dark, compare with its link form, the built stamp, the no-network message with sources as text, the check lines, and Save offline copy with pan, zoom and theme kept.
+  3. Write `scripts/build-page.sh` (R41) from the build steps, and check it with `/bin/bash` 3.2 on macOS and in a Linux container (AC38).
   3. Write `templates/view.md`, `references/view-conventions.md`, `templates/architecture-index.md`, `references/building-the-page.md`, `references/growing-into-a-model.md` and `SKILL.md`.
   4. Create `skills/software-architecture/CHANGELOG.md`, the `marketplace.json` entry at `0.0.0`, the README category row and the root changelog entry for the plugin.
   5. Build a page from the fixture's `larder-views/` by the steps in `building-the-page.md` and run the browser rows AC7 to AC15 and AC17 on it; run AC18 on the conventions' own example with `<b>` and `<br/>` labels; write the quoting rule as Igor settled it at G4 (R11).
 - Files: `skills/software-architecture/drawing-architecture-views/**`, `skills/software-architecture/CHANGELOG.md`, `.claude-plugin/marketplace.json`, `README.md`, `CHANGELOG.md`
-- ACs: AC6 to AC18 and AC27 pass here (AC6, AC16 and AC27 are observed in trial T7 at stage 6); AC1, AC2, AC3 and AC34 progress only
+- ACs: AC6 to AC18, AC27 and AC38 pass here (AC6, AC16 and AC27 are observed in trial T7 at stage 6); AC1, AC2, AC3 and AC34 progress only
 - Leaves the base working because: additive only; the validator passes with a one-skill category
 - Stop point: a finding that contradicts any section of the agreed spec goes to Igor with a recommendation before p3 depends on it. This holds in every phase
 
@@ -76,7 +77,7 @@ A person can install `software-architecture` and ask an agent, in any repository
 - ACs: AC1, AC31, AC32 and AC34 pass here
 - Leaves the base working because: wording only; the mirror check passes
 
-After phase 5 the loop runs stage 6 (the first checkpoint of the Verification contract: AC1 to AC34 and AC36 on the implementation head), stage 7 (quick review), stage 8 (push, pull request, `review:human`) and stage 9 (full review and repairs until it approves).
+After phase 5 the loop runs stage 6 (the first checkpoint of the Verification contract: AC1 to AC34, AC36 and AC38 on the implementation head), stage 7 (quick review), stage 8 (push, pull request, `review:human`) and stage 9 (full review and repairs until it approves).
 
 ## Phase 6: the release commit
 
