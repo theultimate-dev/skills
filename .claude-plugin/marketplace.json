@@ -12,6 +12,19 @@
   },
   "plugins": [
     {
+      "name": "dev-environment",
+      "description": "The machine you develop on, kept in working order: a full Docker disk cleaned of unused data older than an age you pick, with a dry run first and named volumes left for you to decide.",
+      "version": "0.0.0",
+      "source": "./",
+      "strict": false,
+      "license": "MIT",
+      "homepage": "https://github.com/theultimate-dev/skills",
+      "keywords": ["dev-environment", "docker", "colima", "disk-space", "cleanup", "prune", "volumes"],
+      "skills": [
+        "./skills/dev-environment/reclaiming-docker-disk-space"
+      ]
+    },
+    {
       "name": "foundations",
       "description": "What every project needs regardless of stack: decision records that people and agents can read, and releases with a changelog and a tag on main.",
       "version": "0.2.2",

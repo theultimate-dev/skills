@@ -8,6 +8,7 @@ A skill is a set of instructions your agent follows with your permissions. Read 
 
 | Category | Skills | What it covers |
 |---|---|---|
+| `dev-environment` | [`reclaiming-docker-disk-space`](skills/dev-environment/reclaiming-docker-disk-space/SKILL.md) | The machine you develop on, kept in working order: a full Docker disk cleaned of unused data older than an age you pick, with a dry run first and named volumes left for you to decide. |
 | `foundations` | [`decision-records`](skills/foundations/decision-records/SKILL.md) · [`release-process`](skills/foundations/release-process/SKILL.md) | What every project needs regardless of stack: a decision log that people and agents can read, and releases with a changelog and a tag on `main`. |
 | `harness-engineering` | [`marginal-gains`](skills/harness-engineering/marginal-gains/SKILL.md) | The harness your agents run on, improved one small verified change at a time: instruction files, skills, memory, hooks and permissions, repository checks, and your prompts, ranked by what actually happened in your sessions and by your goals. |
 | `product-context` | [`structuring-product-context`](skills/product-context/structuring-product-context/SKILL.md) · [`curating-product-requirements`](skills/product-context/curating-product-requirements/SKILL.md) · [`designing-system-architecture`](skills/product-context/designing-system-architecture/SKILL.md) · [`planning-product-roadmaps`](skills/product-context/planning-product-roadmaps/SKILL.md) · [`shaping-bets`](skills/product-context/shaping-bets/SKILL.md) · [`reconciling-product-context`](skills/product-context/reconciling-product-context/SKILL.md) | A long-running product's whole context in a Markdown repository apart from the code: requirements with permanent IDs, a living architecture with shared contracts, decisions, and a roadmap cut into appetite-bounded bets that the `product-engineering` loop builds, then folded back into the documents. |
@@ -16,7 +17,7 @@ A skill is a set of instructions your agent follows with your permissions. Read 
 | `product-prototyping` | [`structuring-prototype-context`](skills/product-prototyping/structuring-prototype-context/SKILL.md) · [`framing-prototype-ideas`](skills/product-prototyping/framing-prototype-ideas/SKILL.md) · [`shaping-prototype-bets`](skills/product-prototyping/shaping-prototype-bets/SKILL.md) · [`building-prototype-bets`](skills/product-prototyping/building-prototype-bets/SKILL.md) · [`closing-prototype-bets`](skills/product-prototyping/closing-prototype-bets/SKILL.md) | A prototype's context beside its code, and a fast loop for each idea: frame it, shape it into a bet you approve, build it with self-verification and an independent review, then try it and keep it or remove it, with history in the app's changelog. |
 | `prompt-engineering` | [`improving-prompts`](skills/prompt-engineering/improving-prompts/SKILL.md) | A rough prompt to an engineered one: destination and gap diagnosis, a technique catalog with apply and reject criteria, dated model-family notes, and a copy-paste-ready result with the reasoning behind it. |
 
-Each category is a plugin with its own version and changelog: [`foundations`](skills/foundations/CHANGELOG.md) · [`harness-engineering`](skills/harness-engineering/CHANGELOG.md) · [`product-context`](skills/product-context/CHANGELOG.md) · [`product-design`](skills/product-design/CHANGELOG.md) · [`product-engineering`](skills/product-engineering/CHANGELOG.md) · [`product-prototyping`](skills/product-prototyping/CHANGELOG.md) · [`prompt-engineering`](skills/prompt-engineering/CHANGELOG.md).
+Each category is a plugin with its own version and changelog: [`dev-environment`](skills/dev-environment/CHANGELOG.md) · [`foundations`](skills/foundations/CHANGELOG.md) · [`harness-engineering`](skills/harness-engineering/CHANGELOG.md) · [`product-context`](skills/product-context/CHANGELOG.md) · [`product-design`](skills/product-design/CHANGELOG.md) · [`product-engineering`](skills/product-engineering/CHANGELOG.md) · [`product-prototyping`](skills/product-prototyping/CHANGELOG.md) · [`prompt-engineering`](skills/prompt-engineering/CHANGELOG.md).
 
 ## From an idea to a design handoff
 
@@ -135,6 +136,22 @@ Use marginal-gains on this session. My goals, in order: help my readers
 and clients, grow my open-source projects, grow the company.
 
 Use marginal-gains and also read my last five sessions in this project.
+```
+
+## From a full Docker disk to free space
+
+Ask for `reclaiming-docker-disk-space` when a build fails with no space left on device, or the Docker disk is nearly full. It removes the data nothing uses any more and that is older than an age you pick, 24 hours by default: stopped containers, unused networks, unused images, build cache and anonymous volumes. Anything a container uses is kept, however old.
+
+The cleanup is one bundled shell script, so it runs the same way every time. A dry run comes first and shows where the space is and every volume that would go. Named volumes are never removed: the unused ones are listed, and you say which may go. On Colima the disk is trimmed afterwards, so macOS gets the space back.
+
+Install with `claude plugin install dev-environment@theultimate-dev` after marketplace setup, or `npx skills add theultimate-dev/skills/skills/dev-environment`. The script needs bash and the `docker` CLI.
+
+```text
+Use reclaiming-docker-disk-space. My Docker disk is 98% full.
+
+Use reclaiming-docker-disk-space and remove everything older than 7 days.
+
+Use reclaiming-docker-disk-space, dry run only. I want to see what would go.
 ```
 
 ## From product documents to bets ready to build
