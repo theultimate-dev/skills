@@ -72,7 +72,7 @@ Each part ends with one of three findings:
 | Guarantee | What it means | Where the evidence usually sits |
 |---|---|---|
 | Durability of accepted work | Once the system says yes, the work survives a crash | The order of "write" and "answer" in the handler; fsync, replication or append-only settings; a transaction committed before the response |
-| Replay and catch-up | A client or consumer can read what happened after a point it last saw | Retention settings, cursor or offset parameters, "read after id" queries, a log table kept for N days |
+| Replay and catch-up | A client or consumer can read what happened after a point it last saw, in order, including what was deleted | Retention settings, cursor or offset parameters, "read after id" queries, a log table kept for N days, a fallback when a cursor is older than the history kept, a feature that shows a returning user what changed |
 | Ordering | Changes are applied in the order they were accepted | A single consumer, a partition key, a sequence column, an "apply in order" loop |
 | Idempotency, an effect applied once | A retried or redelivered request changes state once | A table of applied ids, `ON CONFLICT DO NOTHING`, an idempotency key header |
 | Delivery despite a downstream outage | Work reaches a provider that was down for a while | An outbox table, a retry schedule with backoff, a maximum attempt count, a dead-letter |
@@ -92,11 +92,13 @@ Read the tests' names too: they often state a guarantee nobody wrote down, such 
 
 A part that carries a guarantee can still go when another element takes over the guarantee and the result is cheaper overall. Re-homing is a design change, so treat it like one:
 
-1. Name the new home: the element and the mechanism. "Item search moves from the Meilisearch service to a trigram index on `items.name` in Postgres, queried by the API."
+1. Name the new home for each part of the guarantee, not only for its headline. Replay, for instance, is a cursor, an order, a retention period, deletes kept as tombstones so a reader learns what was removed, an idempotency key, and the fallback for a cursor older than the history; a design that re-homes four of these breaks the fifth. Name the element and the mechanism for each. "Item search moves from the Meilisearch service to a trigram index on `items.name` in Postgres, queried by the API."
 2. Write what the new mechanism needs that the old one gave for free: an extension to enable, an index to build without blocking writes, typo tolerance written as a query, a period where both answer.
 3. Re-trace every scenario the guarantee served through the new home, on its bad day: does the new home hold under the same failure?
 4. Count its cost with the next two sections, in the same terms as the part it replaces.
 5. Show it in the after view as `proposed`, with the same ids for every element that stays.
+
+When a candidate keeps every guarantee but one, it is not a proposal: list it under "Considered and rejected" with the guarantee it would give up and the scenario that depends on it. Whether that guarantee is still needed is the person's decision; when they drop it, the study is re-run against the new scenarios.
 
 When the guarantee can be re-homed in more than one reasonable way and the choice between them is the real question, the study names the choice and hands it on as an options question rather than choosing silently.
 
