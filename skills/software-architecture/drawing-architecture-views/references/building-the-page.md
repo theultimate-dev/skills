@@ -182,7 +182,7 @@ Do not try to fix this by editing the page. Say that the diagrams were not drawn
 
 ## The offline copy
 
-**Save offline copy** in the page header downloads a second file, `architecture-offline-YYYY-MM-DD.html`. It holds every view and study as the page showed it at that moment: the drawn pictures, the formatted prose, and a small script for switching views, compare, pan, zoom, fit and full screen. It contains no Mermaid library, no script loaded from an address and no CDN address, so it opens anywhere with no network, and it keeps the theme it was saved in.
+**Save offline copy** in the page header downloads a second file, `architecture-offline-YYYY-MM-DD.html`, dated with the local date like the built stamp. It holds every view and study as the page showed it at that moment: the drawn pictures, the formatted prose, and a small script for switching views, compare, pan, zoom, fit and full screen. It contains no Mermaid library, no script loaded from an address and no CDN address, so it opens anywhere with no network, and it keeps the theme it was saved in.
 
 - A person makes it in a browser, because drawing needs one. You cannot make it from the Markdown without a browser.
 - It is what gets sent to someone outside: a client, a reviewer without access to the repository. One file, nothing to install.

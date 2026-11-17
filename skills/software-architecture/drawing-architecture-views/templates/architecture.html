@@ -584,8 +584,11 @@ function ArchViewer(data, opts) {
   }
 
   /* ---- Offline copy ---- */
-  function offlineCopy() {
-    var S = '<' + 'script', E = '<' + '/script>', today = new Date().toISOString().slice(0, 10);
+  /* Today's date in local time, YYYY-MM-DD, the way the build stamp is written. */
+  function localDate() { var d = new Date(); function two(n) { return (n < 10 ? '0' : '') + n; } return d.getFullYear() + '-' + two(d.getMonth() + 1) + '-' + two(d.getDate()); }
+  function offlineCopy(today) {
+    var S = '<' + 'script', E = '<' + '/script>';
+    today = today || localDate();
     var header = doc.querySelector('header.top').cloneNode(true);
     ['theme-btn', 'save-btn'].forEach(function (id) { var b = header.querySelector('#' + id); if (b) b.remove(); });
     header.querySelector('#stamp').appendChild(doc.createTextNode(' \u00b7 offline copy saved ' + today));
@@ -601,8 +604,8 @@ function ArchViewer(data, opts) {
       S + '>' + doc.getElementById('runtime').textContent + '\nArchViewer(JSON.parse(document.getElementById("data").textContent), { offline: true });\n' + E + '\n</body>\n</html>\n';
   }
   function save() {
-    var a = doc.createElement('a'), url = URL.createObjectURL(new Blob([offlineCopy()], { type: 'text/html' }));
-    a.href = url; a.download = 'architecture-offline-' + new Date().toISOString().slice(0, 10) + '.html';
+    var today = localDate(), a = doc.createElement('a'), url = URL.createObjectURL(new Blob([offlineCopy(today)], { type: 'text/html' }));
+    a.href = url; a.download = 'architecture-offline-' + today + '.html';
     doc.body.appendChild(a); a.click(); a.remove();
     setTimeout(function () { URL.revokeObjectURL(url); }, 10000);
   }
