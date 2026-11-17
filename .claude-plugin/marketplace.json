@@ -138,6 +138,19 @@
       "skills": [
         "./skills/prompt-engineering/improving-prompts"
       ]
+    },
+    {
+      "name": "software-architecture",
+      "description": "The architecture of a long-lived application, worked on in any repository: recover what is really built with evidence, take a critical look, compare options, simplify without losing a guarantee, and draw it as Markdown views with Mermaid that everyone reads in one built HTML page.",
+      "version": "0.0.0",
+      "source": "./",
+      "strict": false,
+      "license": "MIT",
+      "homepage": "https://github.com/theultimate-dev/skills",
+      "keywords": ["software-architecture", "architecture", "c4", "mermaid", "diagrams", "risk-review", "simplification", "adr", "agents"],
+      "skills": [
+        "./skills/software-architecture/drawing-architecture-views"
+      ]
     }
   ]
 }

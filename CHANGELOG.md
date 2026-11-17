@@ -10,6 +10,7 @@ All notable changes to the `theultimate-dev` marketplace and the repository arou
 - [`product-engineering`](skills/product-engineering/CHANGELOG.md)
 - [`product-prototyping`](skills/product-prototyping/CHANGELOG.md)
 - [`prompt-engineering`](skills/prompt-engineering/CHANGELOG.md)
+- [`software-architecture`](skills/software-architecture/CHANGELOG.md)
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/2.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
@@ -19,6 +20,7 @@ Marketplace releases are tagged `vX.Y.Z`. Every plugin release is also a marketp
 
 ### Added
 
+- `software-architecture` plugin: skills for working on the architecture of a long-lived application in any repository, with Markdown views and Mermaid diagrams as the source of truth and one built HTML page for readers. Install it with `claude plugin install software-architecture@theultimate-dev`.
 - Decision record [0022](decisions/0022-software-architecture-category.md): why architecture work on existing applications is its own `software-architecture` category, where its files live, and why its built page loads Mermaid from a pinned CDN address.
 
 ## [0.5.0] - 2026-11-17
