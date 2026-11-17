@@ -22,6 +22,7 @@ Marketplace releases are tagged `vX.Y.Z`. Every plugin release is also a marketp
 
 - `software-architecture` plugin: skills for working on the architecture of a long-lived application in any repository, with Markdown views and Mermaid diagrams as the source of truth and one built HTML page for readers. Install it with `claude plugin install software-architecture@theultimate-dev`.
 - Decision record [0022](decisions/0022-software-architecture-category.md): why architecture work on existing applications is its own `software-architecture` category, where its files live, and why its built page loads Mermaid from a pinned CDN address.
+- The validator now keeps the `software-architecture` plugin's shared files identical across its skills: the view template, the view conventions and the scenario intake are listed in `MIRRORS`, and a copy that differs from its source fails the check.
 
 ## [0.5.0] - 2026-11-17
 
