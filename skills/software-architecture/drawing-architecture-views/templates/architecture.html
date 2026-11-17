@@ -74,6 +74,7 @@ main { overflow: auto; min-width: 0; }
 .diagram-error { margin: 12px 0 0; padding: 8px 12px; border-radius: 6px 6px 0 0; background: var(--bad-bg); color: var(--bad); font: 12.5px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace; white-space: pre-wrap; }
 .not-drawn .diagram-error { background: var(--note-bg); color: var(--fg); }
 .diagram-error + pre { margin-top: 0; border-radius: 0 0 6px 6px; }
+.route-note { margin: 0; padding: 8px 16px; background: var(--note-bg); border-bottom: 1px solid var(--note-line); }
 .compare-bar { display: flex; align-items: center; gap: 10px; padding: 8px 16px; border-bottom: 1px solid var(--line); }
 .compare { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); height: calc(100% - 45px); }
 .side { overflow: auto; min-width: 0; border-right: 1px solid var(--line); }
@@ -217,9 +218,15 @@ function ArchViewer(data, opts) {
   }
   function refit() { frames = frames.filter(function (f) { return f.isConnected; }); frames.forEach(function (f) { f.fit(); }); }
   function mark(paths) { [].forEach.call(doc.querySelectorAll('#toc a[data-path]'), function (a) { a.classList.toggle('on', paths.indexOf(a.getAttribute('data-path')) >= 0); }); }
+  /* A compare address that names fewer than two paths shows what it names alone, with a line that says so. */
   function state() {
     var m = /^#(view|compare)=(.*)$/.exec(location.hash);
-    if (m && m[1] === 'compare') { var p = m[2].split(','); return { compare: [dec(p[0] || ''), dec(p[1] || '')] }; }
+    if (m && m[1] === 'compare') {
+      var p = m[2].split(',').map(dec).filter(function (x) { return x.trim(); });
+      if (p.length >= 2) return { compare: [p[0], p[1]], note: p.length > 2 ? 'This comparison link names ' + p.length + ' sources; the page compares the first two.' : '' };
+      if (p.length === 1) return { view: p[0], note: 'This comparison link names only one source, <code>' + esc(p[0]) + '</code>, so it is shown alone. A comparison names two paths separated by a comma.' };
+      return { view: home(), note: 'This comparison link names no source, so the overview is shown instead.' };
+    }
     return { view: m ? dec(m[2]) : home() };
   }
   function route() {
@@ -234,6 +241,7 @@ function ArchViewer(data, opts) {
       mount(main, st.view); main.scrollTop = 0; mark([st.view]);
       doc.title = (byPath[st.view] ? byPath[st.view].label + ' - ' : '') + data.title;
     }
+    if (st.note) main.insertAdjacentHTML('afterbegin', '<p class="route-note" role="status">' + st.note + '</p>');
     if (pendingAnchor) { var a = pendingAnchor; pendingAnchor = null; scrollTo(main, a); }
   }
   function scrollTo(box, slug) { var t = box.querySelector('[data-slug="' + slug.replace(/["\\]/g, '') + '"]'); if (t) t.scrollIntoView(); }

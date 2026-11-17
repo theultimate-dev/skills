@@ -168,7 +168,7 @@ These are the links a view or study can use to steer the page. On GitHub they op
 - **One view:** `architecture.html#view=containers.md` shows that view.
 - **Comparison:** `architecture.html#compare=containers.md,studies/2026-11-10-sync-risks/containers-household-feed.md` shows those two side by side.
 
-The paths after `=` are always relative to the architecture folder. The part before `#` is an ordinary relative path from the file that holds the link to the page: from the index or a standing view it is just `architecture.html`; from a study's `README.md` or a view inside a study it goes two folders up first (two parent-folder steps, then `architecture.html`). The same forms work as the page's own address, so a person can send `architecture.html#compare=...` and the page opens on that comparison. The check line fails when a named path has no block.
+The paths after `=` are always relative to the architecture folder. The part before `#` is an ordinary relative path from the file that holds the link to the page: from the index or a standing view it is just `architecture.html`; from a study's `README.md` or a view inside a study it goes two folders up first (two parent-folder steps, then `architecture.html`). The same forms work as the page's own address, so a person can send `architecture.html#compare=...` and the page opens on that comparison. The check line fails when a named path has no block. Opened anyway, a comparison that names only one path shows that view alone with a line saying so, and a named path with no block is named on its side of the comparison.
 
 ## With no network
 
