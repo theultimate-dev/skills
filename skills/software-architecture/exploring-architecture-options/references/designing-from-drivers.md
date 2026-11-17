@@ -188,7 +188,8 @@ With no code, the brief and the person are the evidence.
 
 - **Location.** Apply the location rule: with no `AGENTS.md` pointer, write under `context/architecture/` and propose the pointer line.
 - **Intake.** Derive the scenarios from the brief's promises ("works offline", "shared by the household", a response time, a region). Facts cite the brief's path or `stated by`. Almost every runtime number is an assumption; say who or what would confirm it.
-- **The smallest change** becomes the fewest moving parts: the fewest deployables, stores and technologies, on a platform's managed features, that could meet the scenarios.
+- **The smallest change** becomes the fewest moving parts: the fewest deployables, stores and technologies, on a platform's managed features, that could meet the scenarios. A bought service counts as fewer parts to run but not as free: when leaving it later means rewriting the clients or migrating data, the undo row says so, and the recommendation weighs it.
+- **Part affected.** When the options differ in their backend elements, write the shared ids in the scenario table and add one line above it naming each option's own elements, so every trace still lands on element ids.
 - **Options** on a new system usually differ on the axes that are cheap to choose now and expensive to change later: who holds the authoritative data (the server, or each device with merging), how many deployables, and what is bought against what is run.
 - **Views.** There is no standing view and no base to compare against. Draw each option at the same level with fresh ids shared across options, `Status: proposed`. A context view first only when the options differ in outside systems. Compare links put two options side by side: both source paths are inside the study.
 - **After the pick.** No standing view changes yet: the next steps are a critical look at the chosen option, then the standing views drawn as `planned`.
