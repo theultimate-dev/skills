@@ -8,6 +8,10 @@ Releases are tagged `product-context--vX.Y.Z`.
 
 ## [Unreleased]
 
+### Changed
+
+- `designing-system-architecture` now names the `software-architecture` plugin for architecture work in a code repository that has no product context repository, and says that a study from it arrives as input.
+
 ## [0.2.0] - 2026-11-08
 
 ### Changed
