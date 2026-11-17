@@ -24,6 +24,7 @@ a { color: var(--accent); }
 #stamp { margin: 0; color: var(--muted); font-size: 13px; }
 #stamp code { font-size: 12px; }
 .tools { margin-left: auto; display: flex; gap: 6px; }
+#nav-btn { display: none; }
 #notice { margin: 0; padding: 10px 16px; background: var(--note-bg); border-bottom: 1px solid var(--note-line); }
 .layout { flex: 1; min-height: 0; display: grid; grid-template-columns: 250px minmax(0, 1fr); }
 nav { overflow: auto; border-right: 1px solid var(--line); background: var(--panel); padding: 10px 8px 16px; font-size: 14px; }
@@ -84,8 +85,9 @@ main { overflow: auto; min-width: 0; }
 .not-drawn .diagram-error { background: var(--note-bg); color: var(--fg); }
 .diagram-error + pre { margin-top: 0; border-radius: 0 0 6px 6px; }
 .route-note { margin: 0; padding: 8px 16px; background: var(--note-bg); border-bottom: 1px solid var(--note-line); }
-.compare-bar { display: flex; align-items: center; gap: 10px; padding: 8px 16px; border-bottom: 1px solid var(--line); }
-.compare { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); height: calc(100% - 45px); }
+.compare-view { display: flex; flex-direction: column; height: 100%; }
+.compare-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; padding: 8px 16px; border-bottom: 1px solid var(--line); }
+.compare { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
 .side { overflow: auto; min-width: 0; border-right: 1px solid var(--line); }
 .side:last-child { border-right: 0; }
 .side select { margin: 10px 14px 0; max-width: calc(100% - 28px); }
@@ -93,10 +95,14 @@ main { overflow: auto; min-width: 0; }
 .empty { padding: 24px 28px; color: var(--muted); max-width: 70ch; }
 #measure { position: absolute; left: -20000px; top: 0; visibility: hidden; }
 @media (max-width: 760px) {
+  #nav-btn { display: inline-block; }
   .layout { grid-template-columns: 1fr; grid-template-rows: auto minmax(0, 1fr); }
-  nav { max-height: 34vh; border-right: 0; border-bottom: 1px solid var(--line); }
-  .compare { grid-template-columns: 1fr; height: auto; }
-  .side { border-right: 0; border-bottom: 1px solid var(--line); }
+  nav { display: none; grid-row: 1; max-height: 60vh; border-right: 0; border-bottom: 1px solid var(--line); }
+  .nav-open nav { display: block; }
+  main { grid-row: 2; }
+  .compare { grid-template-columns: 1fr; grid-template-rows: minmax(0, 1fr) minmax(0, 1fr); }
+  .side { border-right: 0; border-bottom: 2px solid var(--line); }
+  .side:last-child { border-bottom: 0; }
   .doc { padding: 12px 16px 32px; }
 }
 </style>
@@ -105,11 +111,11 @@ main { overflow: auto; min-width: 0; }
 <header class="top">
   <strong id="title">Architecture</strong>
   <p id="stamp">Built <time>not yet</time> from <code>no commit</code></p>
-  <span class="tools"><button id="compare-btn" type="button">Compare</button><button id="theme-btn" type="button">Theme</button><button id="save-btn" type="button" disabled>Save offline copy</button></span>
+  <span class="tools"><button id="nav-btn" type="button" aria-expanded="false" aria-controls="nav">Views</button><button id="compare-btn" type="button">Compare</button><button id="theme-btn" type="button">Theme</button><button id="save-btn" type="button" disabled>Save offline copy</button></span>
 </header>
 <p id="notice" role="alert" hidden></p>
 <div class="layout">
-  <nav><div id="toc"></div><details id="checks" open><summary>Checks</summary><pre id="results">Drawing...</pre></details></nav>
+  <nav id="nav" aria-label="Views"><div id="toc"></div><details id="checks" open><summary>Checks</summary><pre id="results">Drawing...</pre></details></nav>
   <main id="main"></main>
 </div>
 <div id="measure" aria-hidden="true"></div>
@@ -267,10 +273,10 @@ function ArchViewer(data, opts) {
     return { view: m ? dec(m[2]) : home() };
   }
   function route() {
-    var st = state(); frames = [];
+    var st = state(); frames = []; navOpen(false);
     if (!data.sources.length) { main.innerHTML = '<p class="empty">' + (data.empty || 'This page holds no sources.') + '</p>'; return; }
     if (st.compare) {
-      main.innerHTML = '<div class="compare-bar"><strong>Compare</strong><span class="hint">Each side pans and zooms on its own.</span><button type="button" data-close>Close</button></div><div class="compare"><section class="side">' + picker(st.compare[0]) + '<div class="body"></div></section><section class="side">' + picker(st.compare[1]) + '<div class="body"></div></section></div>';
+      main.innerHTML = '<div class="compare-view"><div class="compare-bar"><strong>Compare</strong><span class="hint">Each side pans and zooms on its own.</span><button type="button" data-close>Close</button></div><div class="compare"><section class="side">' + picker(st.compare[0]) + '<div class="body"></div></section><section class="side">' + picker(st.compare[1]) + '<div class="body"></div></section></div></div>';
       var sides = main.querySelectorAll('.side');
       [0, 1].forEach(function (k) { mount(sides[k].querySelector('.body'), st.compare[k]); });
       mark(st.compare); doc.title = 'Compare: ' + st.compare.join(', ') + ' - ' + data.title;
@@ -278,9 +284,15 @@ function ArchViewer(data, opts) {
       mount(main, st.view); main.scrollTop = 0; mark([st.view]);
       doc.title = (byPath[st.view] ? byPath[st.view].label + ' - ' : '') + data.title;
     }
-    if (st.note) main.insertAdjacentHTML('afterbegin', '<p class="route-note" role="status">' + st.note + '</p>');
+    if (st.note) (main.querySelector('.compare-view') || main).insertAdjacentHTML('afterbegin', '<p class="route-note" role="status">' + st.note + '</p>');
     if (pendingAnchor) { var a = pendingAnchor; pendingAnchor = null; scrollTo(main, a); }
   }
+  /* At narrow widths the switcher folds behind the Views button, so a view starts near the top. */
+  var navBtn = doc.getElementById('nav-btn');
+  function navOpen(on) { root.classList.toggle('nav-open', on); if (navBtn) navBtn.setAttribute('aria-expanded', on ? 'true' : 'false'); }
+  if (navBtn) navBtn.addEventListener('click', function () { navOpen(!root.classList.contains('nav-open')); });
+  doc.getElementById('toc').addEventListener('click', function (e) { if (e.target.closest('a')) navOpen(false); });
+  doc.getElementById('nav').addEventListener('keydown', function (e) { if (e.key === 'Escape' && root.classList.contains('nav-open')) { navOpen(false); if (navBtn) navBtn.focus(); } });
   function scrollTo(box, slug) { var t = box.querySelector('[data-slug="' + slug.replace(/["\\]/g, '') + '"]'); if (t) t.scrollIntoView(); }
   function go(hash) { if (location.hash === hash) route(); else location.hash = hash; }
   main.addEventListener('change', function (e) {
