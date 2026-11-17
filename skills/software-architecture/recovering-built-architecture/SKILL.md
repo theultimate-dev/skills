@@ -45,8 +45,8 @@ The views follow [the view conventions](references/view-conventions.md) and [the
 7. **Name each element by what it does.** Describe a unit from its behaviour: what it reads, writes, calls and sends. When the folder, package or service name says something else (a `cache/` package that is the only writer of a table, a `shared/` package that opens its own database connection, a `legacy/` folder still on the login path), use the behaviour for the element's name and id, keep the folder in the Technology or Responsibility cell, and say in the row that the name misleads. Reuse an id that an existing view or the index already gives the same element.
 
 8. **Draw context and containers.** Write `context.md` (the people, the system as one box, the external systems it calls or is called by) and `containers.md` (every unit and store from step 4 inside the system boundary, with the calls from step 5), each from the view template. In both:
-   - `Status: built`, and the `Verified` part with today's date and the short commit from `git rev-parse --short HEAD`, written only when you checked every row of that view against the code at that commit and the files you cite have no uncommitted changes. Otherwise leave `Verified` off and say why.
-   - Every element and relationship has evidence: a backticked path from the repository root, with a line where one statement proves it, code before configuration; `stated by <person>, <date>` for what the person told you; or `assumed`.
+   - `Status: built`, and the `Verified` part with today's date and the short commit from `git rev-parse --short HEAD`, written only when you checked every row of that view against the code at that commit and the files you cite have no uncommitted changes. The check is this: after the view is written, open every cited path at every cited line and confirm that the line shows what its row says, then correct or widen the citation where it does not. A path that exists but proves something else makes the line false. Otherwise leave `Verified` off and say why.
+   - Every element and relationship has evidence: a backticked path from the repository root, with a line where one statement proves it, code before configuration; `stated by <person>, <date>` for what the person told you; or `assumed`. A person's evidence is the text that names the role and what they do, such as the README or the auth code, not a client's entry file.
    - Elements that only configuration reveals, and facts unconfirmed at runtime, say so in their row (step 6).
    - Link the decision records that explain an element under Related.
    - At most 15 elements per view. Past that, split the containers view by concern, as the conventions describe.
@@ -73,7 +73,7 @@ Ask the person nothing before you are done. What the repository cannot answer be
 
 ## Done when
 
-- Every element and relationship in every view written has evidence (a path that exists at the verified commit, or a `stated by`) or is marked `assumed`.
+- Every element and relationship in every view written has evidence (a path that exists at the verified commit and whose cited line shows the row, or a `stated by`) or is marked `assumed`.
 - Every element the code or the production configuration shows is drawn, or its absence is a blind spot; every disagreement between code and a name or a document is in the Recovery section.
 - No decision record was written, and no runtime view was drawn that nobody asked for.
 - The page reports `DONE n/n` with no `FAIL`, or the report says the views were not drawn, or that the page was not rebuilt and which skill rebuilds it.
