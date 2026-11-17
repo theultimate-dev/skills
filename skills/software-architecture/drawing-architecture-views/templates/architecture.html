@@ -10,8 +10,8 @@
   "sources: begin" and "sources: end", as references/building-the-page.md in drawing-architecture-views says.
 -->
 <style id="style">
-:root { color-scheme: light; --bg: #ffffff; --fg: #1d2125; --muted: #57616b; --line: #d3d9df; --panel: #f4f6f8; --code: #eceff2; --accent: #0b5cad; --on-accent: #ffffff; --bad: #b42318; --bad-bg: #fdecea; --note-bg: #fff6dc; --note-line: #e3c25a; --built: #1a7f37; --planned: #9a6700; --proposed: #7438c2; --other: #57616b; }
-:root[data-theme="dark"] { color-scheme: dark; --bg: #15181b; --fg: #e3e6e9; --muted: #9ba5af; --line: #353c43; --panel: #1c2024; --code: #262b31; --accent: #6cb0ff; --on-accent: #0d1117; --bad: #ff8b7e; --bad-bg: #3a1d1a; --note-bg: #322a12; --note-line: #8a7120; --built: #57d07a; --planned: #e3b341; --proposed: #c39bff; --other: #9ba5af; }
+:root { color-scheme: light; --bg: #ffffff; --fg: #1d2125; --muted: #57616b; --line: #d3d9df; --panel: #f4f6f8; --code: #eceff2; --accent: #0b5cad; --on-accent: #ffffff; --bad: #b42318; --bad-bg: #fdecea; --note-bg: #fff6dc; --note-line: #e3c25a; --built: #1a7f37; --planned: #9a6700; --proposed: #7438c2; --other: #57616b; --more: rgba(11, 92, 173, .5); }
+:root[data-theme="dark"] { color-scheme: dark; --bg: #15181b; --fg: #e3e6e9; --muted: #9ba5af; --line: #353c43; --panel: #1c2024; --code: #262b31; --accent: #6cb0ff; --on-accent: #0d1117; --bad: #ff8b7e; --bad-bg: #3a1d1a; --note-bg: #322a12; --note-line: #8a7120; --built: #57d07a; --planned: #e3b341; --proposed: #c39bff; --other: #9ba5af; --more: rgba(108, 176, 255, .5); }
 * { box-sizing: border-box; }
 html, body { height: 100%; }
 body { margin: 0; display: flex; flex-direction: column; background: var(--bg); color: var(--fg); font: 15px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif; }
@@ -63,14 +63,23 @@ main { overflow: auto; min-width: 0; }
 .pill { display: inline-block; padding: 0 8px; border: 1px solid currentColor; border-radius: 10px; font-size: 12px; line-height: 18px; font-weight: 600; color: var(--other); }
 .pill.built { color: var(--built); } .pill.planned { color: var(--planned); } .pill.proposed { color: var(--proposed); }
 .status .pill { font-size: 13px; line-height: 20px; }
-.frame { position: relative; height: 320px; margin: 12px 0 6px; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--bg); cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none; }
-.frame.dragging { cursor: grabbing; }
-.frame:fullscreen { height: 100vh; border: 0; border-radius: 0; }
+.frame { margin: 12px 0 6px; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--bg); }
+.frame:fullscreen { display: flex; flex-direction: column; height: 100vh; border: 0; border-radius: 0; }
+.frame .bar { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; padding: 4px 6px 4px 10px; border-bottom: 1px solid var(--line); background: var(--panel); }
+.frame .hint { flex: 1 1 14em; margin: 0; font-size: 12px; line-height: 1.35; color: var(--muted); }
+.frame .zoom { display: flex; gap: 4px; margin-left: auto; }
+.frame .view { position: relative; height: 320px; overflow: hidden; cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none; --sl: 0 0 0 0 transparent; --sr: 0 0 0 0 transparent; --st: 0 0 0 0 transparent; --sb: 0 0 0 0 transparent; }
+.frame:fullscreen .view { flex: 1; height: auto; }
+.frame .view:focus { outline: none; }
+.frame .view:focus-visible { outline: 3px solid var(--accent); outline-offset: -3px; }
+.frame .view.dragging { cursor: grabbing; }
+.frame .view::after { content: ""; position: absolute; inset: 0; pointer-events: none; box-shadow: inset var(--sl), inset var(--sr), inset var(--st), inset var(--sb); }
+.frame .view.more-l { --sl: 22px 0 16px -14px var(--more); }
+.frame .view.more-r { --sr: -22px 0 16px -14px var(--more); }
+.frame .view.more-t { --st: 0 22px 16px -14px var(--more); }
+.frame .view.more-b { --sb: 0 -22px 16px -14px var(--more); }
 .frame .stage { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
 .frame .stage svg { display: block; }
-.frame .bar { position: absolute; right: 8px; top: 8px; display: flex; gap: 4px; }
-.frame .bar button { background: var(--panel); }
-.frame .hint { position: absolute; left: 8px; bottom: 6px; margin: 0; padding: 0 4px; border-radius: 3px; background: var(--bg); font-size: 11px; color: var(--muted); pointer-events: none; }
 .diagram-error { margin: 12px 0 0; padding: 8px 12px; border-radius: 6px 6px 0 0; background: var(--bad-bg); color: var(--bad); font: 12.5px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace; white-space: pre-wrap; }
 .not-drawn .diagram-error { background: var(--note-bg); color: var(--fg); }
 .diagram-error + pre { margin-top: 0; border-radius: 0 0 6px 6px; }
@@ -157,52 +166,80 @@ function ArchViewer(data, opts) {
     var s = byPath[path];
     if (!s) { box.innerHTML = '<p class="empty">This page holds no source named <code>' + esc(path || '') + '</code>.</p>'; return; }
     box.innerHTML = '<article class="doc" data-path="' + esc(s.path) + '"><p class="path">' + esc(s.path) + '</p>' + s.html + '</article>';
-    [].forEach.call(box.querySelectorAll('.diagram'), function (host) { fill(host, s.diagrams[+host.getAttribute('data-i')] || {}); });
+    var hosts = box.querySelectorAll('.diagram');
+    [].forEach.call(hosts, function (host, k) { fill(host, s.diagrams[+host.getAttribute('data-i')] || {}, s.label + (hosts.length > 1 ? ', diagram ' + (k + 1) : ', diagram')); });
   }
-  function fill(host, d) {
+  function fill(host, d, name) {
     if (!d.svg) {
       host.className = 'diagram ' + (d.notDrawn ? 'not-drawn' : 'failed');
       host.innerHTML = '<div class="diagram-error">' + esc(d.error || 'Not drawn') + '</div><pre><code>' + esc(d.code || '') + '</code></pre>';
       return;
     }
-    host.innerHTML = '<div class="frame"><div class="stage">' + d.svg + '</div><div class="bar"><button type="button" data-act="in" title="Zoom in">+</button><button type="button" data-act="out" title="Zoom out">&minus;</button><button type="button" data-act="fit">Fit</button><button type="button" data-act="full">Full screen</button></div><p class="hint">Drag to pan. Ctrl or &#8984; with the wheel, or pinch, to zoom.</p></div>';
+    host.innerHTML = '<div class="frame"><div class="bar"><p class="hint"></p><span class="zoom"><button type="button" data-act="in" title="Zoom in">+</button><button type="button" data-act="out" title="Zoom out">&minus;</button><button type="button" data-act="fit" title="Show the whole picture">Fit</button><button type="button" data-act="full">Full screen</button></span></div>' +
+      '<div class="view" tabindex="0" role="group" aria-label="' + esc(name) + '. Arrow keys pan, plus and minus zoom, 0 fits the whole picture."><div class="stage">' + d.svg + '</div></div></div>';
     panZoom(host.firstChild);
   }
+  /* A diagram opens at a size its labels can be read at (no smaller than MIN) and pans when it is then larger than its frame; Fit shows the whole picture. */
   function panZoom(frame) {
-    var stage = frame.firstChild, svg = stage.querySelector('svg'), vb = svg.viewBox && svg.viewBox.baseVal;
+    var MIN = 0.6, PAD = 12, bar = frame.firstChild, hint = bar.firstChild, view = frame.lastChild, stage = view.firstChild, svg = stage.querySelector('svg'), vb = svg.viewBox && svg.viewBox.baseVal;
     var w = vb && vb.width ? vb.width : (svg.getBBox().width || 400), h = vb && vb.height ? vb.height : (svg.getBBox().height || 300);
-    var s = 1, x = 0, y = 0, drag = null, moved = false, lastWidth = 0;
+    var s = 1, x = 0, y = 0, drag = null, mode = 'open', lastWidth = 0, said = '';
     svg.setAttribute('width', w); svg.setAttribute('height', h); svg.style.maxWidth = 'none';
     function full() { return doc.fullscreenElement === frame; }
-    function apply() { stage.style.transform = 'translate(' + x.toFixed(1) + 'px, ' + y.toFixed(1) + 'px) scale(' + s.toFixed(4) + ')'; }
+    function apply() {
+      stage.style.transform = 'translate(' + x.toFixed(1) + 'px, ' + y.toFixed(1) + 'px) scale(' + s.toFixed(4) + ')';
+      var vw = view.clientWidth, vh = view.clientHeight, more = { l: x < -1, r: x + w * s > vw + 1, t: y < -1, b: y + h * s > vh + 1 }, dirs = [];
+      ['l', 'r', 't', 'b'].forEach(function (k) { view.classList.toggle('more-' + k, more[k]); });
+      if (more.r) dirs.push('right'); if (more.l) dirs.push('left'); if (more.b) dirs.push('below'); if (more.t) dirs.push('above');
+      var text = dirs.length ? 'The picture continues ' + dirs.join(' and ') + ': drag it, or use the arrow keys. Fit shows all of it.' : 'Drag to pan. Ctrl or ⌘ with the wheel, or pinch, to zoom.';
+      if (text !== said) hint.textContent = said = text;
+    }
+    function whole() { return Math.min((view.clientWidth - 2 * PAD) / w, (view.clientHeight - 2 * PAD) / h); }
+    function place() {
+      var vw = view.clientWidth, vh = view.clientHeight;
+      x = w * s <= vw - 2 * PAD ? (vw - w * s) / 2 : PAD; y = h * s <= vh - 2 * PAD ? (vh - h * s) / 2 : PAD; apply();
+    }
     function size() {
-      if (full()) { frame.style.height = ''; return; }
-      var k = Math.min((frame.clientWidth - 24) / w, 1);
-      frame.style.height = Math.round(Math.max(160, Math.min(h * k + 40, window.innerHeight * 0.85))) + 'px';
+      if (full()) { view.style.height = ''; return; }
+      var side = frame.closest('.side'), top = window.innerHeight * 0.85;
+      var max = (side ? Math.min(top, side.clientHeight - 24) : top) - bar.offsetHeight, min = Math.min(260, max);
+      var k = Math.min(1, Math.max(MIN, (view.clientWidth - 2 * PAD) / w));
+      view.style.height = Math.round(Math.max(min, Math.min(h * k + 2 * PAD, max))) + 'px';
     }
-    function fit() {
-      size();
-      var fw = frame.clientWidth, fh = frame.clientHeight;
-      moved = false; lastWidth = fw;
-      s = Math.max(0.05, Math.min((fw - 24) / w, (fh - 40) / h, full() ? 2.5 : 1));
-      x = (fw - w * s) / 2; y = Math.max(8, (fh - h * s) / 2); apply();
+    function open() {
+      size(); mode = 'open'; lastWidth = view.clientWidth;
+      s = full() ? Math.max(0.05, Math.min(whole(), 2.5)) : Math.min(1, Math.max(MIN, whole())); place();
     }
-    function zoom(k, px, py) { moved = true; var ns = Math.min(8, Math.max(0.05, s * k)); k = ns / s; x = px - (px - x) * k; y = py - (py - y) * k; s = ns; apply(); }
-    frame.addEventListener('wheel', function (e) {
+    function fit() { mode = 'fit'; lastWidth = view.clientWidth; s = Math.max(0.05, Math.min(whole(), full() ? 2.5 : 1)); place(); }
+    function zoom(k, px, py) { mode = 'moved'; var ns = Math.min(8, Math.max(0.05, s * k)); k = ns / s; x = px - (px - x) * k; y = py - (py - y) * k; s = ns; apply(); }
+    function pan(dx, dy) { mode = 'moved'; x += dx; y += dy; apply(); }
+    function centre(k) { zoom(k, view.clientWidth / 2, view.clientHeight / 2); }
+    view.addEventListener('wheel', function (e) {
       if (!(e.ctrlKey || e.metaKey || full())) return;
-      e.preventDefault(); var r = frame.getBoundingClientRect(); zoom(Math.exp(-e.deltaY * 0.002), e.clientX - r.left, e.clientY - r.top);
+      e.preventDefault(); var r = view.getBoundingClientRect(); zoom(Math.exp(-e.deltaY * 0.002), e.clientX - r.left, e.clientY - r.top);
     }, { passive: false });
-    frame.addEventListener('pointerdown', function (e) {
-      if (e.button !== 0 || e.target.closest('.bar')) return;
-      drag = { px: e.clientX, py: e.clientY, x: x, y: y }; frame.classList.add('dragging');
-      try { frame.setPointerCapture(e.pointerId); } catch (err) { /* synthetic pointer */ }
+    view.addEventListener('pointerdown', function (e) {
+      if (e.button !== 0) return;
+      drag = { px: e.clientX, py: e.clientY, x: x, y: y }; view.classList.add('dragging');
+      try { view.setPointerCapture(e.pointerId); } catch (err) { /* synthetic pointer */ }
     });
-    frame.addEventListener('pointermove', function (e) { if (drag) { moved = true; x = drag.x + e.clientX - drag.px; y = drag.y + e.clientY - drag.py; apply(); } });
-    function stop() { drag = null; frame.classList.remove('dragging'); }
-    frame.addEventListener('pointerup', stop); frame.addEventListener('pointercancel', stop);
-    frame.querySelector('.bar').addEventListener('click', function (e) {
-      var act = e.target.getAttribute('data-act');
-      if (act === 'in' || act === 'out') zoom(act === 'in' ? 1.25 : 0.8, frame.clientWidth / 2, frame.clientHeight / 2);
+    view.addEventListener('pointermove', function (e) { if (drag) { mode = 'moved'; x = drag.x + e.clientX - drag.px; y = drag.y + e.clientY - drag.py; apply(); } });
+    function stop() { drag = null; view.classList.remove('dragging'); }
+    view.addEventListener('pointerup', stop); view.addEventListener('pointercancel', stop);
+    /* The keys act only while this frame has focus, so the arrows scroll the page everywhere else. */
+    view.addEventListener('keydown', function (e) {
+      if (e.altKey || e.ctrlKey || e.metaKey) return;
+      var step = e.shiftKey ? 200 : 50, k = e.key;
+      if (k === 'ArrowLeft') pan(step, 0); else if (k === 'ArrowRight') pan(-step, 0);
+      else if (k === 'ArrowUp') pan(0, step); else if (k === 'ArrowDown') pan(0, -step);
+      else if (k === '+' || k === '=') centre(1.25); else if (k === '-' || k === '_') centre(0.8);
+      else if (k === '0') fit();
+      else return;
+      e.preventDefault();
+    });
+    bar.addEventListener('click', function (e) {
+      var b = e.target.closest('button'), act = b && b.getAttribute('data-act');
+      if (act === 'in' || act === 'out') centre(act === 'in' ? 1.25 : 0.8);
       else if (act === 'fit') fit();
       else if (act === 'full') {
         if (full()) { doc.exitFullscreen(); return; }
@@ -211,12 +248,12 @@ function ArchViewer(data, opts) {
         if (p && p.catch) p.catch(function () { frame.setAttribute('data-fullscreen', 'refused'); });
       }
     });
-    frame.fit = fit; frames.push(frame);
-    requestAnimationFrame(fit);
-    /* Refit an untouched diagram when its frame's width changes, such as when a scrollbar appears beside it. */
-    if (window.ResizeObserver) new ResizeObserver(function () { if (!moved && frame.clientWidth !== lastWidth) fit(); }).observe(frame);
+    frame.open = open; frames.push(frame);
+    requestAnimationFrame(open);
+    /* Redo an untouched diagram's opening size or fit when its frame's width changes, such as when a scrollbar appears beside it. */
+    if (window.ResizeObserver) new ResizeObserver(function () { if (mode !== 'moved' && view.clientWidth !== lastWidth) (mode === 'fit' ? fit : open)(); }).observe(frame);
   }
-  function refit() { frames = frames.filter(function (f) { return f.isConnected; }); frames.forEach(function (f) { f.fit(); }); }
+  function refit() { frames = frames.filter(function (f) { return f.isConnected; }); frames.forEach(function (f) { f.open(); }); }
   function mark(paths) { [].forEach.call(doc.querySelectorAll('#toc a[data-path]'), function (a) { a.classList.toggle('on', paths.indexOf(a.getAttribute('data-path')) >= 0); }); }
   /* A compare address that names fewer than two paths shows what it names alone, with a line that says so. */
   function state() {

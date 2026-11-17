@@ -155,7 +155,8 @@ Run it from the architecture folder. The browser's program name differs by syste
 Knowing this lets you point a person at the right thing:
 
 - The left column lists the index as **Overview**, then **Standing views** in the order the index links them, then **Studies**, newest first, each with its own views beneath it. Each entry shows its status.
-- Every `mermaid` fence is drawn in a frame. Drag pans; Ctrl or Cmd with the mouse wheel, or a trackpad pinch, zooms; the buttons zoom in, zoom out, fit, and show the diagram full screen, where the plain wheel zooms too.
+- Every `mermaid` fence is drawn in a frame, at a size its labels can be read at. A picture larger than the frame at that size opens at its start, and a shaded edge and the line above the picture say where it continues. Drag pans; Ctrl or Cmd with the mouse wheel, or a trackpad pinch, zooms; the buttons above the picture zoom in, zoom out, fit the whole picture, and show it full screen, where the plain wheel zooms too.
+- Tab reaches each frame. While a frame has focus, the arrow keys pan (further with Shift), `+` and `-` zoom, and `0` fits the whole picture; everywhere else the arrow keys scroll the page as usual.
 - A long or wide table scrolls inside its own box, with its header row kept in view.
 - **Theme** switches between light and dark. The page starts in the system setting and follows it until the person switches. Nodes styled in the view with `classDef` or `style` keep their fill; where a label would be hard to read on that fill in the current theme, the page draws it in black or white instead.
 - **Compare** shows two sources side by side, each with its own pan and zoom, chosen in the two lists above them.
