@@ -150,7 +150,8 @@
       "keywords": ["software-architecture", "architecture", "c4", "mermaid", "diagrams", "risk-review", "simplification", "adr", "agents"],
       "skills": [
         "./skills/software-architecture/drawing-architecture-views",
-        "./skills/software-architecture/recovering-built-architecture"
+        "./skills/software-architecture/recovering-built-architecture",
+        "./skills/software-architecture/evaluating-architecture-risks"
       ]
     }
   ]

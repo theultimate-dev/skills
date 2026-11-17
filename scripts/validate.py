@@ -129,6 +129,10 @@ MIRRORS = (
      "skills/software-architecture/recovering-built-architecture/templates/view.md"),
     ("skills/software-architecture/drawing-architecture-views/references/view-conventions.md",
      "skills/software-architecture/recovering-built-architecture/references/view-conventions.md"),
+    ("skills/software-architecture/drawing-architecture-views/templates/view.md",
+     "skills/software-architecture/evaluating-architecture-risks/templates/view.md"),
+    ("skills/software-architecture/drawing-architecture-views/references/view-conventions.md",
+     "skills/software-architecture/evaluating-architecture-risks/references/view-conventions.md"),
 )
 EXTRA_KEYS_NOTE = ("only name, description and license are allowed here; spec fields such as compatibility,"
                    " metadata and allowed-tools, and Claude-only fields, are not permitted")
