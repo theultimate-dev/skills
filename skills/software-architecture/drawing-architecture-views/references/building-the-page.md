@@ -39,6 +39,10 @@ The commit says which committed state the views were built on. Views edited sinc
 
 The template ships with no source blocks. Opened as it is, it says so and writes `FAIL page: no source blocks; build the page from the Markdown files first`.
 
+## Before the first build
+
+The page is a built HTML file that gets committed beside the Markdown. Some folders have house rules about what they may hold: a prototype context's `AGENTS.md`, for example, may say "Markdown only". Read the rules that govern the architecture folder before you create `architecture.html` in it for the first time. Where they name the page as allowed, or say nothing about file types, build it. Where they say Markdown only and do not name it, ask the person once, in one line, whether to build it there, and propose the sentence that would add the exception to their rules. Without a yes, leave the folder as it is and say in your report that the page was not built and why. Once the page exists in a folder, rebuilding it needs no new question.
+
 ## Build or rebuild with the script
 
 Where a shell is available, build and rebuild with the script in this skill, `scripts/build-page.sh`. Run `bash`, then the script's path inside this skill, then the architecture folder:
