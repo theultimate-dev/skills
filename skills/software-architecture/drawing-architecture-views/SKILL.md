@@ -1,6 +1,6 @@
 ---
 name: drawing-architecture-views
-description: "Draws a system's architecture as Markdown views with Mermaid diagrams and builds the one page people read them in: writes a view file such as containers.md or runtime-sync.md in the architecture folder (context/architecture/ by default), updates its README.md index, writes a short guide study for a named audience, and builds or rebuilds architecture.html from templates/architecture.html by copying each Markdown file into a source block, then reads the page's PASS and FAIL check lines. Starts every view from one sentence naming its audience, question, scope and state, and draws the highest level that shows the fact in question. Use when the user says draw this, draw the containers, diagram this flow, explain the architecture to X, show the architecture to a new engineer, or rebuild the architecture page. Not for recovering the architecture of an undrawn codebase (recovering-built-architecture), or UI prototypes (building-html-prototypes)."
+description: "Draws a system's architecture as Markdown views with Mermaid diagrams and builds the one page people read them in: writes a view file such as containers.md or runtime-sync.md in the architecture folder (context/architecture/ by default), updates its README.md index, writes a short guide study for a named audience, and builds or rebuilds architecture.html with scripts/build-page.sh, which copies templates/architecture.html and places each Markdown file in a source block, then reads the page's PASS and FAIL check lines. Starts every view from one sentence naming its audience, question, scope and state, and draws the highest level that shows the fact in question. Use when the user says draw this, draw the containers, diagram this flow, explain the architecture to X, show the architecture to a new engineer, or rebuild the architecture page. Not for recovering the architecture of an undrawn codebase (recovering-built-architecture), or UI prototypes (building-html-prototypes)."
 license: MIT
 ---
 
@@ -32,7 +32,13 @@ Read the repository's `AGENTS.md`, or its `CLAUDE.md` when there is none. Where 
 3. **Pick the view.** The highest level that shows the fact in question (context, then containers, then one container's modules), then the concern: sequence for order and timeouts, deployment for what runs where and fails together, data flow for trust boundaries, state machine for allowed states, module graph for dependencies and cycles. The conventions' table maps each question to its file name and Mermaid type. One view first; a second only for a question the first leaves open.
 4. **Check before drawing.** Look for an existing view that already answers the sentence. Update it rather than adding a near copy, because two views of one question drift apart.
 5. **Write the view file** from [the view template](templates/view.md): the title, the Status line, the view sentence as the first sentence, one Mermaid fence, what the picture cannot show, the Elements and Relationships tables with evidence, and Related links. Keep it to at most 15 elements; split a larger system by concern or level. A view in a study is written in the study's folder and never edits a standing view.
-6. **Update the index and build the page.** Add or update the view's row in `README.md` (from [the index template](templates/architecture-index.md) when there is none), then build or rebuild `architecture.html` as [building the page](references/building-the-page.md) says: copy the template on the first build, then change only the source blocks and the built stamp. Where a shell is available, one command assembles every block.
+6. **Update the index and build the page.** Add or update the view's row in `README.md` (from [the index template](templates/architecture-index.md) when there is none), then build or rebuild `architecture.html`. Where a shell is available, run `bash`, then the path of [scripts/build-page.sh](scripts/build-page.sh) inside this skill, then the architecture folder:
+
+   ```bash
+   bash <this skill's directory>/scripts/build-page.sh context/architecture
+   ```
+
+   The same command does the first build and every rebuild: it copies the template when the folder has no page, places one block for every `.md` file under the folder, sets the built stamp, and writes only `architecture.html`. It needs bash 3.2 or newer and the standard `awk`, `sed`, `find`, `sort`, `cut` and `date`; `git` is optional, for the stamp. It prints one `placed` line per file and stops with a message, writing nothing, when something is wrong. Where no shell is available, make the same changes by hand as [building the page](references/building-the-page.md) says: copy the template once, then change only the source blocks and the built stamp.
 7. **Read the check lines.** The page writes `PASS path` or `FAIL path: detail` for every file, then `DONE passed/total`. Where the harness can open a browser, open the page, wait for the `DONE` line, fix every `FAIL`, rebuild and read again; then look at the drawn view once, because a diagram can parse and still read badly. Where it cannot, say the views were not drawn and ask the person to open the page and tell you the `DONE` line.
 
 ## Explain to an audience
@@ -61,13 +67,13 @@ The offline copy (the page's **Save offline copy** button) is not output of this
 
 ## Example
 
-The person asks: "Draw how a phone that was offline catches up." Reading the Larder folder shows `containers.md` and the ids `mobile`, `api`, `stream`, `worker`, `db`; no view covers order. The view sentence: "This view helps an engineer answer what happens, in what order, when a phone that was offline reconnects, about the sync path as built." Order makes it a sequence, so the file is `runtime-sync.md` with a `sequenceDiagram` whose participants use the same ids, Status `built`, and evidence paths for each step. The index gains a row; the assembly command rebuilds `architecture.html`; the check lines end with `DONE 7/7`, one PASS for each Markdown file in the folder. Later the person asks to explain the sync to a new mobile developer: a guide study `studies/2026-11-17-guide-mobile/README.md` links `containers.md` (where the mobile client sits) and `runtime-sync.md` (what happens on reconnect), says to read the `alt` block for the 410 path, and adds no standing view.
+The person asks: "Draw how a phone that was offline catches up." Reading the Larder folder shows `containers.md` and the ids `mobile`, `api`, `stream`, `worker`, `db`; no view covers order. The view sentence: "This view helps an engineer answer what happens, in what order, when a phone that was offline reconnects, about the sync path as built." Order makes it a sequence, so the file is `runtime-sync.md` with a `sequenceDiagram` whose participants use the same ids, Status `built`, and evidence paths for each step. The index gains a row; `scripts/build-page.sh` rebuilds `architecture.html`; the check lines end with `DONE 7/7`, one PASS for each Markdown file in the folder. Later the person asks to explain the sync to a new mobile developer: a guide study `studies/2026-11-17-guide-mobile/README.md` links `containers.md` (where the mobile client sits) and `runtime-sync.md` (what happens on reconnect), says to read the `alt` block for the 410 path, and adds no standing view.
 
 ## Anti-patterns
 
 | Anti-pattern | Instead |
 |---|---|
-| Writing or editing HTML in `architecture.html` | Change only the source blocks and the stamp; the template does the rest |
+| Writing or editing HTML in `architecture.html` | Run the script, or change only the source blocks and the stamp by hand |
 | A view with no sentence, or one that answers three questions | One sentence, one question; a second view for a second question |
 | A new id for an element another view already names | Reuse the id from the index's element ids table |
 | A full set of views "for completeness" | Only the views someone's question needs |
@@ -92,8 +98,9 @@ Without file access, return the view or the guide as Markdown, say that nothing 
 | Read | When |
 |---|---|
 | [view conventions](references/view-conventions.md) | Before the first view in a folder: location rule, view format, ids, evidence, Mermaid subset, links |
-| [building the page](references/building-the-page.md) | Every build and rebuild of `architecture.html`, reading the check lines, the offline copy |
+| [building the page](references/building-the-page.md) | Every build and rebuild of `architecture.html`, the script's messages, the by-hand route, reading the check lines, the offline copy |
+| [the build script](scripts/build-page.sh) | Every build and rebuild where a shell is available: run it with `bash` |
 | [growing into a model](references/growing-into-a-model.md) | When hand-kept views drift, or past about ten views of the same elements |
-| [the page template](templates/architecture.html) | The first build: copy it, never edit it |
+| [the page template](templates/architecture.html) | The first build by hand: copy it, never edit it. The script copies it itself |
 | [the view template](templates/view.md) | Writing a view file |
 | [the index template](templates/architecture-index.md) | Creating `README.md` in a new architecture folder |
