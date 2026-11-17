@@ -152,7 +152,8 @@
         "./skills/software-architecture/drawing-architecture-views",
         "./skills/software-architecture/recovering-built-architecture",
         "./skills/software-architecture/evaluating-architecture-risks",
-        "./skills/software-architecture/exploring-architecture-options"
+        "./skills/software-architecture/exploring-architecture-options",
+        "./skills/software-architecture/simplifying-system-architecture"
       ]
     }
   ]

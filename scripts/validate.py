@@ -142,6 +142,12 @@ MIRRORS = (
     # exploring-architecture-options and simplifying-system-architecture, and in each skill's study template.
     ("skills/software-architecture/evaluating-architecture-risks/references/scenario-intake.md",
      "skills/software-architecture/exploring-architecture-options/references/scenario-intake.md"),
+    ("skills/software-architecture/drawing-architecture-views/templates/view.md",
+     "skills/software-architecture/simplifying-system-architecture/templates/view.md"),
+    ("skills/software-architecture/drawing-architecture-views/references/view-conventions.md",
+     "skills/software-architecture/simplifying-system-architecture/references/view-conventions.md"),
+    ("skills/software-architecture/evaluating-architecture-risks/references/scenario-intake.md",
+     "skills/software-architecture/simplifying-system-architecture/references/scenario-intake.md"),
 )
 EXTRA_KEYS_NOTE = ("only name, description and license are allowed here; spec fields such as compatibility,"
                    " metadata and allowed-tools, and Claude-only fields, are not permitted")
