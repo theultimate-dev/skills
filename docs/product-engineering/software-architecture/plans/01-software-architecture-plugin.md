@@ -17,18 +17,18 @@ A person can install `software-architecture` and ask an agent, in any repository
 
 ## Boundaries
 
-- In scope: `skills/software-architecture/`, decision 0021, the catalog and changelogs, `MIRRORS` in `scripts/validate.py`, one sentence each in `brainstorming-solutions` and `designing-system-architecture`, the prototype profile exception and its mirrors, the root README, the release commit.
+- In scope: `skills/software-architecture/`, decision 0022, the catalog and changelogs, `MIRRORS` in `scripts/validate.py`, one sentence each in `brainstorming-solutions` and `designing-system-architecture`, the prototype profile exception and its mirrors, the root README, the release commit.
 - Out of scope: the spec's non-goals; a plugin README, visuals and committed evaluations (follow-up).
 - Contracts produced or consumed: the view format and the HTML template's marker lines, link form and check lines (settled in p2, consumed by p3 and p4); the scenario intake (settled in p3, consumed by p4).
 - Shared files and their owning slice: one slice. Within it, the orchestrator owns `marketplace.json`, `README.md`, both changelogs of the category and the root, `scripts/validate.py` and the mirrored copies.
 
-## Phase 1: planning files and decision 0021
+## Phase 1: planning files and decision 0022
 
 - Tasks:
   1. Commit `spec.md`, `roadmap.md`, this plan and the re-confirmed `verification-profile.md`.
-  2. Write `decisions/0021-software-architecture-category.md` with the `decision-records` skill, covering every point of R35, and add its row to `decisions/README.md`.
+  2. Write `decisions/0022-software-architecture-category.md` with the `decision-records` skill, covering every point of R35, and add its row to `decisions/README.md`.
   3. Add the root changelog entry for the decision.
-- Files: `docs/product-engineering/software-architecture/**`, `docs/product-engineering/verification-profile.md`, `decisions/0021-software-architecture-category.md`, `decisions/README.md`, `CHANGELOG.md`
+- Files: `docs/product-engineering/software-architecture/**`, `docs/product-engineering/verification-profile.md`, `decisions/0022-software-architecture-category.md`, `decisions/README.md`, `CHANGELOG.md`
 - ACs: AC33 passes here
 - Leaves the base working because: additive only; the validator passes
 

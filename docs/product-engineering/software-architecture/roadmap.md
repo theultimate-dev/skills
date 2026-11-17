@@ -37,7 +37,7 @@ Changes:
 
 | Plan | Phases | PR slices | Predicted category | Depends on |
 |---|---|---|---|---|
-| `plans/01-software-architecture-plugin.md` | p1: planning files and decision 0021; p2: `drawing-architecture-views` with the HTML template and the category scaffold; p3: `recovering-built-architecture` and `evaluating-architecture-risks`; p4: `exploring-architecture-options` and `simplifying-system-architecture`; p5: changes outside the category; p6: the release commit | whole plan: one pull request | `human`: Igor reviews and merges it himself (session prompt, 2026-11-17). It also changes `scripts/validate.py`, adds a decision record, and ships a user-visible HTML template | none |
+| `plans/01-software-architecture-plugin.md` | p1: planning files and decision 0022; p2: `drawing-architecture-views` with the HTML template and the category scaffold; p3: `recovering-built-architecture` and `evaluating-architecture-risks`; p4: `exploring-architecture-options` and `simplifying-system-architecture`; p5: changes outside the category; p6: the release commit | whole plan: one pull request | `human`: Igor reviews and merges it himself (session prompt, 2026-11-17). It also changes `scripts/validate.py`, adds a decision record, and ships a user-visible HTML template | none |
 
 ## Order and parallelism
 
@@ -62,3 +62,4 @@ Changes:
 - 2026-11-17 A plugin README with visuals and committed evaluations are a follow-up pull request (G1). The follow-up's evaluations are a `claude plugin eval` suite.
 - 2026-11-17 Igor settled the quoting rule at G4 ("1a"): labels are quoted wherever the diagram type takes a quoted string; sequence diagram text and state transition labels stay bare. R11 is reworded; this is a recorded departure from the agreed spec §3, which says "every label quoted".
 - 2026-11-17 Igor's G4 approval also confirms the changes the roadmap review made to the Verification contract after G3: AC36, AC37, the rubrics, trials T10 and T11, the two checkpoints.
+- 2026-11-17 `main` moved during phase 2: pull requests #31 and #32 added the `dev-environment` plugin, released the marketplace as 0.5.0, took decision number 0021 and allowed skills to ship bash scripts. The unpushed branch was rebased onto `main` at 74a0a63. Consequences: this work item's decision record is 0022; the marketplace release in p6 is 0.6.0; the plugin is the ninth. Whether `drawing-architecture-views` should now ship a bash script that builds the page is a question for Igor; until he answers, the plan is unchanged and no script ships.
