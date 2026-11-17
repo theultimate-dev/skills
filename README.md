@@ -16,7 +16,7 @@ A skill is a set of instructions your agent follows with your permissions. Read 
 | `product-engineering` | [`running-implementation-loops`](skills/product-engineering/running-implementation-loops/SKILL.md) · [`specifying-work-items`](skills/product-engineering/specifying-work-items/SKILL.md) · [`brainstorming-solutions`](skills/product-engineering/brainstorming-solutions/SKILL.md) · [`defining-verification`](skills/product-engineering/defining-verification/SKILL.md) · [`planning-implementation`](skills/product-engineering/planning-implementation/SKILL.md) · [`implementing-plans`](skills/product-engineering/implementing-plans/SKILL.md) · [`verifying-implementation`](skills/product-engineering/verifying-implementation/SKILL.md) · [`reviewing-code-changes`](skills/product-engineering/reviewing-code-changes/SKILL.md) · [`shipping-pull-requests`](skills/product-engineering/shipping-pull-requests/SKILL.md) | Specify by interview, brainstorm and pick an approach, agree how the agent verifies itself, approve the roadmap; then autonomous implementation, real verification in the running app, quick and five-lens review, and one PR per slice, merged by the agent when safe and authorized. |
 | `product-prototyping` | [`structuring-prototype-context`](skills/product-prototyping/structuring-prototype-context/SKILL.md) · [`framing-prototype-ideas`](skills/product-prototyping/framing-prototype-ideas/SKILL.md) · [`shaping-prototype-bets`](skills/product-prototyping/shaping-prototype-bets/SKILL.md) · [`building-prototype-bets`](skills/product-prototyping/building-prototype-bets/SKILL.md) · [`closing-prototype-bets`](skills/product-prototyping/closing-prototype-bets/SKILL.md) | A prototype's context beside its code, and a fast loop for each idea: frame it, shape it into a bet you approve, build it with self-verification and an independent review, then try it and keep it or remove it, with history in the app's changelog. |
 | `prompt-engineering` | [`improving-prompts`](skills/prompt-engineering/improving-prompts/SKILL.md) | A rough prompt to an engineered one: destination and gap diagnosis, a technique catalog with apply and reject criteria, dated model-family notes, and a copy-paste-ready result with the reasoning behind it. |
-| `software-architecture` | [`drawing-architecture-views`](skills/software-architecture/drawing-architecture-views/SKILL.md) · [`recovering-built-architecture`](skills/software-architecture/recovering-built-architecture/SKILL.md) · [`evaluating-architecture-risks`](skills/software-architecture/evaluating-architecture-risks/SKILL.md) · [`exploring-architecture-options`](skills/software-architecture/exploring-architecture-options/SKILL.md) · [`simplifying-system-architecture`](skills/software-architecture/simplifying-system-architecture/SKILL.md) | The architecture of a long-lived application, in any repository: Markdown views with Mermaid as the source of truth, each element tied to evidence, and one built `architecture.html` that anyone can open to read them. |
+| `software-architecture` | [`recovering-built-architecture`](skills/software-architecture/recovering-built-architecture/SKILL.md) · [`evaluating-architecture-risks`](skills/software-architecture/evaluating-architecture-risks/SKILL.md) · [`exploring-architecture-options`](skills/software-architecture/exploring-architecture-options/SKILL.md) · [`simplifying-system-architecture`](skills/software-architecture/simplifying-system-architecture/SKILL.md) · [`drawing-architecture-views`](skills/software-architecture/drawing-architecture-views/SKILL.md) | The architecture of a long-lived application, in any repository: what is really built, a critical look, options, a simpler design, and drawings. Markdown views with Mermaid are the source of truth, each element is tied to evidence, and one built `architecture.html` lets anyone read them. |
 
 Each category is a plugin with its own version and changelog: [`dev-environment`](skills/dev-environment/CHANGELOG.md) · [`foundations`](skills/foundations/CHANGELOG.md) · [`harness-engineering`](skills/harness-engineering/CHANGELOG.md) · [`product-context`](skills/product-context/CHANGELOG.md) · [`product-design`](skills/product-design/CHANGELOG.md) · [`product-engineering`](skills/product-engineering/CHANGELOG.md) · [`product-prototyping`](skills/product-prototyping/CHANGELOG.md) · [`prompt-engineering`](skills/prompt-engineering/CHANGELOG.md) · [`software-architecture`](skills/software-architecture/CHANGELOG.md).
 
@@ -220,6 +220,34 @@ Use shaping-prototype-bets to turn that framing into a bet.
 Use building-prototype-bets: bet 03 is approved.
 
 Use closing-prototype-bets: I tried bet 03, keep it.
+```
+
+## From an undrawn system to an architecture everyone can read
+
+`software-architecture` is for the architecture of an application that is meant to last, in whatever repository it lives: your own app, or a client's you have just been handed. The architecture is kept as Markdown files with Mermaid diagrams, one question per view, with every element tied to the file that proves it. Those files are the source of truth and read fine on GitHub. People look at them through one built page, `architecture.html`, with pan, zoom, light and dark, and any two views side by side, so nobody installs a tool to read your architecture. Each skill works with no other plugin installed.
+
+| Step | Skill | What comes out | Your gate |
+|---|---|---|---|
+| Recover | `recovering-built-architecture` | Context and container views of what is really built, each element and relationship with evidence, and a list of blind spots with what would settle each | |
+| Evaluate | `evaluating-architecture-risks` | A dated risk review: three to five measurable scenarios traced through the views, risks ranked and pinned to elements, trade-offs, and the next check for each top risk | |
+| Explore | `exploring-architecture-options` | An options study: two or three options that differ in kind, each as a view, a matrix with a sentence per cell, a recommendation and what would reverse it | Pick an option |
+| Simplify | `simplifying-system-architecture` | A simplification study: before and after views, a row per scenario showing it still holds, what each removed part guaranteed and where that guarantee now lives; or "nothing should change", with reasons | Accept, narrow or decline |
+| Draw | `drawing-architecture-views` | One view for one question, a guide to the existing views for a named audience, and the rebuilt `architecture.html` | |
+
+On an existing application the usual order is recover, evaluate, then simplify or explore, then a decision record and the updated views. On a new system, start with explore. Each skill also works alone and names the one that fits next. Views and studies go where your `AGENTS.md` points, or to `context/architecture/` when it points nowhere, and you commit them yourself. Inside a product context repository, `designing-system-architecture` in `product-context` owns the architecture, and these skills hand it their studies.
+
+Install with `claude plugin install software-architecture@theultimate-dev` after marketplace setup, or `npx skills add theultimate-dev/skills/skills/software-architecture`. Rebuilding the page uses a bundled bash script where a shell is available; the built page loads Mermaid from one pinned address, and its Save button makes a copy that opens with no network.
+
+```text
+Use recovering-built-architecture: what is really there in this repository?
+
+Use evaluating-architecture-risks to take a critical look at how sync works before we add a second mobile app.
+
+Use exploring-architecture-options: we want lists to update live on every device. What are our options?
+
+Use simplifying-system-architecture: this feels heavy for a small app. Can we drop the queue?
+
+Use drawing-architecture-views to explain the architecture to the new mobile developer.
 ```
 
 ## Install
