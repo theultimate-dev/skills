@@ -4,11 +4,9 @@ Date: [YYYY-MM-DD] · Kind: risk review · Outcome: [findings shown | no archite
 
 <!-- Save as studies/[YYYY-MM-DD]-[slug]/README.md in the architecture folder; the slug names the subject in two to four words.
 Keep the title and the header line first: the index row is copied from them. Update the Outcome when the person answers, and the index row with it.
-Write the Intake before any verdict. Ids: S scenarios, C constraints, F facts, A assumptions, P proposals, R risks, T trade-off points. Element ids are the ids of the views.
+The Intake comes directly under the header line: put no summary or finding above it; the headline finding goes in "Does this need an architecture change?". Ids: S scenarios, C constraints, F facts, A assumptions, P proposals, R risks, T trade-off points. Element ids are the ids of the views.
 Links to standing views and to the page start with two parent-folder steps, because the study sits two folders below the architecture folder; the source paths after "#compare=" stay relative to the architecture folder.
 Write "none" under a heading that has nothing, with what was checked. Delete this comment and every unused placeholder. -->
-
-Views read: [links to the standing views and earlier studies read]. Code read at commit [short commit]: [the folders and files the traces crossed].
 
 ## Intake
 
@@ -43,6 +41,10 @@ Considered, not traced: [scenarios left out, one phrase each, or none].
 **Already decided.**
 
 - [link to a decision record, an accepted study or a standing view]: [what it settles here, or "the decision log is empty"].
+
+## Scope
+
+Views read: [links to the standing views and earlier studies read]. Code read at commit [short commit]: [the folders and files the traces crossed]. Earlier reviews of this subject: [which of their findings still hold, changed or were wrong, or none].
 
 ## Scenario verdicts
 
