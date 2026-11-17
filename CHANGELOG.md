@@ -17,6 +17,10 @@ Marketplace releases are tagged `vX.Y.Z`. Every plugin release is also a marketp
 
 ## [Unreleased]
 
+### Added
+
+- Decision record [0022](decisions/0022-software-architecture-category.md): why architecture work on existing applications is its own `software-architecture` category, where its files live, and why its built page loads Mermaid from a pinned CDN address.
+
 ## [0.5.0] - 2026-11-17
 
 ### Added
