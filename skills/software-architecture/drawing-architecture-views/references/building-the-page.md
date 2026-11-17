@@ -2,7 +2,7 @@
 
 `architecture.html` is the one file people open to read the architecture. It sits in the architecture folder beside the index (`README.md`) and holds a copy of every Markdown file in that folder, each in its own source block. In a browser it formats the prose and tables, draws every `mermaid` fence, and writes one check line per file. The Markdown files stay the source of truth; the page is rebuilt from them whenever they change.
 
-You never write HTML for this page. You copy `templates/architecture.html` once, then change only two things: the source blocks and the built stamp. Everything else in the file is the template's own code, and leaving it untouched is what lets the next template update, a diff and the check lines be trusted.
+You never write HTML for this page. It starts as a copy of `templates/architecture.html`, and after that only two things change: the source blocks and the built stamp. Everything else in the file is the template's own code, and leaving it untouched is what lets the next template update, a diff and the check lines be trusted. Where a shell is available, the script `scripts/build-page.sh` makes both changes; where it is not, you make them by hand as text edits.
 
 ## What the page holds
 
@@ -19,7 +19,7 @@ You never write HTML for this page. You copy `templates/architecture.html` once,
 - The closing marker line is exactly `</script><!-- end PATH -->`, alone on its line, with the same `PATH`.
 - `PATH` is the file's path relative to the architecture folder, with forward slashes and its `.md` ending: `README.md`, `containers.md`, `studies/2026-11-10-sync-risks/README.md`. It is the same identifier the views use in links, the compare link form and the check lines.
 - Between the marker lines goes the file exactly as it is, with one mechanical escape: wherever the file contains `</script` (in any letter case) or `<!--`, insert a backslash after the `<`, giving `<\/script` and `<\!--`. Where a backslash already follows that `<`, insert one more. The browser would otherwise end the block early or swallow the next one; the page removes the backslash again before it reads the file. Most views contain neither string, so their block is the file verbatim.
-- The block order does not matter. The command below writes `README.md` first and the others sorted by path.
+- The block order does not matter to the page. The script writes `README.md` first, then the standing views, then the studies, each group sorted by path, so the order is the same on every run.
 
 **The built stamp.** One line in the page header, which the template ships as:
 
@@ -33,78 +33,83 @@ A build sets the date (`YYYY-MM-DD`, the day of the build) and the short commit 
   <p id="stamp">Built <time>2026-11-17</time> from <code>b93de10</code></p>
 ```
 
-The commit says which committed state the views were built on. Views edited since then and not yet committed are still included; the person commits them together with the page. Where the folder is not in a git repository, write `no commit`.
+The commit says which committed state the views were built on. Views edited since then and not yet committed are still included; the person commits them together with the page. Where the folder is not in a git repository, the commit is `no-git`; in a repository with no commit yet, `uncommitted`. Committing the page moves `HEAD`, so a rebuild after that commit changes the stamp line even when no view changed.
 
 **Which files.** One block for the index `README.md` and one for every other Markdown file in the architecture folder and its `studies/` folders: each standing view, each study's `README.md`, each view inside a study. The index is a block too: the page opens on it, and its check line fails when it links a file that has no block, which catches a file left out of the build.
 
 The template ships with no source blocks. Opened as it is, it says so and writes `FAIL page: no source blocks; build the page from the Markdown files first`.
 
-## First build
+## Build or rebuild with the script
+
+Where a shell is available, build and rebuild with the script in this skill, `scripts/build-page.sh`. Run `bash`, then the script's path inside this skill, then the architecture folder:
+
+```bash
+bash <this skill's directory>/scripts/build-page.sh context/architecture
+```
+
+It does the whole build except reading the checks, and the same command serves the first build and every rebuild:
+
+- When the folder has no `architecture.html`, it copies the template from this skill's `templates/` folder, which it finds from its own path.
+- It replaces the whole region between the region lines with one block for every `.md` file under the folder, in the stable order above, with the escape applied. Changed files are replaced, new files added, deleted files dropped. Folders whose names start with a dot are skipped.
+- It sets the built stamp.
+- It writes only `architecture.html`, through a temporary file moved into place, so a failure leaves the page as it was.
+- It prints `placed PATH` for each file and a final line with the count and the stamp, for example `built context/architecture/architecture.html: 7 files, stamp 2026-11-17 from b93de10`.
+
+Unchanged files give byte-identical blocks, so a second run with no change gives a byte-identical page (only the stamp line moves when the date or the commit changed), and `git status` shows `architecture.html` as the only changed file.
+
+It needs bash 3.2 or newer and the standard `awk`, `sed`, `find`, `sort`, `cut` and `date`, in their macOS or Linux versions; `git` is optional and only used for the stamp. Run it with `bash`, because installers do not always keep a script's executable bit.
+
+It stops with exit code 1 and a message on standard error, writing nothing, when:
+
+| Message | What to do |
+|---|---|
+| `no such folder` | Pass the architecture folder that holds `README.md` |
+| `no template at ...` | Run the copy of the script that sits inside this skill, beside its `templates/` folder |
+| `... lacks its region lines ... or its stamp line` | The page was edited outside its blocks: copy the template over it and run the script again |
+| `no Markdown files under ...` | Write the index and the views first |
+| `the page cannot carry this path, rename the file` | Rename the file: a path with `"`, `<`, `>`, `&` or a backslash cannot sit in a marker line |
+
+A missing `README.md` is only a warning: the page builds, but it has no index to open on, so write one.
+
+The script takes every `.md` file under the folder. When it places a file the index does not list, add that file to the index: the index is how people find a view.
+
+When this skill's template is newer than the page (a fix you were told about, or a different Mermaid version on the line `var MERMAID_URL = ...`), move the old page aside or delete it and run the script: with no page in the folder, it starts from the current template.
+
+To confirm a first build, diff it against the template. Every changed line must be a block line or the stamp line:
+
+```bash
+diff <this skill's directory>/templates/architecture.html context/architecture/architecture.html
+```
+
+`diff` reports the stamp line as changed and the blocks as added after the `<!-- sources: begin -->` line, and nothing else.
+
+## Build or rebuild by hand
+
+Where no shell is available, edit `architecture.html` as text. The result is the same page; only the order of the blocks may differ, which the page does not mind.
+
+**First build.**
 
 1. Copy `templates/architecture.html` from this skill into the architecture folder, beside `README.md`, as `architecture.html`.
-2. Insert one block for `README.md` and one for every file it lists, and for every view inside each study, between the region lines.
-3. Set the built stamp.
-4. Read the check lines (below).
+2. Add a block for `README.md`, one for every file it links, and one for every view inside each study, as **Add a file** below says.
+3. Set the stamp.
+4. Read the check lines.
 
-Where a shell is available, steps 2 and 3 are the command in the next section. Where it is not, do them by hand as the section after it says.
-
-## Rebuild
-
-Rebuild after every change to a view, a study or the index, before you report: a page that does not match its Markdown is worse than no page, because people trust what they see drawn.
+**Rebuild**, after every change to a view, a study or the index:
 
 1. Replace the block of every file that changed.
 2. Add a block for every new file.
 3. Remove the block of every deleted or renamed file, together with both its marker lines.
-4. Set the built stamp to today and the current short commit.
+4. Set the stamp to today and the current short commit.
 5. Read the check lines.
 
-Leave everything outside the region lines and the stamp line as it is. When this skill's template is newer than the page (a fix you were told about, or a different Mermaid version on the line `var MERMAID_URL = ...`), start again from a fresh copy of the template and run the first build instead.
+**The edits.**
 
-## Assemble with one command
-
-Where a shell is available, one command does steps 2 and 3 of the first build and every step of a rebuild except reading the checks: it regenerates the whole region from the Markdown files on disk, applies the escape, and sets the stamp. Unchanged files produce byte-identical blocks, so a diff shows only what changed. It uses only `sh`, `awk`, `sed`, `find`, `sort` and `git`, and works with both the BSD and the GNU versions of those tools. Run it with the architecture folder in place of `ARCH_DIR`:
-
-```sh
-cd ARCH_DIR || exit 1
-date=$(date +%Y-%m-%d)
-commit=$(git rev-parse --short HEAD 2>/dev/null || echo 'no commit')
-{
-  awk -v date="$date" -v commit="$commit" '
-    /<p id="stamp">/ { sub(/<p id="stamp">.*<\/p>/, "<p id=\"stamp\">Built <time>" date "</time> from <code>" commit "</code></p>") }
-    { print }
-    /^<!-- sources: begin -->$/ { exit }' architecture.html
-  { echo README.md; find . -name '*.md' ! -path './README.md' | sed 's|^\./||' | LC_ALL=C sort; } |
-  while IFS= read -r f; do
-    printf '<script type="text/markdown" data-path="%s">\n' "$f"
-    awk 1 "$f" | sed -E 's#<(\\*)(/[Ss][Cc][Rr][Ii][Pp][Tt]|!--)#<\\\1\2#g'
-    printf '</script><!-- end %s -->\n' "$f"
-  done
-  awk '/^<!-- sources: end -->$/ { on = 1 } on' architecture.html
-} > architecture.html.new && mv architecture.html.new architecture.html
-```
-
-What each part does, so you can adapt it when a shell lacks one tool: the first `awk` copies the page up to and including `<!-- sources: begin -->` and rewrites the stamp line on the way; the loop writes one block per Markdown file (`awk 1` adds a final newline where a file lacks one, so the closing marker always starts its own line; `sed` applies the escape); the last `awk` copies the page from `<!-- sources: end -->` to the end. The result goes to a temporary file first, so a failure leaves the page as it was.
-
-The command takes every `.md` file under the folder. When it adds a file the index does not list, add that file to the index: the index is how people find a view.
-
-Then confirm the build with a diff against the template. Every changed line must be a block line or the stamp line:
-
-```sh
-diff TEMPLATE ARCH_DIR/architecture.html
-```
-
-with this skill's `templates/architecture.html` in place of `TEMPLATE`. On a first build, `diff` reports the stamp line as changed and the blocks as added after the `<!-- sources: begin -->` line, and nothing else.
-
-## Build by hand
-
-Where no shell is available, edit `architecture.html` as text, one file at a time.
-
-- **Add a file.** Directly above the line `<!-- sources: end -->`, write the opening marker line with the file's path, then the file's full text, then the closing marker line with the same path. Apply the escape to any `</script` or `<!--` in the text.
+- **Add a file.** Directly above the line `<!-- sources: end -->`, write the opening marker line with the file's path, then the file's full text, then the closing marker line with the same path. Apply the escape to any `</script` or `<!--` in the text: a forgotten escape lets the rest of the file spill into the page as HTML, and the page then fails that file with `the block does not end on its own closing marker line`.
 - **Replace a file.** Find the line `<script type="text/markdown" data-path="PATH">` and the line `</script><!-- end PATH -->`. Replace every line between them with the file's current text, escaped. Keep both marker lines.
 - **Remove a file.** Delete both marker lines of its path and every line between them.
 - **Stamp.** Replace the date between `<time>` and `</time>` and the commit between `<code>` and `</code>` on the line that starts with `<p id="stamp">`.
 
-Copy each file's text in full, not from memory and not shortened: the page shows exactly what the block holds.
+Copy each file's text in full, not from memory and not shortened: the page shows exactly what the block holds. Leave everything outside the region lines and the stamp line as it is.
 
 ## Reading the check lines
 
@@ -201,7 +206,7 @@ context/architecture/
         └── containers-household-feed.md
 ```
 
-**First build.** Copy this skill's `templates/architecture.html` to `context/architecture/architecture.html`. Run the assembly command with `context/architecture` in place of `ARCH_DIR`, from the repository root. The page now holds seven blocks, in this order:
+**First build.** From the repository root, run `bash <this skill's directory>/scripts/build-page.sh context/architecture`. The folder has no page yet, so the script copies the template, then places seven blocks, in this order:
 
 ```text
 README.md
@@ -228,4 +233,4 @@ DONE 7/7
 
 The left column shows Overview; Standing views in the index's order (Context, Containers, Runtime, offline sync, Deployment); and under Studies, "Risk review: offline sync" dated 2026-11-10 with "Containers, household feed (proposed)" beneath it. The study can link the comparison of the standing containers view with its proposal by a link two folders up to `architecture.html#compare=containers.md,studies/2026-11-10-sync-risks/containers-household-feed.md`.
 
-**Rebuild.** Later, `deployment.md` gains a Redis replica, a new view `runtime-expiry.md` is written and linked from the index, and the study's proposed view is deleted after the study is closed with its findings moved into its `README.md`. Run the same command again. The diff against the previous page shows the `deployment.md` block's changed lines, a new `runtime-expiry.md` block, the `containers-household-feed.md` block gone, and the new stamp. The checks then read `DONE 7/7`, with the index and the study `README.md` still passing because neither links the deleted file any longer. Had the study still linked it, its line would read `FAIL studies/2026-11-10-sync-risks/README.md: link "containers-household-feed.md" points to studies/2026-11-10-sync-risks/containers-household-feed.md, which has no source block`, and the fix would be to remove that link.
+**Rebuild.** Later, `deployment.md` gains a Redis replica, a new view `runtime-expiry.md` is written and linked from the index, and the study's proposed view is deleted after the study is closed with its findings moved into its `README.md`. Run the same script again. It places `runtime-expiry.md` and drops the deleted file. The diff against the previous page shows the `deployment.md` block's changed lines, a new `runtime-expiry.md` block, the `containers-household-feed.md` block gone, and the new stamp. The checks then read `DONE 7/7`, with the index and the study `README.md` still passing because neither links the deleted file any longer. Had the study still linked it, its line would read `FAIL studies/2026-11-10-sync-risks/README.md: link "containers-household-feed.md" points to studies/2026-11-10-sync-risks/containers-household-feed.md, which has no source block`, and the fix would be to remove that link.
