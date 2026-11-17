@@ -156,6 +156,7 @@ Knowing this lets you point a person at the right thing:
 
 - The left column lists the index as **Overview**, then **Standing views** in the order the index links them, then **Studies**, newest first, each with its own views beneath it. Each entry shows its status.
 - Every `mermaid` fence is drawn in a frame. Drag pans; Ctrl or Cmd with the mouse wheel, or a trackpad pinch, zooms; the buttons zoom in, zoom out, fit, and show the diagram full screen, where the plain wheel zooms too.
+- A long or wide table scrolls inside its own box, with its header row kept in view.
 - **Theme** switches between light and dark. The page starts in the system setting and follows it until the person switches. Nodes styled in the view with `classDef` or `style` keep their fill; where a label would be hard to read on that fill in the current theme, the page draws it in black or white instead.
 - **Compare** shows two sources side by side, each with its own pan and zoom, chosen in the two lists above them.
 - A Markdown link to another file in the folder switches to that view inside the page. On GitHub the same link opens the Markdown file.
