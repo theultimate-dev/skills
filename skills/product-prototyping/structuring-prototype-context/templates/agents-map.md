@@ -46,7 +46,7 @@ The profile in one sentence: a bet is read at the commit it was approved at, bui
 5. Accepted decisions are superseded, never edited.
 6. Research is evidence, not truth.
 7. Point at the code, never copy it.
-8. Markdown only, except prototypes under `design/`.
+8. Markdown only, except prototypes under `design/` and the built page `architecture/architecture.html`.
 9. **A bet is read at the commit it was approved at, so what it reads stays still.** The approved bet's shaped fields cannot drift. While a bet is open, the files its Context pack and Architecture › Relies on name change only through that bet, or with the person's agreement as a reshape. From approval, building writes the code and, in the bet file, only its Status and Build log; closing writes the Result and the catalogue. Research notes, `notes.md` rows and derived indexes may change at any time. Before approval, shaping writes the bet, the board, the planned sections and `notes.md` rows.
 
 ## Code and changelogs

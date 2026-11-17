@@ -8,6 +8,10 @@ Releases are tagged `product-prototyping--vX.Y.Z`.
 
 ## [Unreleased]
 
+### Changed
+
+- A prototype context may now hold one built page, `architecture/architecture.html`, which the `software-architecture` plugin builds from the architecture's Markdown files so that people can read the views drawn. The "Markdown only" rule in the prototype profile and in the context's `AGENTS.md` map names this exception.
+
 ## [0.2.0] - 2026-11-09
 
 ### Added
