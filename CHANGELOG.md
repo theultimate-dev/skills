@@ -2,6 +2,7 @@
 
 All notable changes to the `theultimate-dev` marketplace and the repository around it are documented in this file: the plugin catalog, install routes, release assets, repository tooling, and every plugin release, with a link to its notes. Each plugin keeps its own changelog:
 
+- [`dev-environment`](skills/dev-environment/CHANGELOG.md)
 - [`foundations`](skills/foundations/CHANGELOG.md)
 - [`harness-engineering`](skills/harness-engineering/CHANGELOG.md)
 - [`product-context`](skills/product-context/CHANGELOG.md)
@@ -15,6 +16,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Marketplace releases are tagged `vX.Y.Z`. Every plugin release is also a marketplace release, which lists the plugins released under Changed.
 
 ## [Unreleased]
+
+### Added
+
+- `dev-environment` plugin: skills that keep the machine you develop on in working order. It starts with `reclaiming-docker-disk-space`, which frees a full Docker disk. Install with `claude plugin install dev-environment@theultimate-dev` or `npx skills add theultimate-dev/skills/skills/dev-environment`.
+- A skill may now ship shell scripts in its `scripts/` directory, for work that has to run the same way every time. Decision record 0021 sets the rules: bash only, no runtime to install, and a dry run for anything that deletes.
 
 ## [0.4.2] - 2026-11-09
 

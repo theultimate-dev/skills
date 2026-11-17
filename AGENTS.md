@@ -6,7 +6,7 @@ This repository holds agent skills in the open [Agent Skills](https://agentskill
 
 | Path | What it is |
 |---|---|
-| `skills/<category>/<skill>/` | One skill: `SKILL.md`, optional `references/` and `templates/` |
+| `skills/<category>/<skill>/` | One skill: `SKILL.md`, optional `references/`, `templates/` and, for shell scripts the skill runs, `scripts/` ([0021](decisions/0021-dev-environment-category-with-shell-scripts.md)) |
 | `skills/<category>/CHANGELOG.md` | The plugin's changelog, Keep a Changelog 2.0.0. Every user-visible change to the category gets an entry under `[Unreleased]` |
 | `skills/<category>/README.md` | Optional: the plugin's landing page, which GitHub shows at the category's directory |
 | `visuals/<category>/` | A category README's images: one HTML source per visual and its rendered `-dark.png` and `-light.png`. Regenerate with `uv run scripts/render_visuals.py <category>`, as [`visuals/README.md`](visuals/README.md) explains |
@@ -25,6 +25,7 @@ Skill format
 - A skill is self-contained: links stay inside its directory, and nothing in it assumes a particular harness, install path, or environment variable.
 - A template that two skills need unchanged is copied byte for byte into each skill and listed in `MIRRORS` in `scripts/validate.py`, which fails when a copy differs from its source ([0019](decisions/0019-mirror-shared-templates-across-skills.md)). Change the source and every copy in the same commit, together with each skill's text that describes the template's inputs, results and limits, which the comment on its `MIRRORS` entry names.
 - `SKILL.md` stays under 500 lines. Depth goes in `references/`, copyable files in `templates/`.
+- A script a skill runs is a bash script in `scripts/`, run with `bash <path>`. It needs only bash 3.2 or newer and the tools the skill's subject implies, and one that removes data has a dry run ([0021](decisions/0021-dev-environment-category-with-shell-scripts.md)).
 
 Layout
 - `SKILL.md` lives only at `skills/<category>/<skill>/SKILL.md`. One skill belongs to one category.
