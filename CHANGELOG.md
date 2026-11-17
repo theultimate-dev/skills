@@ -17,10 +17,17 @@ Marketplace releases are tagged `vX.Y.Z`. Every plugin release is also a marketp
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-11-17
+
 ### Added
 
 - `dev-environment` plugin: skills that keep the machine you develop on in working order. It starts with `reclaiming-docker-disk-space`, which frees a full Docker disk. Install with `claude plugin install dev-environment@theultimate-dev` or `npx skills add theultimate-dev/skills/skills/dev-environment`.
 - A skill may now ship shell scripts in its `scripts/` directory, for work that has to run the same way every time. Decision record 0021 sets the rules: bash only, no runtime to install, and a dry run for anything that deletes.
+
+### Changed
+
+- Plugins released with this version:
+  - `dev-environment` [0.1.0](https://github.com/theultimate-dev/skills/releases/tag/dev-environment--v0.1.0): first release, with `reclaiming-docker-disk-space`, which frees a full Docker disk by removing unused data older than an age you pick, after a dry run.
 
 ## [0.4.2] - 2026-11-09
 
@@ -186,7 +193,8 @@ Marketplace releases are tagged `vX.Y.Z`. Every plugin release is also a marketp
 - Published releases are immutable: their archives, `checksums.txt` and tag cannot change after publication.
 - The CI and release workflows run `actions/checkout` pinned to a full commit SHA, and Dependabot proposes updates to it weekly.
 
-[Unreleased]: https://github.com/theultimate-dev/skills/compare/v0.4.2...HEAD
+[Unreleased]: https://github.com/theultimate-dev/skills/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/theultimate-dev/skills/compare/v0.4.2...v0.5.0
 [0.4.2]: https://github.com/theultimate-dev/skills/compare/v0.4.1...v0.4.2
 [0.4.1]: https://github.com/theultimate-dev/skills/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/theultimate-dev/skills/compare/v0.3.3...v0.4.0
