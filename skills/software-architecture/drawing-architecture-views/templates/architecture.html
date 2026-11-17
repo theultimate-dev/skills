@@ -1,0 +1,645 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Architecture</title>
+<!--
+  The built architecture page. It draws the Markdown views and studies copied into the source blocks below.
+  The Markdown files stay the source of truth. Change only the stamp line and the source blocks between
+  "sources: begin" and "sources: end", as references/building-the-page.md in drawing-architecture-views says.
+-->
+<style id="style">
+:root { color-scheme: light; --bg: #ffffff; --fg: #1d2125; --muted: #57616b; --line: #d3d9df; --panel: #f4f6f8; --code: #eceff2; --accent: #0b5cad; --on-accent: #ffffff; --bad: #b42318; --bad-bg: #fdecea; --note-bg: #fff6dc; --note-line: #e3c25a; --built: #1a7f37; --planned: #9a6700; --proposed: #7438c2; --other: #57616b; }
+:root[data-theme="dark"] { color-scheme: dark; --bg: #15181b; --fg: #e3e6e9; --muted: #9ba5af; --line: #353c43; --panel: #1c2024; --code: #262b31; --accent: #6cb0ff; --on-accent: #0d1117; --bad: #ff8b7e; --bad-bg: #3a1d1a; --note-bg: #322a12; --note-line: #8a7120; --built: #57d07a; --planned: #e3b341; --proposed: #c39bff; --other: #9ba5af; }
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body { margin: 0; display: flex; flex-direction: column; background: var(--bg); color: var(--fg); font: 15px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif; }
+button, select { font: inherit; font-size: 13px; color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 5px; padding: 3px 9px; cursor: pointer; }
+button:hover, select:hover { border-color: var(--muted); }
+button:disabled { opacity: .5; cursor: default; }
+a { color: var(--accent); }
+.top { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px; padding: 8px 16px; border-bottom: 1px solid var(--line); background: var(--panel); }
+.top #title { font-size: 16px; }
+#stamp { margin: 0; color: var(--muted); font-size: 13px; }
+#stamp code { font-size: 12px; }
+.tools { margin-left: auto; display: flex; gap: 6px; }
+#notice { margin: 0; padding: 10px 16px; background: var(--note-bg); border-bottom: 1px solid var(--note-line); }
+.layout { flex: 1; min-height: 0; display: grid; grid-template-columns: 250px minmax(0, 1fr); }
+nav { overflow: auto; border-right: 1px solid var(--line); background: var(--panel); padding: 10px 8px 16px; font-size: 14px; }
+nav h2 { margin: 14px 6px 4px; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+nav a { display: block; padding: 4px 8px; border-radius: 5px; color: var(--fg); text-decoration: none; }
+nav a:hover { background: var(--code); }
+nav a.on, nav a.on:hover { background: var(--accent); color: var(--on-accent); }
+nav a.on .pill { color: inherit; border-color: currentColor; }
+nav a.sub { margin-left: 14px; font-size: 13px; }
+nav .study { margin-top: 4px; }
+nav .date { display: block; padding: 0 8px; font-size: 11px; color: var(--muted); }
+#checks { margin: 18px 6px 0; }
+#checks summary { cursor: pointer; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+#results { margin: 6px 0 0; white-space: pre-wrap; overflow-wrap: anywhere; font: 11px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--muted); }
+main { overflow: auto; min-width: 0; }
+.doc { max-width: 1100px; padding: 16px 28px 48px; }
+.doc .path { margin: 0 0 2px; font: 12px ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--muted); }
+.doc h1 { font-size: 26px; line-height: 1.25; margin: 0 0 10px; }
+.doc h2 { font-size: 19px; margin: 28px 0 8px; padding-bottom: 4px; border-bottom: 1px solid var(--line); }
+.doc h3 { font-size: 16px; margin: 22px 0 6px; }
+.doc h4, .doc h5, .doc h6 { font-size: 15px; margin: 18px 0 6px; }
+.doc p, .doc li { max-width: 80ch; }
+.doc p { margin: 8px 0; }
+.doc ul, .doc ol { padding-left: 24px; margin: 8px 0; }
+.doc blockquote { margin: 10px 0; padding: 2px 14px; border-left: 3px solid var(--line); color: var(--muted); }
+.doc code { font: .88em ui-monospace, SFMono-Regular, Menlo, monospace; background: var(--code); padding: 1px 4px; border-radius: 4px; }
+.doc pre { background: var(--code); padding: 10px 12px; border-radius: 6px; overflow: auto; font-size: 13px; line-height: 1.45; }
+.doc pre code { background: none; padding: 0; }
+.doc hr { border: 0; border-top: 1px solid var(--line); margin: 20px 0; }
+.doc .table { overflow-x: auto; margin: 10px 0; }
+.doc table { border-collapse: collapse; font-size: 13.5px; }
+.doc th, .doc td { border: 1px solid var(--line); padding: 5px 9px; text-align: left; vertical-align: top; }
+.doc th { background: var(--panel); font-weight: 600; }
+.doc a.broken { color: var(--bad); text-decoration: line-through; }
+.doc .img { color: var(--muted); font-style: italic; }
+.status { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; color: var(--muted); font-size: 14px; }
+.pill { display: inline-block; padding: 0 8px; border: 1px solid currentColor; border-radius: 10px; font-size: 12px; line-height: 18px; font-weight: 600; color: var(--other); }
+.pill.built { color: var(--built); } .pill.planned { color: var(--planned); } .pill.proposed { color: var(--proposed); }
+.status .pill { font-size: 13px; line-height: 20px; }
+.frame { position: relative; height: 320px; margin: 12px 0 6px; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--bg); cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none; }
+.frame.dragging { cursor: grabbing; }
+.frame:fullscreen { height: 100vh; border: 0; border-radius: 0; }
+.frame .stage { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+.frame .stage svg { display: block; }
+.frame .bar { position: absolute; right: 8px; top: 8px; display: flex; gap: 4px; }
+.frame .bar button { background: var(--panel); }
+.frame .hint { position: absolute; left: 8px; bottom: 6px; margin: 0; padding: 0 4px; border-radius: 3px; background: var(--bg); font-size: 11px; color: var(--muted); pointer-events: none; }
+.diagram-error { margin: 12px 0 0; padding: 8px 12px; border-radius: 6px 6px 0 0; background: var(--bad-bg); color: var(--bad); font: 12.5px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace; white-space: pre-wrap; }
+.not-drawn .diagram-error { background: var(--note-bg); color: var(--fg); }
+.diagram-error + pre { margin-top: 0; border-radius: 0 0 6px 6px; }
+.compare-bar { display: flex; align-items: center; gap: 10px; padding: 8px 16px; border-bottom: 1px solid var(--line); }
+.compare { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); height: calc(100% - 45px); }
+.side { overflow: auto; min-width: 0; border-right: 1px solid var(--line); }
+.side:last-child { border-right: 0; }
+.side select { margin: 10px 14px 0; max-width: calc(100% - 28px); }
+.side .doc { padding: 10px 14px 32px; }
+.empty { padding: 24px 28px; color: var(--muted); max-width: 70ch; }
+#measure { position: absolute; left: -20000px; top: 0; visibility: hidden; }
+@media (max-width: 760px) {
+  .layout { grid-template-columns: 1fr; grid-template-rows: auto minmax(0, 1fr); }
+  nav { max-height: 34vh; border-right: 0; border-bottom: 1px solid var(--line); }
+  .compare { grid-template-columns: 1fr; height: auto; }
+  .side { border-right: 0; border-bottom: 1px solid var(--line); }
+  .doc { padding: 12px 16px 32px; }
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <strong id="title">Architecture</strong>
+  <p id="stamp">Built <time>not yet</time> from <code>no commit</code></p>
+  <span class="tools"><button id="compare-btn" type="button">Compare</button><button id="theme-btn" type="button">Theme</button><button id="save-btn" type="button" disabled>Save offline copy</button></span>
+</header>
+<p id="notice" role="alert" hidden></p>
+<div class="layout">
+  <nav><div id="toc"></div><details id="checks" open><summary>Checks</summary><pre id="results">Drawing...</pre></details></nav>
+  <main id="main"></main>
+</div>
+<div id="measure" aria-hidden="true"></div>
+<div id="sources" hidden>
+<!-- sources: begin -->
+<!-- sources: end -->
+</div>
+<script id="runtime">
+/* Shows the views: switcher, compare, pan and zoom. The offline copy carries this script and nothing else. */
+function ArchViewer(data, opts) {
+  'use strict';
+  opts = opts || {};
+  var doc = document, root = doc.documentElement, main = doc.getElementById('main');
+  var byPath = {}, frames = [], pendingAnchor = null;
+  data.sources.forEach(function (s) { byPath[s.path] = s; });
+  function esc(t) { return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+  function enc(p) { return encodeURI(p).replace(/#/g, '%23').replace(/,/g, '%2C'); }
+  function dec(p) { try { return decodeURIComponent(p); } catch (e) { return p; } }
+  function home() { return byPath['README.md'] ? 'README.md' : (data.sources[0] || {}).path; }
+  function pill(st) { return st ? ' <span class="pill ' + esc(st) + '">' + esc(st) + '</span>' : ''; }
+  function link(s, cls) { return '<a class="' + cls + '" href="#view=' + enc(s.path) + '" data-path="' + esc(s.path) + '" title="' + esc(s.path) + '">' + esc(s.label) + pill(s.status) + '</a>'; }
+  function groups() {
+    var g = { index: [], standing: [], studies: [] }, studies = {};
+    data.sources.forEach(function (s) {
+      if (s.group !== 'study') { g[s.group].push(s); return; }
+      if (!studies[s.study]) { studies[s.study] = { key: s.study, readme: null, views: [] }; g.studies.push(studies[s.study]); }
+      if (s.path === s.study + '/README.md') studies[s.study].readme = s; else studies[s.study].views.push(s);
+    });
+    g.studies.sort(function (a, b) { return a.key < b.key ? 1 : -1; });
+    return g;
+  }
+  function nav() {
+    var g = groups(), h = '';
+    g.index.forEach(function (s) { h += link(s, 'index'); });
+    if (g.standing.length) h += '<h2>Standing views</h2>' + g.standing.map(function (s) { return link(s, ''); }).join('');
+    if (g.studies.length) {
+      h += '<h2>Studies</h2>';
+      g.studies.forEach(function (st) {
+        var slug = st.key.split('/')[1] || st.key, date = /^\d{4}-\d{2}-\d{2}/.exec(slug);
+        h += '<div class="study">' + (st.readme ? link(st.readme, '') : '<a>' + esc(slug) + '</a>') + (date ? '<span class="date">' + date[0] + '</span>' : '') + st.views.map(function (s) { return link(s, 'sub'); }).join('') + '</div>';
+      });
+    }
+    doc.getElementById('toc').innerHTML = h;
+  }
+  function picker(sel) {
+    var g = groups(), h = '<select aria-label="Source to compare">';
+    function opt(s, pre) { return '<option value="' + esc(s.path) + '"' + (s.path === sel ? ' selected' : '') + '>' + esc((pre || '') + s.label) + '</option>'; }
+    g.index.forEach(function (s) { h += opt(s); });
+    if (g.standing.length) h += '<optgroup label="Standing views">' + g.standing.map(function (s) { return opt(s); }).join('') + '</optgroup>';
+    g.studies.forEach(function (st) { h += '<optgroup label="Study ' + esc(st.key.split('/')[1] || st.key) + '">' + (st.readme ? opt(st.readme) : '') + st.views.map(function (s) { return opt(s, '- '); }).join('') + '</optgroup>'; });
+    return h + '</select>';
+  }
+  function mount(box, path) {
+    var s = byPath[path];
+    if (!s) { box.innerHTML = '<p class="empty">This page holds no source named <code>' + esc(path || '') + '</code>.</p>'; return; }
+    box.innerHTML = '<article class="doc" data-path="' + esc(s.path) + '"><p class="path">' + esc(s.path) + '</p>' + s.html + '</article>';
+    [].forEach.call(box.querySelectorAll('.diagram'), function (host) { fill(host, s.diagrams[+host.getAttribute('data-i')] || {}); });
+  }
+  function fill(host, d) {
+    if (!d.svg) {
+      host.className = 'diagram ' + (d.notDrawn ? 'not-drawn' : 'failed');
+      host.innerHTML = '<div class="diagram-error">' + esc(d.error || 'Not drawn') + '</div><pre><code>' + esc(d.code || '') + '</code></pre>';
+      return;
+    }
+    host.innerHTML = '<div class="frame"><div class="stage">' + d.svg + '</div><div class="bar"><button type="button" data-act="in" title="Zoom in">+</button><button type="button" data-act="out" title="Zoom out">&minus;</button><button type="button" data-act="fit">Fit</button><button type="button" data-act="full">Full screen</button></div><p class="hint">Drag to pan. Ctrl or &#8984; with the wheel, or pinch, to zoom.</p></div>';
+    panZoom(host.firstChild);
+  }
+  function panZoom(frame) {
+    var stage = frame.firstChild, svg = stage.querySelector('svg'), vb = svg.viewBox && svg.viewBox.baseVal;
+    var w = vb && vb.width ? vb.width : (svg.getBBox().width || 400), h = vb && vb.height ? vb.height : (svg.getBBox().height || 300);
+    var s = 1, x = 0, y = 0, drag = null;
+    svg.setAttribute('width', w); svg.setAttribute('height', h); svg.style.maxWidth = 'none';
+    function full() { return doc.fullscreenElement === frame; }
+    function apply() { stage.style.transform = 'translate(' + x.toFixed(1) + 'px, ' + y.toFixed(1) + 'px) scale(' + s.toFixed(4) + ')'; }
+    function size() {
+      if (full()) { frame.style.height = ''; return; }
+      var k = Math.min((frame.clientWidth - 24) / w, 1);
+      frame.style.height = Math.round(Math.max(160, Math.min(h * k + 40, window.innerHeight * 0.85))) + 'px';
+    }
+    function fit() {
+      size();
+      var fw = frame.clientWidth, fh = frame.clientHeight;
+      s = Math.max(0.05, Math.min((fw - 24) / w, (fh - 40) / h, full() ? 2.5 : 1));
+      x = (fw - w * s) / 2; y = Math.max(8, (fh - h * s) / 2); apply();
+    }
+    function zoom(k, px, py) { var ns = Math.min(8, Math.max(0.05, s * k)); k = ns / s; x = px - (px - x) * k; y = py - (py - y) * k; s = ns; apply(); }
+    frame.addEventListener('wheel', function (e) {
+      if (!(e.ctrlKey || e.metaKey || full())) return;
+      e.preventDefault(); var r = frame.getBoundingClientRect(); zoom(Math.exp(-e.deltaY * 0.002), e.clientX - r.left, e.clientY - r.top);
+    }, { passive: false });
+    frame.addEventListener('pointerdown', function (e) {
+      if (e.button !== 0 || e.target.closest('.bar')) return;
+      drag = { px: e.clientX, py: e.clientY, x: x, y: y }; frame.classList.add('dragging');
+      try { frame.setPointerCapture(e.pointerId); } catch (err) { /* synthetic pointer */ }
+    });
+    frame.addEventListener('pointermove', function (e) { if (drag) { x = drag.x + e.clientX - drag.px; y = drag.y + e.clientY - drag.py; apply(); } });
+    function stop() { drag = null; frame.classList.remove('dragging'); }
+    frame.addEventListener('pointerup', stop); frame.addEventListener('pointercancel', stop);
+    frame.querySelector('.bar').addEventListener('click', function (e) {
+      var act = e.target.getAttribute('data-act');
+      if (act === 'in' || act === 'out') zoom(act === 'in' ? 1.25 : 0.8, frame.clientWidth / 2, frame.clientHeight / 2);
+      else if (act === 'fit') fit();
+      else if (act === 'full') {
+        if (full()) { doc.exitFullscreen(); return; }
+        frame.setAttribute('data-fullscreen', 'requested');
+        var p = frame.requestFullscreen ? frame.requestFullscreen() : null;
+        if (p && p.catch) p.catch(function () { frame.setAttribute('data-fullscreen', 'refused'); });
+      }
+    });
+    frame.fit = fit; frames.push(frame);
+    requestAnimationFrame(fit);
+  }
+  function refit() { frames = frames.filter(function (f) { return f.isConnected; }); frames.forEach(function (f) { f.fit(); }); }
+  function mark(paths) { [].forEach.call(doc.querySelectorAll('#toc a[data-path]'), function (a) { a.classList.toggle('on', paths.indexOf(a.getAttribute('data-path')) >= 0); }); }
+  function state() {
+    var m = /^#(view|compare)=(.*)$/.exec(location.hash);
+    if (m && m[1] === 'compare') { var p = m[2].split(','); return { compare: [dec(p[0] || ''), dec(p[1] || '')] }; }
+    return { view: m ? dec(m[2]) : home() };
+  }
+  function route() {
+    var st = state(); frames = [];
+    if (!data.sources.length) { main.innerHTML = '<p class="empty">' + (data.empty || 'This page holds no sources.') + '</p>'; return; }
+    if (st.compare) {
+      main.innerHTML = '<div class="compare-bar"><strong>Compare</strong><span class="hint">Each side pans and zooms on its own.</span><button type="button" data-close>Close</button></div><div class="compare"><section class="side">' + picker(st.compare[0]) + '<div class="body"></div></section><section class="side">' + picker(st.compare[1]) + '<div class="body"></div></section></div>';
+      var sides = main.querySelectorAll('.side');
+      [0, 1].forEach(function (k) { mount(sides[k].querySelector('.body'), st.compare[k]); });
+      mark(st.compare); doc.title = 'Compare: ' + st.compare.join(', ') + ' - ' + data.title;
+    } else {
+      mount(main, st.view); main.scrollTop = 0; mark([st.view]);
+      doc.title = (byPath[st.view] ? byPath[st.view].label + ' - ' : '') + data.title;
+    }
+    if (pendingAnchor) { var a = pendingAnchor; pendingAnchor = null; scrollTo(main, a); }
+  }
+  function scrollTo(box, slug) { var t = box.querySelector('[data-slug="' + slug.replace(/["\\]/g, '') + '"]'); if (t) t.scrollIntoView(); }
+  function go(hash) { if (location.hash === hash) route(); else location.hash = hash; }
+  main.addEventListener('change', function (e) {
+    if (e.target.tagName !== 'SELECT') return;
+    var v = [].map.call(main.querySelectorAll('.side select'), function (s) { return enc(s.value); });
+    go('#compare=' + v.join(','));
+  });
+  main.addEventListener('click', function (e) {
+    if (e.target.closest('[data-close]')) { go('#view=' + enc(state().compare[0])); return; }
+    var a = e.target.closest('a[data-anchor]');
+    if (!a) return;
+    var href = a.getAttribute('href');
+    if (href.charAt(0) === '#' && /^#(view|compare)=/.test(href)) { pendingAnchor = a.getAttribute('data-anchor') || null; if (location.hash === href) route(); return; }
+    e.preventDefault(); scrollTo(a.closest('article') || main, a.getAttribute('data-anchor'));
+  });
+  var cmp = doc.getElementById('compare-btn');
+  if (cmp) cmp.addEventListener('click', function () {
+    var st = state();
+    if (st.compare) { go('#view=' + enc(st.compare[0])); return; }
+    var cur = byPath[st.view] ? st.view : home(), cs = byPath[cur] || {};
+    var other = data.sources.filter(function (s) { return s.path !== cur && s.group !== 'index' && (cs.group === 'study' ? s.group === 'standing' : s.group === 'study' && !/README\.md$/.test(s.path)); })[0] ||
+      data.sources.filter(function (s) { return s.path !== cur; })[0] || cs;
+    go('#compare=' + enc(cur) + ',' + enc(other.path || ''));
+  });
+  addEventListener('hashchange', route);
+  addEventListener('resize', refit);
+  doc.addEventListener('fullscreenchange', function () { setTimeout(refit, 60); });
+  root.setAttribute('data-theme', data.theme);
+  doc.getElementById('title').textContent = data.title;
+  nav(); route();
+  return { refresh: function () { root.setAttribute('data-theme', data.theme); nav(); route(); } };
+}
+</script>
+<script id="builder">
+/* Reads the source blocks, renders the Markdown, draws the diagrams, writes the check lines, saves the offline copy. */
+(function () {
+  'use strict';
+  var MERMAID_URL = 'https://cdn.jsdelivr.net/npm/mermaid@12.3.0/dist/mermaid.min.js';
+  var doc = document, results = doc.getElementById('results'), notice = doc.getElementById('notice');
+  var data = { title: 'Architecture', theme: 'light', sources: [] }, viewer = null, chosenTheme = null, seq = 0;
+  var media = window.matchMedia ? matchMedia('(prefers-color-scheme: dark)') : null;
+  data.theme = media && media.matches ? 'dark' : 'light';
+  doc.documentElement.setAttribute('data-theme', data.theme);
+
+  function esc(t) { return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+  function short(t, n) { t = String(t).replace(/\s+/g, ' ').trim(); return t.length > n ? t.slice(0, n - 1) + '\u2026' : t; }
+
+  /* ---- Source blocks ---- */
+  function unescapeSource(t) { return t.replace(/<\\(\\*)(\/script|!--)/gi, '<$1$2'); }
+  function readBlocks() {
+    var seen = {}, out = [];
+    [].forEach.call(doc.querySelectorAll('#sources script[type="text/markdown"]'), function (b) {
+      var path = b.getAttribute('data-path') || '', text = b.textContent, problems = [];
+      if (text.charAt(0) === '\n') text = text.slice(1);
+      text = unescapeSource(text).replace(/\r\n?/g, '\n');
+      var n = b.nextSibling;
+      while (n && n.nodeType === 3 && !n.data.trim()) n = n.nextSibling;
+      if (!n || n.nodeType !== 8 || n.data.trim() !== 'end ' + path) problems.push('the block does not end on its own closing marker line; a closing script tag or comment opener in the source was probably not escaped');
+      if (/\n<script type="text\/markdown"/.test(text)) problems.push('the block runs into the next block; its closing marker line is missing');
+      if (!path || /^\/|^\.\/|\\/.test(path)) problems.push('data-path must be the path relative to the architecture folder, with forward slashes');
+      if (seen[path]) problems.push('a second block has the same path');
+      if (!text.trim()) problems.push('the file is empty');
+      seen[path] = true;
+      out.push({ path: path, text: text, problems: problems });
+    });
+    return out;
+  }
+
+  /* ---- Markdown ---- */
+  var RE = {
+    fence: /^ {0,3}(`{3,}|~{3,})\s*([^\s`]*)/,
+    heading: /^ {0,3}(#{1,6})(?:[ \t]+(.*?))?(?:[ \t]+#+)?[ \t]*$/,
+    hr: /^ {0,3}([-*_])(?:[ \t]*\1){2,}[ \t]*$/,
+    quote: /^ {0,3}>/,
+    item: /^( {0,3})([-*+]|\d{1,9}[.)])( +|$)/,
+    delim: /^ *\|? *:?-+:? *(\| *:?-+:? *)*\|? *$/,
+    comment: /^ {0,3}<!-{2}/
+  };
+  function indent(l) { return /^ */.exec(l)[0].length; }
+  function startsBlock(l) {
+    return RE.fence.test(l) || RE.heading.test(l) || RE.hr.test(l) || RE.quote.test(l) || RE.comment.test(l) || /^ {0,3}([-*+]|1[.)]) +\S/.test(l);
+  }
+  function slugOf(t) { return plain(t).toLowerCase().replace(/[^\p{L}\p{N}_\- ]+/gu, '').trim().replace(/ /g, '-'); }
+  function plain(t) { return String(t).replace(/!?\[([^\]]*)\]\([^)]*\)/g, '$1').replace(/[`*_~]/g, '').replace(/<[^>]+>/g, '').trim(); }
+
+  function renderMarkdown(src) {
+    var ctx = { path: src.path, dir: src.path.replace(/[^\/]*$/, ''), problems: src.problems, diagrams: [], links: [], keep: [], title: '', status: '' };
+    ctx.html = blocks(src.text.replace(/\t/g, '    ').split('\n'), ctx);
+    return ctx;
+  }
+  function blocks(lines, ctx) {
+    var out = [], i = 0, n = lines.length, m;
+    while (i < n) {
+      var line = lines[i];
+      if (!line.trim()) { i++; continue; }
+      if (RE.comment.test(line)) { while (i < n && lines[i].indexOf('--' + '>') < 0) i++; i++; continue; }
+      if ((m = RE.fence.exec(line))) {
+        var close = new RegExp('^ {0,3}' + (m[1].charAt(0) === '`' ? '`' : '~') + '{' + m[1].length + ',}\\s*$'), body = [];
+        for (i++; i < n && !close.test(lines[i]); i++) body.push(lines[i]);
+        i++;
+        if (m[2].toLowerCase() === 'mermaid') out.push('<div class="diagram" data-i="' + (ctx.diagrams.push({ code: body.join('\n') }) - 1) + '"></div>');
+        else out.push('<pre><code>' + esc(body.join('\n')) + '</code></pre>');
+        continue;
+      }
+      if ((m = RE.heading.exec(line))) {
+        var lvl = m[1].length, txt = m[2] || '';
+        if (lvl === 1 && !ctx.title) ctx.title = plain(txt);
+        out.push('<h' + lvl + ' data-slug="' + esc(slugOf(txt)) + '">' + inline(txt, ctx) + '</h' + lvl + '>');
+        i++; continue;
+      }
+      if (RE.hr.test(line)) { out.push('<hr>'); i++; continue; }
+      if (line.indexOf('|') >= 0 && i + 1 < n && RE.delim.test(lines[i + 1]) && lines[i + 1].indexOf('-') >= 0 && cells(line).length === cells(lines[i + 1]).length) { i = table(lines, i, out, ctx); continue; }
+      if (RE.quote.test(line)) {
+        var q = [];
+        while (i < n && RE.quote.test(lines[i])) q.push(lines[i++].replace(/^ {0,3}> ?/, ''));
+        out.push('<blockquote>' + blocks(q, ctx) + '</blockquote>');
+        continue;
+      }
+      if (RE.item.test(line)) { i = list(lines, i, out, ctx); continue; }
+      var para = [line];
+      for (i++; i < n && lines[i].trim() && !startsBlock(lines[i]); i++) para.push(lines[i]);
+      out.push(paragraph(para, ctx));
+    }
+    return out.join('\n');
+  }
+  function paragraph(lines, ctx) {
+    var last = lines.length - 1;
+    var text = lines.map(function (l, k) { return k < last && /( {2,}|\\)$/.test(l) ? l.replace(/( {2,}|\\)$/, '').trim() + '\u0003' : l.trim(); }).join('\n');
+    if (/^Status:/i.test(text)) {
+      var parts = text.split(/\s+\u00b7\s+/), value = parts[0].replace(/^Status:\s*/i, '').trim(), word = (value.split(/\s/)[0] || '').toLowerCase();
+      if (!ctx.status) ctx.status = word;
+      return '<p class="status"><span>Status</span><span class="pill ' + esc(word) + '">' + inline(value, ctx) + '</span>' + parts.slice(1).map(function (p) { return '<span>' + inline(p, ctx) + '</span>'; }).join('') + '</p>';
+    }
+    return '<p>' + inline(text, ctx).replace(/\u0003/g, '<br>') + '</p>';
+  }
+  function cells(l) {
+    l = l.trim();
+    if (l.charAt(0) === '|') l = l.slice(1);
+    if (l.slice(-1) === '|' && l.slice(-2) !== '\\|') l = l.slice(0, -1);
+    var out = [], cur = '';
+    for (var k = 0; k < l.length; k++) {
+      var c = l.charAt(k);
+      if (c === '\\' && l.charAt(k + 1) === '|') { cur += '|'; k++; } else if (c === '|') { out.push(cur.trim()); cur = ''; } else cur += c;
+    }
+    out.push(cur.trim());
+    return out;
+  }
+  function table(lines, i, out, ctx) {
+    var head = cells(lines[i]), align = cells(lines[i + 1]).map(function (d) { return /^:-+:$/.test(d) ? 'center' : /-:$/.test(d) ? 'right' : ''; }), rows = [];
+    for (i += 2; i < lines.length && lines[i].trim() && lines[i].indexOf('|') >= 0; i++) rows.push(cells(lines[i]));
+    function cell(tag, c, k) { return '<' + tag + (align[k] ? ' style="text-align:' + align[k] + '"' : '') + '>' + inline(c || '', ctx) + '</' + tag + '>'; }
+    out.push('<div class="table"><table><thead><tr>' + head.map(function (c, k) { return cell('th', c, k); }).join('') + '</tr></thead><tbody>' +
+      rows.map(function (r) { return '<tr>' + head.map(function (x, k) { return cell('td', r[k], k); }).join('') + '</tr>'; }).join('') + '</tbody></table></div>');
+    return i;
+  }
+  function list(lines, i, out, ctx) {
+    var n = lines.length, first = RE.item.exec(lines[i]), ordered = /\d/.test(first[2]), items = [], loose = false, m;
+    while (i < n && (m = RE.item.exec(lines[i])) && /\d/.test(m[2]) === ordered) {
+      var co = m[3] ? m[0].length : m[1].length + m[2].length + 1, body = [lines[i].slice(m[0].length)];
+      for (i++; i < n; ) {
+        var l = lines[i];
+        if (!l.trim()) {
+          var j = i; while (j < n && !lines[j].trim()) j++;
+          if (j < n && indent(lines[j]) >= co) { while (i < j) { body.push(''); i++; } loose = true; continue; }
+          break;
+        }
+        if (indent(l) >= co) { body.push(l.slice(co)); i++; continue; }
+        if (RE.item.test(l) || startsBlock(l) || !body[body.length - 1].trim()) break;
+        body.push(l.trim()); i++;
+      }
+      items.push(body);
+      if (i < n && !lines[i].trim()) {
+        var k = i; while (k < n && !lines[k].trim()) k++;
+        var nx = k < n && RE.item.exec(lines[k]);
+        if (nx && /\d/.test(nx[2]) === ordered) { loose = true; i = k; } else break;
+      }
+    }
+    var start = ordered ? parseInt(first[2], 10) : 1, tag = ordered ? 'ol' : 'ul';
+    out.push('<' + tag + (start !== 1 ? ' start="' + start + '"' : '') + '>' + items.map(function (b) {
+      b[0] = b[0].replace(/^\[ \] /, '\u2610 ').replace(/^\[[xX]\] /, '\u2611 ');
+      var h = blocks(b, ctx);
+      return '<li>' + (loose ? h : h.replace(/<p>([\s\S]*?)<\/p>/g, '$1')) + '</li>';
+    }).join('') + '</' + tag + '>');
+    return i;
+  }
+  function inline(s, ctx) {
+    function hold(html) { return '\u0001' + (ctx.keep.push(html) - 1) + '\u0002'; }
+    s = s.replace(/(`+)([\s\S]*?[^`])\1(?!`)/g, function (x, t, c) { c = c.replace(/\n/g, ' '); if (/^ [\s\S]* $/.test(c)) c = c.slice(1, -1); return hold('<code>' + esc(c) + '</code>'); });
+    s = s.replace(/\\([!-\/:-@\[-`{-~])/g, function (x, c) { return hold(esc(c)); });
+    s = s.replace(/<((?:https?:\/\/|mailto:)[^\s<>]+)>/g, function (x, u) { return hold(link(u, esc(u), '', ctx)); });
+    s = s.replace(/(!?)\[((?:[^\[\]]|\[[^\]]*\])*)\]\(\s*<?([^\s()<>]*(?:\([^\s()]*\)[^\s()<>]*)*)>?(?:\s+(?:"([^"]*)"|'([^']*)'))?\s*\)/g, function (x, bang, text, href, t1, t2) {
+      if (bang) return hold('<span class="img" title="' + esc(href) + '">[image: ' + inline(text, ctx) + ']</span>');
+      return hold(link(href, inline(text, ctx), t1 || t2 || '', ctx));
+    });
+    s = s.replace(/<(\/?)(b|i|em|strong|code|sub|sup|kbd|br)\s*\/?>/gi, function (x, sl, tag) { tag = tag.toLowerCase(); return hold(tag === 'br' ? '<br>' : '<' + sl + tag + '>'); });
+    s = esc(s)
+      .replace(/\*\*(?=\S)([\s\S]*?\S)\*\*/g, '<strong>$1</strong>')
+      .replace(/(^|[^\w])__(?=\S)([\s\S]*?\S)__(?!\w)/g, '$1<strong>$2</strong>')
+      .replace(/\*(?=[^\s*])([\s\S]*?[^\s*])\*/g, '<em>$1</em>')
+      .replace(/(^|[^\w])_(?=\S)([\s\S]*?\S)_(?!\w)/g, '$1<em>$2</em>')
+      .replace(/~~(?=\S)([\s\S]*?\S)~~/g, '<del>$1</del>');
+    for (var guard = 0; /\u0001\d+\u0002/.test(s) && guard < 20; guard++) s = s.replace(/\u0001(\d+)\u0002/g, function (x, k) { return ctx.keep[+k]; });
+    return s;
+  }
+
+  /* ---- Links ---- */
+  function resolve(dir, rel) {
+    var parts = (dir + rel).split('/'), out = [], up = 0;
+    parts.forEach(function (p, k) {
+      if (p === '.' || (p === '' && k < parts.length - 1)) return;
+      if (p === '..') { if (out.length) out.pop(); else up++; return; }
+      out.push(p);
+    });
+    return { path: out.join('/'), up: up };
+  }
+  function link(href, textHtml, title, ctx) {
+    var t = title ? ' title="' + esc(title) + '"' : '';
+    if (/^[a-z][a-z0-9+.\-]*:/i.test(href) || href.indexOf('//') === 0) return '<a href="' + esc(href) + '"' + t + ' target="_blank" rel="noopener">' + textHtml + '</a>';
+    if (href.charAt(0) === '#') return '<a href="' + esc(href) + '" data-anchor="' + esc(slugOf(decodeSafe(href.slice(1)))) + '"' + t + '>' + textHtml + '</a>';
+    var hash = href.indexOf('#') >= 0 ? href.slice(href.indexOf('#') + 1) : '', file = decodeSafe(href.split('#')[0]);
+    if (href.charAt(0) === '/') return '<a href="' + esc(href) + '"' + t + '>' + textHtml + '</a>';
+    var r = resolve(ctx.dir, file);
+    if (r.up) return '<a href="' + esc(new Array(r.up + 1).join('..' + '/') + r.path + (hash ? '#' + hash : '')) + '"' + t + '>' + textHtml + '</a>';
+    if (r.path === 'architecture.html' && /^(view|compare)=/.test(hash)) {
+      ctx.links.push({ kind: hash.split('=')[0], targets: hash.slice(hash.indexOf('=') + 1).split(',').map(decodeSafe), href: href });
+      return '<a href="#' + esc(hash) + '" data-anchor=""' + t + '>' + textHtml + '</a>';
+    }
+    if (/\.md$/i.test(r.path)) {
+      ctx.links.push({ kind: 'view', targets: [r.path], href: href });
+      return '<a href="#view=' + esc(encodeURI(r.path)) + '" data-anchor="' + esc(hash ? slugOf(decodeSafe(hash)) : '') + '" data-target="' + esc(r.path) + '"' + t + '>' + textHtml + '</a>';
+    }
+    if (r.path.split('/').pop() === 'architecture.html' && hash) ctx.problems.push('link "' + short(href, 80) + '" reaches architecture.html in another folder');
+    return '<a href="' + esc(r.path + (hash ? '#' + hash : '')) + '"' + t + '>' + textHtml + '</a>';
+  }
+  function decodeSafe(p) { try { return decodeURIComponent(p); } catch (e) { return p; } }
+
+  /* ---- Diagrams ---- */
+  function loadMermaid() {
+    return new Promise(function (resolveLoad) {
+      if (window.mermaid) { resolveLoad(true); return; }
+      var done = false, s = doc.createElement('script');
+      function end(ok) { if (!done) { done = true; resolveLoad(ok && !!window.mermaid); } }
+      s.onload = function () { end(true); }; s.onerror = function () { end(false); };
+      setTimeout(function () { end(false); }, 20000);
+      s.src = MERMAID_URL; doc.head.appendChild(s);
+    });
+  }
+  function rgba(c) { var m = /rgba?\(([\d.]+),\s*([\d.]+),\s*([\d.]+)(?:,\s*([\d.]+))?\)/.exec(c || ''); return m ? [+m[1], +m[2], +m[3], m[4] === undefined ? 1 : +m[4]] : null; }
+  function rgb(c) { var v = rgba(c); return v && v[3] > 0.5 ? v.slice(0, 3) : null; }
+  function lum(c) { return c.map(function (v) { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }).reduce(function (a, v, k) { return a + v * [0.2126, 0.7152, 0.0722][k]; }, 0); }
+  function contrast(a, b) { var x = lum(a), y = lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); }
+  function fix(t, bg) {
+    var isSvgText = t.tagName === 'text' || t.tagName === 'tspan', cs = getComputedStyle(t), fg = rgb(isSvgText ? cs.fill : cs.color);
+    if (!fg || contrast(fg, bg) >= 4.5) return;
+    t.style.setProperty(isSvgText ? 'fill' : 'color', contrast([0, 0, 0], bg) >= contrast([255, 255, 255], bg) ? '#000000' : '#ffffff', 'important');
+  }
+  /* What an edge label's text sits on: the first background behind it, blended over the page. */
+  function behind(t, page) {
+    for (var e = t; e && e.tagName !== 'foreignObject' && e.tagName !== 'svg'; e = e.parentElement) {
+      var c = rgba(getComputedStyle(e).backgroundColor);
+      if (c && c[3] > 0) return [0, 1, 2].map(function (k) { return c[k] * c[3] + page[k] * (1 - c[3]); });
+    }
+    return page;
+  }
+  /* Nodes styled in the view (classDef or style) keep their fill, and edge labels their theme background; a label that would be hard to read there switches to black or white. */
+  function legible(svgText, theme) {
+    var host = doc.getElementById('measure'), page = theme === 'dark' ? [21, 24, 27] : [255, 255, 255];
+    host.innerHTML = svgText;
+    var svg = host.querySelector('svg');
+    if (!svg) { host.textContent = ''; return svgText; }
+    [].forEach.call(svg.querySelectorAll('g.node, g.cluster'), function (g) {
+      var shape = g.querySelector('rect, path, polygon, circle, ellipse'), bg = shape && rgb(getComputedStyle(shape).fill);
+      if (!bg) return;
+      [].forEach.call(g.querySelectorAll('.nodeLabel, .nodeLabel *, .cluster-label span, text, tspan'), function (t) { fix(t, bg); });
+    });
+    [].forEach.call(svg.querySelectorAll('g.edgeLabel span, g.edgeLabel p, g.edgeLabel text'), function (t) {
+      fix(t, t.tagName === 'text' ? page : behind(t, page));
+    });
+    var out = svg.outerHTML;
+    host.textContent = '';
+    return out;
+  }
+  function parseError(e) {
+    var lines = String(e && (e.message || e.str) || e).split('\n').map(function (l) { return l.trim(); }).filter(Boolean);
+    return short(lines.length > 1 ? lines[0] + ' ' + lines[lines.length - 1] : lines[0] || 'unknown error', 200);
+  }
+  async function drawAll(theme) {
+    window.mermaid.initialize({ startOnLoad: false, theme: theme === 'dark' ? 'dark' : 'default', securityLevel: 'strict' });
+    for (var k = 0; k < data.sources.length; k++) {
+      var s = data.sources[k];
+      for (var j = 0; j < s.diagrams.length; j++) {
+        var d = s.diagrams[j], id = 'arch-d' + (++seq);
+        delete d.svg; delete d.error;
+        try {
+          await window.mermaid.parse(d.code);
+          d.svg = legible((await window.mermaid.render(id, d.code)).svg, theme);
+        } catch (e) {
+          d.error = 'Diagram ' + (j + 1) + ' could not be drawn: ' + parseError(e);
+          var junk = doc.getElementById('d' + id); if (junk) junk.remove();
+        }
+      }
+    }
+  }
+
+  /* ---- Build ---- */
+  function build() {
+    var blocksRead = readBlocks(), byPath = {}, indexLinks = [];
+    blocksRead.forEach(function (b) { byPath[b.path] = b; });
+    blocksRead.forEach(function (b) {
+      var r = renderMarkdown(b), study = /^studies\/[^\/]+\//.exec(b.path);
+      b.ctx = r;
+      b.links = r.links;
+      if (b.path === 'README.md') r.links.forEach(function (l) { indexLinks.push(l.targets[0]); });
+      data.sources.push({ path: b.path, group: b.path === 'README.md' ? 'index' : study ? 'study' : 'standing', study: study ? study[0].slice(0, -1) : '', title: r.title || b.path, label: '', status: r.status, html: r.html, diagrams: r.diagrams });
+    });
+    blocksRead.forEach(function (b) {
+      b.links.forEach(function (l) {
+        var bad = l.targets.filter(function (t) { return !byPath[t]; });
+        if (l.kind === 'compare' && l.targets.length !== 2) b.problems.push('compare link "' + short(l.href, 80) + '" must name two sources separated by a comma');
+        else if (bad.length) b.problems.push('link "' + short(l.href, 80) + '" points to ' + bad.join(', ') + ', which has no source block');
+      });
+    });
+    var index = data.sources.filter(function (s) { return s.group === 'index'; })[0];
+    if (index) data.title = index.title || 'Architecture';
+    var prefix = index && index.title.indexOf(':') > 0 ? index.title.split(':')[0] + ':' : '\u0000';
+    data.sources.forEach(function (s) {
+      var named = s.title !== s.path, label = s.group === 'index' ? 'Overview' : !named ? (s.group === 'study' && /README\.md$/.test(s.path) ? s.study.split('/')[1] : s.path) : s.title.indexOf(prefix) === 0 ? s.title.slice(prefix.length).trim() : s.title;
+      s.label = named ? label.charAt(0).toUpperCase() + label.slice(1) : label;
+      s.order = s.group === 'index' ? -1 : indexLinks.indexOf(s.path) >= 0 ? indexLinks.indexOf(s.path) : 1e6;
+    });
+    data.sources.sort(function (a, b) { return a.order - b.order || (a.path < b.path ? -1 : a.path > b.path ? 1 : 0); });
+    data.blocks = blocksRead;
+    if (!blocksRead.length) data.empty = 'This page holds no source blocks yet. Build it from the Markdown files beside it.';
+  }
+  function writeChecks(drawn) {
+    var lines = [], passed = 0;
+    if (!data.blocks.length) lines.push('FAIL page: no source blocks; build the page from the Markdown files first');
+    data.blocks.forEach(function (b) {
+      var s = data.sources.filter(function (x) { return x.path === b.path; })[0], problems = b.problems.slice();
+      s.diagrams.forEach(function (d) { if (d.error) problems.push(d.notDrawn ? 'diagram ' + (s.diagrams.indexOf(d) + 1) + ' not drawn, the Mermaid library did not load' : d.error.replace(/^Diagram/, 'diagram')); });
+      if (problems.length) lines.push('FAIL ' + b.path + ': ' + problems.join('; '));
+      else { passed++; lines.push('PASS ' + b.path); }
+    });
+    lines.push('DONE ' + passed + '/' + Math.max(data.blocks.length, 1));
+    results.textContent = lines.join('\n');
+  }
+
+  /* ---- Offline copy ---- */
+  function offlineCopy() {
+    var S = '<' + 'script', E = '<' + '/script>', today = new Date().toISOString().slice(0, 10);
+    var header = doc.querySelector('header.top').cloneNode(true);
+    ['theme-btn', 'save-btn'].forEach(function (id) { var b = header.querySelector('#' + id); if (b) b.remove(); });
+    header.querySelector('#stamp').appendChild(doc.createTextNode(' \u00b7 offline copy saved ' + today));
+    var layout = doc.querySelector('.layout').cloneNode(true);
+    layout.querySelector('#main').innerHTML = ''; layout.querySelector('#toc').innerHTML = '';
+    var checks = layout.querySelector('#checks'); if (checks) checks.remove();
+    var payload = { title: data.title, theme: data.theme, empty: data.empty, sources: data.sources.map(function (s) {
+      return { path: s.path, group: s.group, study: s.study, label: s.label, status: s.status, html: s.html, diagrams: s.diagrams.map(function (d) { return d.svg ? { svg: d.svg } : { error: d.error, code: d.code, notDrawn: d.notDrawn }; }) };
+    }) };
+    return '<!doctype html>\n<html lang="en" data-theme="' + data.theme + '">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1">\n<title>' + esc(data.title) + ' (offline copy)</title>\n<style>' +
+      doc.getElementById('style').textContent + '</style>\n</head>\n<body class="offline">\n' + header.outerHTML + '\n' + layout.outerHTML + '\n' +
+      S + ' type="application/json" id="data">' + JSON.stringify(payload).replace(/</g, '\\u003c') + E + '\n' +
+      S + '>' + doc.getElementById('runtime').textContent + '\nArchViewer(JSON.parse(document.getElementById("data").textContent), { offline: true });\n' + E + '\n</body>\n</html>\n';
+  }
+  function save() {
+    var a = doc.createElement('a'), url = URL.createObjectURL(new Blob([offlineCopy()], { type: 'text/html' }));
+    a.href = url; a.download = 'architecture-offline-' + new Date().toISOString().slice(0, 10) + '.html';
+    doc.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 10000);
+  }
+
+  /* ---- Start ---- */
+  async function setTheme(theme, btn) {
+    if (theme === data.theme) return;
+    if (btn) btn.disabled = true;
+    data.theme = theme;
+    doc.documentElement.setAttribute('data-theme', theme);
+    if (window.mermaid) { try { await drawAll(theme); } catch (e) { /* each diagram already reports its own error */ } }
+    if (viewer) viewer.refresh();
+    if (btn) btn.disabled = false;
+    themeLabel();
+  }
+  function themeLabel() { var b = doc.getElementById('theme-btn'); b.textContent = data.theme === 'dark' ? 'Light' : 'Dark'; b.title = 'Switch to the ' + b.textContent.toLowerCase() + ' theme'; }
+  async function start() {
+    try { build(); } catch (e) { results.textContent = 'FAIL page: ' + parseError(e) + '\nDONE 0/1'; return; }
+    themeLabel();
+    var drawn = await loadMermaid();
+    if (drawn) {
+      try { await drawAll(data.theme); } catch (e) { drawn = false; }
+    }
+    if (!drawn) {
+      data.sources.forEach(function (s) { s.diagrams.forEach(function (d, j) { delete d.svg; d.notDrawn = true; d.error = 'Diagram ' + (j + 1) + ' was not drawn. Its source follows as text.'; }); });
+      notice.innerHTML = '<strong>The diagrams could not be drawn.</strong> This page draws them with the Mermaid library, which did not load from its pinned address on cdn.jsdelivr.net: this computer is probably offline, or the address is blocked. Each source is shown as text, with every diagram as its Mermaid source. Open the page again with a network connection to see the pictures.';
+      notice.hidden = false;
+    }
+    writeChecks(drawn);
+    viewer = ArchViewer(data, {});
+    var saveBtn = doc.getElementById('save-btn');
+    saveBtn.disabled = !drawn || !data.sources.length;
+    saveBtn.title = drawn ? 'Download one HTML file with the drawn pictures, for someone without network or this folder' : 'Needs the drawn diagrams; open the page with a network connection first';
+    saveBtn.addEventListener('click', save);
+    doc.getElementById('theme-btn').addEventListener('click', function () { chosenTheme = data.theme === 'dark' ? 'light' : 'dark'; setTheme(chosenTheme, this); });
+    if (media && media.addEventListener) media.addEventListener('change', function (e) { if (!chosenTheme) setTheme(e.matches ? 'dark' : 'light'); });
+    window.architecturePage = { data: data, offlineCopy: offlineCopy };
+  }
+  start().catch(function (e) { results.textContent = 'FAIL page: ' + parseError(e) + '\nDONE 0/1'; });
+})();
+</script>
+</body>
+</html>
