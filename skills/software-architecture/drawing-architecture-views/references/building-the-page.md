@@ -61,7 +61,7 @@ It does the whole build except reading the checks, and the same command serves t
 
 Unchanged files give byte-identical blocks, so a second run with no change gives a byte-identical page (only the stamp line moves when the date or the commit changed), and `git status` shows `architecture.html` as the only changed file.
 
-It needs bash 3.2 or newer and the standard `awk`, `sed`, `find`, `sort`, `cut` and `date`, in their macOS or Linux versions; `git` is optional and only used for the stamp. Run it with `bash`, because installers do not always keep a script's executable bit.
+It needs bash 3.2 or newer and the standard `awk`, `find`, `sort`, `cut` and `date`, in their macOS or Linux versions; `git` is optional and only used for the stamp. Run it with `bash`, because installers do not always keep a script's executable bit.
 
 It stops with exit code 1 and a message on standard error, writing nothing, when:
 
@@ -72,6 +72,12 @@ It stops with exit code 1 and a message on standard error, writing nothing, when
 | `... lacks its region lines ... or its stamp line` | The page was edited outside its blocks: copy the template over it and run the script again |
 | `no Markdown files under ...` | Write the index and the views first |
 | `the page cannot carry this path, rename the file` | Rename the file: a path with `"`, `<`, `>`, `&` or a backslash cannot sit in a marker line |
+| `cannot read ...` or `could not read ...` | Give the named file read permission, or move it out of the folder, and run the script again |
+| `could not list the Markdown files under ...` | `find` names the folder it could not read on the line above: give it read permission, or move it out |
+| `could not create the temporary file ...` or `could not move the new page into place ...` | Make the architecture folder writable and run the script again |
+| `... is not a regular file` | Something other than a file sits at `architecture.html`: move it aside |
+
+Every step that reads or writes is checked on its own, so a file that cannot be read stops the build instead of leaving its block empty, and the new page replaces the old one only once it is complete. An interrupted run removes its temporary file.
 
 A missing `README.md` is only a warning: the page builds, but it has no index to open on, so write one.
 
