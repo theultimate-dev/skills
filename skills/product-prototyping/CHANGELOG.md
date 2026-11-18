@@ -8,6 +8,8 @@ Releases are tagged `product-prototyping--vX.Y.Z`.
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-11-18
+
 ### Changed
 
 - A prototype context may now hold one built page, `architecture/architecture.html`, which the `software-architecture` plugin builds from the architecture's Markdown files so that people can read the views drawn. The "Markdown only" rule in the prototype profile and in the context's `AGENTS.md` map names this exception.
@@ -35,6 +37,7 @@ Releases are tagged `product-prototyping--vX.Y.Z`.
 - `building-prototype-bets` skill: builds an approved bet in a loop until the result matches its intent: plan, implement in small commits within what you allowed, prove every check by its method, have a fresh reviewer compare the result with the bet, fix, repeat. It cuts scope or stops when the appetite runs out, adds the changelog entry, and leaves you the steps to try it.
 - `closing-prototype-bets` skill: asks you to keep or remove a bet once you have tried it. Keep marks its requirements and architecture as built and records the decisions it made. Remove reverts its code, records its requirements as dropped with your reason, and writes the lesson. Either way it rebuilds the board and the indexes.
 
-[Unreleased]: https://github.com/theultimate-dev/skills/compare/product-prototyping--v0.2.0...HEAD
+[Unreleased]: https://github.com/theultimate-dev/skills/compare/product-prototyping--v0.2.1...HEAD
+[0.2.1]: https://github.com/theultimate-dev/skills/compare/product-prototyping--v0.2.0...product-prototyping--v0.2.1
 [0.2.0]: https://github.com/theultimate-dev/skills/compare/product-prototyping--v0.1.0...product-prototyping--v0.2.0
 [0.1.0]: https://github.com/theultimate-dev/skills/releases/tag/product-prototyping--v0.1.0

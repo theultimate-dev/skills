@@ -8,6 +8,8 @@ Releases are tagged `software-architecture--vX.Y.Z`.
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-11-18
+
 ### Added
 
 - `recovering-built-architecture` skill: answers "what is really there?" for an application nobody has drawn. It reads manifests, entry points, configuration, infrastructure files and schema, and writes dated context and container views that give the evidence for each element and relationship, a file and line where the code shows it, and mark what is assumed. It keeps apart what the code shows, what only deployment configuration says and what only the running system could confirm, describes a part by what its code does when its name says otherwise, and lists the blind spots with what would settle each.
@@ -17,4 +19,5 @@ Releases are tagged `software-architecture--vX.Y.Z`.
 - `drawing-architecture-views` skill: draws one question about your system as one view, a Markdown file with a Mermaid diagram and tables that tie every element and relationship to evidence, and keeps the index of views and studies. It explains the architecture to a named audience with a short guide to the views that already exist. It builds `architecture.html`, one page that shows every view and study with pan, zoom, light and dark, and any two views side by side, so nobody installs a tool to read your architecture. The page treats every view as untrusted text: it never reads a view's text as HTML, makes only relative, in-page, http, https and mailto links clickable, and runs only its own scripts and the pinned Mermaid file, which it checks against a known hash. A bundled bash script rebuilds the page from the Markdown files, the page reports which views drew, and its Save button makes a copy that opens with no network, for sending to someone outside.
 - What to expect from a recovery, a risk review, an options study or a simplification study: an analysis to check, with its evidence, not a result. Each one is written by a model and gets a second pass that tries to break it before you see it, by a separate agent where the harness can start one and by the author's own second read where it cannot. That pass catches errors and not all of them: in the trials behind this release, a recovered view could still cite a line that shows only part of what its row says, a study could still repeat in one place a claim it had corrected in another, and an options study could still hold a verdict that its own timing table contradicts. Read the evidence cells of a recovered view and the Falsification pass section of a study before you rely on a verdict.
 
-[Unreleased]: https://github.com/theultimate-dev/skills/commits/main/skills/software-architecture
+[Unreleased]: https://github.com/theultimate-dev/skills/compare/software-architecture--v0.1.0...HEAD
+[0.1.0]: https://github.com/theultimate-dev/skills/releases/tag/software-architecture--v0.1.0

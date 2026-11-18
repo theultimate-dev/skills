@@ -18,11 +18,21 @@ Marketplace releases are tagged `vX.Y.Z`. Every plugin release is also a marketp
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-11-18
+
 ### Added
 
 - `software-architecture` plugin: skills for working on the architecture of a long-lived application in any repository, with Markdown views and Mermaid diagrams as the source of truth and one built HTML page for readers. Install it with `claude plugin install software-architecture@theultimate-dev`.
 - Decision record [0022](decisions/0022-software-architecture-category.md): why architecture work on existing applications is its own `software-architecture` category, where its files live, and why its built page loads Mermaid from a pinned CDN address.
 - The validator now keeps the `software-architecture` plugin's shared files identical across its skills: the view template, the view conventions and the scenario intake are listed in `MIRRORS`, and a copy that differs from its source fails the check.
+
+### Changed
+
+- Plugins released with this version:
+  - `software-architecture` [0.1.0](https://github.com/theultimate-dev/skills/releases/tag/software-architecture--v0.1.0): first release, with five skills for the architecture of a long-lived application in any repository: recover what is really built with evidence, take a critical look, compare options, simplify without losing a guarantee, and draw it as Markdown views with Mermaid that everyone reads in one built `architecture.html`.
+  - `product-engineering` [0.2.1](https://github.com/theultimate-dev/skills/releases/tag/product-engineering--v0.2.1): for a choice about the system as a whole, `brainstorming-solutions` hands off to `exploring-architecture-options` when that skill is installed.
+  - `product-context` [0.2.1](https://github.com/theultimate-dev/skills/releases/tag/product-context--v0.2.1): `designing-system-architecture` names the `software-architecture` plugin for architecture work in a code repository that has no product context repository.
+  - `product-prototyping` [0.2.1](https://github.com/theultimate-dev/skills/releases/tag/product-prototyping--v0.2.1): a prototype context may hold the built page `architecture/architecture.html`.
 
 ## [0.5.0] - 2026-11-17
 
@@ -200,7 +210,8 @@ Marketplace releases are tagged `vX.Y.Z`. Every plugin release is also a marketp
 - Published releases are immutable: their archives, `checksums.txt` and tag cannot change after publication.
 - The CI and release workflows run `actions/checkout` pinned to a full commit SHA, and Dependabot proposes updates to it weekly.
 
-[Unreleased]: https://github.com/theultimate-dev/skills/compare/v0.5.0...HEAD
+[Unreleased]: https://github.com/theultimate-dev/skills/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/theultimate-dev/skills/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/theultimate-dev/skills/compare/v0.4.2...v0.5.0
 [0.4.2]: https://github.com/theultimate-dev/skills/compare/v0.4.1...v0.4.2
 [0.4.1]: https://github.com/theultimate-dev/skills/compare/v0.4.0...v0.4.1
