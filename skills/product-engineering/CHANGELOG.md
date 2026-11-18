@@ -10,7 +10,7 @@ Releases are tagged `product-engineering--vX.Y.Z`.
 
 ### Changed
 
-- `brainstorming-solutions` now sends a choice about the system as a whole (a new system, a boundary between applications, a store, one deployable or several) to `exploring-architecture-options` when the `software-architecture` plugin is installed, and keeps choices inside one work item.
+- `brainstorming-solutions` now sends a choice about the system as a whole (a new system, a boundary between applications, a store, one deployable or several) to `exploring-architecture-options` when that skill is installed, and keeps choices inside one work item.
 
 ## [0.2.0] - 2026-10-20
 
