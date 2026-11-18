@@ -59,7 +59,7 @@ The study reads the standing views and the decision log and edits neither while 
 
 Show the person the result: each proposed change with what it removes, the guarantees it re-homes and where, the net complexity, and what to measure first; or the reasons nothing should change. Ask them to accept, narrow (accept some changes, decline others) or decline. Silence is not acceptance: until they answer, the Accept section says the study is waiting, and nothing outside the study changes.
 
-When they answer, record it as below and then give a short updated report that opens with the current outcome, and correct any saved report that still says the study is waiting:
+When they answer, record it as below and then give a short updated report that opens with the current outcome; where an earlier report was saved to a file, rewrite that file as a whole for the new state instead of adding to it, and read it once more for any line that still says the study is waiting:
 
 1. **Record the answer** in the study's Accept section with the date and their words, which changes are accepted and which declined, and set the Outcome (`accepted on`, `narrowed on`, `declined on` and the date) in the header line and in the index row.
 2. **Offer a decision record** for the accepted changes, and write it only when the person says yes: in the decision log the location rule found, in that log's own format, or with the parts Title, Status, Date, Context, Decision, Consequences when it has none. Its Context links the study, and its Consequences name the guarantees re-homed and the measurements to run. When the change reverses an accepted record, the new record supersedes it by link; never edit the old one. Record in the Accept section whether it was written.
