@@ -307,7 +307,7 @@ A defect of the application that a study did not find, and an estimate the grade
 
 ### Waived on 2026-11-18
 
-Igor waived two blocking review findings as stated limits ("Waive as stated limits (Recommended)"): F7, AC20 is reported as partial, because a recovery's `Verified` views still hold a few evidence cells that do not show the whole of their row; and F8, AC22 is reported as partial, because a risk review still states in a place or two a claim its falsification pass corrected. AC5 is reported as passed with the trivial commands outside a run folder listed. The repairs made for both (an independent citation check, carrying each correction through the whole study) stay in the skills.
+Igor waived two blocking review findings as stated limits ("Waive as stated limits (Recommended)"): F7, AC20 is reported as partial, because a recovery's `Verified` views still hold a few evidence cells that do not show the whole of their row; and F8, AC22 is reported as partial, because a risk review still states in a place or two a claim its falsification pass corrected. AC5 is reported as passed with the trivial commands outside a run folder listed. The repairs made for both (an independent citation check, carrying each correction through the whole study) stay in the skills. On the same day Igor waived a third finding the same way ("Waive as a stated limit (Recommended)"): F18, AC23 is reported as partial, because an options study passed the agreed bar in some graded runs and in others still held a verdict its own numbers contradict.
 
 ### Automated checks
 

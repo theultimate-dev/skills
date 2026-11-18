@@ -1,6 +1,6 @@
 # Plan 01: the software-architecture plugin
 
-Status: planned
+Status: done
 
 Spec: `spec.md` · Roadmap: `roadmap.md`
 Requirements: R1 to R40
@@ -102,6 +102,8 @@ These are the orchestrator's steps. They change no tracked file, so the release 
 ## Notes
 
 ## Changes after launch
+
+- 2026-11-18 The three study skills gained a trace ledger and a falsification pass (R42) during stage 6, and the page gained a content security policy, an integrity check and lazy drawing during stage 9. AC20, AC22 and AC23 are reported as partial under Igor's waivers (roadmap, Decisions).
 
 - 2026-11-18 The decision record is 0022 and the marketplace release 0.6.0, because `main` gained `dev-environment` during phase 2; the branch was rebased before its first push.
 - 2026-11-18 Phase 2 gained `scripts/build-page.sh` (R41, AC38) on Igor's decision.
