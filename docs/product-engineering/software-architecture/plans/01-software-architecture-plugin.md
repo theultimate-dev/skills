@@ -102,3 +102,8 @@ These are the orchestrator's steps. They change no tracked file, so the release 
 ## Notes
 
 ## Changes after launch
+
+- 2026-11-18 The decision record is 0022 and the marketplace release 0.6.0, because `main` gained `dev-environment` during phase 2; the branch was rebased before its first push.
+- 2026-11-18 Phase 2 gained `scripts/build-page.sh` (R41, AC38) on Igor's decision.
+- 2026-11-18 AC5's check changed to a classified scan on Igor's decision (roadmap, Decisions).
+- 2026-11-18 Phase 5's wording changes were committed during phase 3, and the trials for a skill started as soon as that skill's directory stopped changing; a trial is rerun whenever its skill's files change afterwards.
