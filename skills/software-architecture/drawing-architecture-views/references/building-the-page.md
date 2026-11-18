@@ -55,13 +55,14 @@ It does the whole build except reading the checks, and the same command serves t
 
 - When the folder has no `architecture.html`, it copies the template from this skill's `templates/` folder, which it finds from its own path.
 - It replaces the whole region between the region lines with one block for every `.md` file under the folder, in the stable order above, with the escape applied. Changed files are replaced, new files added, deleted files dropped. Folders whose names start with a dot are skipped.
+- It reads only regular files inside the folder and follows no symbolic link: a Markdown file that is a link stops the build, and a linked folder is skipped with a warning. A name with a control character, such as a newline or a tab, stops the build too, because it could make one path read as another.
 - It sets the built stamp.
 - It writes only `architecture.html`, through a temporary file moved into place, so a failure leaves the page as it was.
 - It prints `placed PATH` for each file and a final line with the count and the stamp, for example `built context/architecture/architecture.html: 7 files, stamp 2026-11-17 from b93de10`.
 
 Unchanged files give byte-identical blocks, so a second run with no change gives a byte-identical page (only the stamp line moves when the date or the commit changed), and `git status` shows `architecture.html` as the only changed file.
 
-It needs bash 3.2 or newer and the standard `awk`, `find`, `sort`, `cut` and `date`, in their macOS or Linux versions; `git` is optional and only used for the stamp. Run it with `bash`, because installers do not always keep a script's executable bit.
+It needs bash 3.2 or newer and the standard `awk`, `find`, `sort`, `cut`, `tr` and `date`, in their macOS or Linux versions; `git` is optional and only used for the stamp. Run it with `bash`, because installers do not always keep a script's executable bit.
 
 It stops with exit code 1 and a message on standard error, writing nothing, when:
 
@@ -72,6 +73,8 @@ It stops with exit code 1 and a message on standard error, writing nothing, when
 | `... lacks its region lines ... or its stamp line` | The page was edited outside its blocks: copy the template over it and run the script again |
 | `no Markdown files under ...` | Write the index and the views first |
 | `the page cannot carry this path, rename the file` | Rename the file: a path with `"`, `<`, `>`, `&` or a backslash cannot sit in a marker line |
+| `a name under ... holds a control character` | Rename the file or folder shown, where `?` marks each such character |
+| `... is a symbolic link, which the page does not follow` | Put the file itself in its place, or move the link out of the folder; for `architecture.html`, put the page itself there |
 | `cannot read ...` or `could not read ...` | Give the named file read permission, or move it out of the folder, and run the script again |
 | `could not list the Markdown files under ...` | `find` names the folder it could not read on the line above: give it read permission, or move it out |
 | `could not create the temporary file ...` or `could not move the new page into place ...` | Make the architecture folder writable and run the script again |
