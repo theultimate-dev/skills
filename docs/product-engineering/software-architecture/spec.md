@@ -43,6 +43,7 @@ The HTML file (agreed spec §4)
 - R19: The template writes `PASS name`, `FAIL name: detail` and `DONE passed/total` as text into the page, the form decision 0017 uses. Where the harness can open a browser the skill reads those lines; where it cannot, it says the views were not drawn and asks the person to open the file.
 
 The shared intake (agreed spec §5)
+- R42: Before it reports, each of the three study skills runs a falsification pass on its own study: an independent agent where the harness can start one, otherwise the author's second read from the last ledger row backwards, tries to break every step said to succeed, every sum, every default, every measure of zero, every end state and every threshold. The study is changed for what breaks and records the pass, including what could not be checked without running the system (Igor, 2026-11-18, after three graded trial rounds).
 - R20: Before any judgement, `evaluating-architecture-risks`, `exploring-architecture-options` and `simplifying-system-architecture` write at the top of the study: the real question, restated without the solution the person named; three to five priority scenarios with six fields each (source, stimulus, environment, the part affected, response, measure); hard constraints; facts, assumptions and proposals kept apart, each fact with evidence and each assumption with what would confirm it; and what is already decided, read from the decision log and the standing views. The skill asks the person only for what the repository cannot answer, in one message.
 
 The skills (agreed spec §6, §7)
@@ -292,6 +293,17 @@ A trial passes its row only when the rubric holds too. Each judgement quotes the
 - Evaluating (T3; R23): single points of failure, each dependency slow or down, trust boundaries and a premortem each appear; risks are ranked by likelihood and impact and carry cause and evidence; trade-off points are named; there is one annotated view, and a failure sequence or the reason that order adds nothing; at least two of the answer key's real risks are found.
 - Exploring (T4, T10; R24): the options differ in kind, not in detail; one is the smallest change; the study says what was not checked and what prior art it drew on, or that the harness could not search.
 - Simplifying (T5, T6; R25): before and after views share ids; there is a row for every scenario and constraint; every removed mechanism has the guarantee it gave and where it now lives; the study says where complexity moved and what must be measured first; in T5 the gateway is found removable with its reason.
+
+### How AC23 and AC24 are judged (changed 2026-11-18)
+
+Three graded rounds on Sonnet and one comparison on Opus showed that a strict reading, in which any analysis error in a study fails the row, is met by neither model: each round an independent grader who traces the code finds a new error, some of them defects the fixture application already has. Igor decided on 2026-11-18 ("Falsification pass, one last round (Recommended)") to add a falsification pass to the three study skills and to judge AC23 and AC24 in one last round by this bar:
+
+- the row's written conditions and rubric hold;
+- no verdict of "holds" or "met" is contradicted by the study's own ledger or numbers;
+- no default of a proposal drops a guarantee without putting that loss to the person;
+- the study has a filled "Falsification pass" section.
+
+A defect of the application that a study did not find, and an estimate the grader disputes without the study's own numbers contradicting it, are reported as limits and do not fail the row. Whatever the last round shows is reported as it is.
 
 ### Automated checks
 

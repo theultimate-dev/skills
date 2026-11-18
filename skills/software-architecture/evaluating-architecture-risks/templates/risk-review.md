@@ -116,6 +116,16 @@ quadrantChart
 
 - T1: [mechanism or setting] helps [S id] because [reason] and hurts [S id] because [reason]. Evidence: [`path:line`]. Choosing between them is the person's call.
 
+## Falsification pass
+
+By: [an independent agent with a fresh context | the author's second read, from the last ledger row backwards]
+
+| Attacked | Result | What changed in this study |
+|---|---|---|
+| [a verdict, a sum, a default, a measure of zero, an end state or a threshold, by its id or row] | [broke: `path:line`, what follows \| not falsified] | [the verdict or default as it now reads \| nothing] |
+
+Could not be checked without running the system: [list, or "nothing"].
+
 ## Next checks
 
 | Risk | Check | Settled when | Where it runs |

@@ -108,6 +108,16 @@ Net: [one or two sentences: fewer technologies or deployables to run, and what t
 |---|---|---|---|
 | M1 | [the riskiest assumption first, then each scenario whose mechanism changed, then a failure drill for each re-homed guarantee] | [the threshold, both ways] | [production read-only, a copy, a test environment, a person] |
 
+## Falsification pass
+
+By: [an independent agent with a fresh context | the author's second read, from the last ledger row backwards]
+
+| Attacked | Result | What changed in this study |
+|---|---|---|
+| [a verdict, a sum, a default, a measure of zero, an end state or a threshold, by its id or row] | [broke: `path:line`, what follows \| not falsified] | [the verdict or default as it now reads \| nothing] |
+
+Could not be checked without running the system: [list, or "nothing"].
+
 ## Result
 
 [One plain sentence: the changes proposed (X ids) and what they remove, or "Nothing should change: [reasons tied to the scenarios]".]

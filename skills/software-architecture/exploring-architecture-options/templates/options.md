@@ -133,6 +133,16 @@ One sentence per cell: whether the measure holds, by which mechanism, and on wha
 - Thrown away afterwards: [what is not kept]
 - Result: [not run | YYYY-MM-DD: the raw observation, and what it changed in the recommendation]
 
+## Falsification pass
+
+By: [an independent agent with a fresh context | the author's second read, from the last ledger row backwards]
+
+| Attacked | Result | What changed in this study |
+|---|---|---|
+| [a verdict, a sum, a default, a measure of zero, an end state or a threshold, by its id or row] | [broke: `path:line`, what follows \| not falsified] | [the verdict or default as it now reads \| nothing] |
+
+Could not be checked without running the system: [list, or "nothing"].
+
 ## What was not checked
 
 - [Measures nobody has taken, prior art not searched, costs not priced, code paths not read, migrations not traced, and what would check each.]

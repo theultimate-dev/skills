@@ -17,6 +17,7 @@ The examples use Larder, a fictional household pantry app: a web client, a mobil
 9. [The intake block](#the-intake-block)
 10. [A filled example](#a-filled-example)
 11. [Before you move on](#before-you-move-on)
+12. [The falsification pass](#the-falsification-pass), run after the study is written
 
 ## What the intake holds
 
@@ -141,6 +142,24 @@ Keep three lists apart, each item with an id, because a study that mixes them pr
 - **Proposals (`P1`)** are designs not yet built or agreed: the solution the person named, a study's `proposed` view, a design document. A proposal is judged, never used as evidence.
 
 A view's claim is a fact only when its Evidence cell holds; an element marked `assumed` in a view is an assumption here.
+
+## The falsification pass
+
+The intake makes a study checkable; this pass does the checking, before the person sees the study. An author reads their own trace and sees what they meant. A reader who did not write it, and who is asked only to break it, finds the wait that was left out and the statement that cannot succeed. So every study that gives a verdict gets one pass whose only job is to prove the study wrong.
+
+**Who does it.** Where the harness lets you start another agent with a fresh context, give one the study, its views and the code, without your notes or reasoning, and this task: "Find every claim in this study that the code or the study's own numbers contradict. For each, give the file and line and what follows from it." Where it does not, do the pass yourself as a second read: close your notes, start from the last row of each ledger and go backwards, with the code open at every row.
+
+**What to attack.** Each of these has broken studies that looked finished:
+
+- **Every step that is said to succeed.** Open the code at that row and run the statement in your head with exactly the values this scenario sends: a required field the caller leaves out, a constraint, a type, a permission. A step that fails with these values ends the trace there.
+- **Every sum.** Add the rows again. Each timer the study names has its number in the sum, not zero. Waits that happen together are not added, and waits that happen one after another are not treated as alternatives: say which.
+- **Every path before the part being praised.** A part cannot give a benefit that an earlier step on the same path takes away: follow the request from its first line, through authentication and every lookup, to the part in question.
+- **Every default of a proposal.** Follow one change down the failure path under the default the study chose. A change that is acknowledged and then not applied, or a promise given up once at cutover, is a guarantee dropped.
+- **Every measure of zero, never or always.** Find the window between the event and the moment the mechanism notices it, and what can happen in that window. A window bounded by a timer or a token's lifetime is not zero.
+- **Every end state.** Take two writers and concrete values, and derive what each device shows at the end, step by step, including what a device does with its own change when it comes back.
+- **Every threshold.** A number in a recommendation or in what would reverse it is compared with the scenarios' own numbers, not with a smaller case.
+
+**What to do with the result.** Change the study before the person sees it: a verdict that broke becomes at risk or not met, with the row that broke it; a default that drops a guarantee is replaced, or the loss is put to the person as their decision; a defect found in the system as it is today goes in the study as a finding in its own right, because a proposal cannot be said to keep what does not hold now. Then record the pass in the study's "Falsification pass" section: who did it, what was attacked, what broke and what changed, and what could not be checked without running the system. A verdict that survived is written as "not falsified", which is what it is: the pass lowers the number of errors and does not prove their absence, and the person should read a study as an analysis to check, with its evidence, not as a result.
 
 ## What is already decided
 
