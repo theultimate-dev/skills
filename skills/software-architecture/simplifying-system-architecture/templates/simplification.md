@@ -73,7 +73,14 @@ Considered and rejected: [each removal or merge tested and dropped, with the gua
 
 ## Scenarios and constraints after the change
 
-Every scenario and constraint of the intake, and every guarantee no scenario names, re-traced through the after view.
+Every scenario and constraint of the intake, and every guarantee no scenario names, re-traced through the after view. A scenario with a time or a count as its measure, or one that ends in a state its source must see, gets a ledger first, from the source's first action to what its own device shows, with every wait on its own row:
+
+| Step | Element | What happens | Wait or cost, normal | Wait or cost, bad day | Evidence |
+|---|---|---|---|---|---|
+| 1 | [id] | [what happens] | [number] | [number] | [`path:line` or A id] |
+| Sum | | | [sum] against [measure] | [sum] against [measure] | |
+
+[Where the same ledger through today's design already misses the measure, say so here.]
 
 | Id | Holds after? | Why: the mechanism that carries it after the change | Evidence or assumption |
 |---|---|---|---|

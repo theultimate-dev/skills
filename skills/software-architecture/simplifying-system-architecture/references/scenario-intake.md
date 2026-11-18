@@ -73,6 +73,25 @@ A quality-attribute scenario turns a vague quality into something a design can b
 
 A scenario is met only at its response, as its source observes it, within its measure. Follow it to the last element of the part affected, which is usually where a person sees the result or a caller gets its answer: a change that reached a device's local store is not yet a change the member sees on the screen. Compare the mechanism's own numbers with the measure in the same unit: a retry that waits five minutes cannot meet a measure of one minute. Where the trace stops one element short, or the numbers do not meet, the verdict is at risk or does not hold, with the missing mechanism named, never met with a caveat. The same test applies to every default a proposal carries, a cutover included: a default that gives up part of a promise even once does not keep that scenario.
 
+### The trace ledger
+
+A verdict written from memory of a trace tends to skip the waits. So for every scenario whose measure is a time or a count, write the trace as a ledger before you write its verdict, one row per step, in order:
+
+| Step | Element | What happens | Wait or cost, normal | Wait or cost, bad day | Evidence |
+|---|---|---|---|---|---|
+| 1 | `mobile` | The member ticks an item; the change is written to the local store and the outbox | 0 s | 0 s | `mobile/src/screens/List.tsx:22` |
+| 2 | `mobile` | The outbox is sent on the next sync timer | up to 30 s | up to 5 min after a failed attempt (backoff cap) | `mobile/src/sync/engine.ts:12`, `:40` |
+| 3 | `api` | Accepts and applies the change | 0.1 s (A2) | 0.1 s | `api/src/sync/routes.ts:22` |
+| 4 | `mobile` (the other phone) | Pulls on its own timer and re-reads the list on screen | up to 30 s | up to 30 s | `mobile/src/sync/engine.ts:12` |
+| Sum | | | up to 60 s | up to 5.5 min | |
+
+- Start at the first thing the source does, the tap or the request, not at the first server element: a change that waits in a client's outbox has not started its journey.
+- End at the element where the source observes the response, and say what that element shows. For an end state, the last row says what the source's own device ends up with, including what it does with its own changes when they come back to it.
+- Put every timer, poll interval, batch window, retry delay and backoff cap on its own row, with its number and the line it comes from. A wait that is not on the ledger is not counted, and a number you assumed carries its assumption id.
+- Sum both columns and set the sums beside the measure. The verdict follows from the numbers: met when both sums are inside the measure; at risk when only the bad-day sum is outside, or a decisive row rests on an assumption; not met when the normal sum is outside. A proposed change earns a better verdict only through the rows it changes.
+
+Keep each ledger in the study, under the scenario or the option it belongs to. A ledger that is the same for several options is written once and named as shared.
+
 "Fast" is not a scenario; "a household of 5 syncs 200 items on a mobile connection in under 2 seconds" is. "Reliable" is not a scenario; "the API restarts during a sync and no accepted change is lost or applied twice" is. A measure is something a check could observe: a duration at a percentile, a count of lost or duplicated items, a time to recover, a number of places a change must touch.
 
 ### Kinds of scenario

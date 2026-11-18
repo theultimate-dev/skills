@@ -156,7 +156,7 @@ Every element has one id, and that id is its Mermaid node id in every view and s
 
 **Before you choose a new id**, look it up in the index's element ids table and search the architecture folder for it, where a shell is available. Reuse the existing id when the element is the same; choose a new one when it is not.
 
-**Ids never change.** When an element is renamed in the code, change its label and Element cell and keep the id. When an element is split, the parts get new ids and the old id stays with the part that keeps its main responsibility. When an element is removed, its id is not reused, so an old study still means what it meant.
+**Ids never change. An existing view's Mermaid node ids are its elements' ids even when no table lists them: before you choose an id, read the diagrams of the views already in the folder, reuse what you find, and add those ids to the index's table.** When an element is renamed in the code, change its label and Element cell and keep the id. When an element is split, the parts get new ids and the old id stays with the part that keeps its main responsibility. When an element is removed, its id is not reused, so an old study still means what it meant.
 
 ## Evidence
 

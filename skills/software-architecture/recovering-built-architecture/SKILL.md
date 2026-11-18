@@ -101,7 +101,7 @@ Larder's `AGENTS.md` points to no architecture folder, so the work goes to `cont
 
 Report, in this order:
 
-- **Written**: each file's path, created or changed, and the page's `DONE` line with every `FAIL` and what you did about it; or that the views were not drawn; or that the page was not rebuilt and `drawing-architecture-views` rebuilds it.
+- **Written**: each file's path, created or changed, and the page's `DONE` line with every `FAIL` and what you did about it; or that the views were not drawn; or that the page was not rebuilt and `drawing-architecture-views` rebuilds it, with a request to have it rebuilt and to read its `DONE` line before relying on the pictures.
 - **Disagreements**: each place the code contradicts a name, a document or a decision record, in one line with both paths.
 - **Uncertain**: the elements and relationships marked `assumed` or "unconfirmed at runtime", and the blind spots, each with what would establish it. Then the questions a person could answer quickly, as one list.
 - **Choices worth recording**: consequential choices the code shows with no decision record, for the person to record with their reasons.

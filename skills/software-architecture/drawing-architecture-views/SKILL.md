@@ -83,7 +83,7 @@ The person asks: "Draw how a phone that was offline catches up." Reading the Lar
 
 ## Hand back
 
-Report what you wrote (each file's path), the view sentence, the page's `DONE` line and every `FAIL` with what you did about it, what is uncertain (assumed elements, evidence you could not find, a sentence you had to assume), and the skill that fits next: `evaluating-architecture-risks` for a critical look at what the view shows, `exploring-architecture-options` when the view exposed an open choice, `simplifying-system-architecture` when it looks heavier than its job, `recovering-built-architecture` when the views lack evidence from the code. Commit nothing: the person reviews and commits the views and the page together.
+Report what you wrote (each file's path), the view sentence, the page's `DONE` line and every `FAIL` with what you did about it, what is uncertain (assumed elements, evidence you could not find, a sentence you had to assume), and the skill that fits next, or that none is needed, in every report, a guide's included: `evaluating-architecture-risks` for a critical look at what the view shows, `exploring-architecture-options` when the view exposed an open choice, `simplifying-system-architecture` when it looks heavier than its job, `recovering-built-architecture` when the views lack evidence from the code. Commit nothing: the person reviews and commits the views and the page together.
 
 Without file access, return the view or the guide as Markdown, say that nothing was written and that the page was not rebuilt.
 

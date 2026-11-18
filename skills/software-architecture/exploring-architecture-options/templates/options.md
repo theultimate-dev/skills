@@ -86,9 +86,21 @@ The choice turns on [the axis: where a responsibility lives, how a change travel
 
 - [Option]: [the hard constraint it breaks, or "no situation in which it wins: (reason)"].
 
+## Traces
+
+One ledger per priority scenario whose measure is a time or a count, per option where the options differ; a ledger shared by several options is written once and says so. Every wait has its own row.
+
+### S1 through A
+
+| Step | Element | What happens | Wait or cost, normal | Wait or cost, bad day | Evidence |
+|---|---|---|---|---|---|
+| 1 | [id: where the source acts] | [what happens] | [number] | [number] | [`path:line` or A id] |
+| [n] | [id: where the source observes the response] | [what it shows] | [number] | [number] | [evidence] |
+| Sum | | | [sum] against [measure] | [sum] against [measure] | |
+
 ## Matrix
 
-One sentence per cell: whether the measure holds, by which mechanism, and on what fact or assumption. No scores.
+One sentence per cell: whether the measure holds, by which mechanism, and on what fact or assumption. A cell for a scenario with a ledger states its sums and takes its verdict from them. No scores.
 
 | Scenario or constraint | A: [name] | B: [name] | C: [name] |
 |---|---|---|---|
