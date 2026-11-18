@@ -305,6 +305,10 @@ Three graded rounds on Sonnet and one comparison on Opus showed that a strict re
 
 A defect of the application that a study did not find, and an estimate the grader disputes without the study's own numbers contradicting it, are reported as limits and do not fail the row. Whatever the last round shows is reported as it is.
 
+### Waived on 2026-11-18
+
+Igor waived two blocking review findings as stated limits ("Waive as stated limits (Recommended)"): F7, AC20 is reported as partial, because a recovery's `Verified` views still hold a few evidence cells that do not show the whole of their row; and F8, AC22 is reported as partial, because a risk review still states in a place or two a claim its falsification pass corrected. AC5 is reported as passed with the trivial commands outside a run folder listed. The repairs made for both (an independent citation check, carrying each correction through the whole study) stay in the skills.
+
 ### Automated checks
 
 Every command runs on the candidate SHA and must pass.
