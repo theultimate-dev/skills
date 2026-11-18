@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-lNQ/L/7i786VZo3/KXk7VZ233WKtTnwNazBo+/k5Gbc=' 'sha256-PlIYUaWlg1W/EBO6zyhoP2RkSLykjcOMpTUl/dhMHYY=' 'sha384-HHW54r639fK42Ip0coGF3mz8oSiGn0eEoWNTLs75X7H63pLSDBa0Tqs0RwGmLlXE'; script-src-attr 'none'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-08mFlD9IPw2Tv+Jtjof22yvy4Fo7XFeddzWMIIGyAOw=' 'sha256-PlIYUaWlg1W/EBO6zyhoP2RkSLykjcOMpTUl/dhMHYY=' 'sha384-HHW54r639fK42Ip0coGF3mz8oSiGn0eEoWNTLs75X7H63pLSDBa0Tqs0RwGmLlXE'; script-src-attr 'none'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Architecture</title>
 <!--
@@ -163,7 +163,15 @@ function ArchViewer(data, opts) {
     add(e, kids);
     return e;
   }
-  function add(e, kids) { [].concat(kids == null ? [] : kids).forEach(function (k) { if (k != null) e.appendChild(typeof k === 'string' ? doc.createTextNode(k) : k); }); return e; }
+  /* Text goes in as a text node and only real nodes are appended as nodes, so nothing a source or the address bar supplies is ever parsed as markup. */
+  function add(e, kids) {
+    [].concat(kids == null ? [] : kids).forEach(function (k) {
+      if (k == null) return;
+      if (k instanceof Node) e.appendChild(k);
+      else e.appendChild(doc.createTextNode(String(k)));
+    });
+    return e;
+  }
   function put(box, kids) { box.textContent = ''; return add(box, kids); }
   /* A rendered source is a tree of [tag, attributes, ...children] and strings. Only these tags and attributes are made, and every href is checked again. */
   var TAGS = /^(p|h[1-6]|a|em|strong|del|b|i|code|sub|sup|kbd|br|hr|pre|ul|ol|li|blockquote|div|span|table|thead|tbody|tr|th|td)$/;
