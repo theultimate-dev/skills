@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-08mFlD9IPw2Tv+Jtjof22yvy4Fo7XFeddzWMIIGyAOw=' 'sha256-PlIYUaWlg1W/EBO6zyhoP2RkSLykjcOMpTUl/dhMHYY=' 'sha384-HHW54r639fK42Ip0coGF3mz8oSiGn0eEoWNTLs75X7H63pLSDBa0Tqs0RwGmLlXE'; script-src-attr 'none'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-y7nNog2Ia3qSzblX9qvypn6KZkPZl0GyH3huj+6dis4=' 'sha256-PlIYUaWlg1W/EBO6zyhoP2RkSLykjcOMpTUl/dhMHYY=' 'sha384-HHW54r639fK42Ip0coGF3mz8oSiGn0eEoWNTLs75X7H63pLSDBa0Tqs0RwGmLlXE'; script-src-attr 'none'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Architecture</title>
 <!--
@@ -226,7 +226,7 @@ function ArchViewer(data, opts) {
   function name(s, hosts, k) { return s.label + (hosts.length > 1 ? ', diagram ' + (k + 1) : ', diagram'); }
   function mount(box, path) {
     var s = byPath[path];
-    if (!s) { put(box, el('p', { 'class': 'empty' }, ['This page holds no source named ', el('code', null, path || ''), '.'])); return; }
+    if (!s) { put(box, el('p', { 'class': 'empty' }, ['This page holds no source named ', el('code', null, doc.createTextNode(path || '')), '.'])); return; }
     var art = put(box, el('article', { 'class': 'doc', 'data-path': s.path }, el('p', { 'class': 'path' }, s.path))).firstChild;
     s.body.forEach(function (n) { art.appendChild(tree(n)); });
     var hosts = art.querySelectorAll('.diagram');
@@ -350,7 +350,7 @@ function ArchViewer(data, opts) {
   }
   function route() {
     var st = state(); frames = []; navOpen(false);
-    if (!data.sources.length) { put(main, el('p', { 'class': 'empty' }, data.empty || 'This page holds no sources.')); return; }
+    if (!data.sources.length) { put(main, el('p', { 'class': 'empty' }, doc.createTextNode(data.empty || 'This page holds no sources.'))); return; }
     if (st.compare) {
       var bodies = [el('div', { 'class': 'body' }), el('div', { 'class': 'body' })];
       put(main, el('div', { 'class': 'compare-view' }, [
