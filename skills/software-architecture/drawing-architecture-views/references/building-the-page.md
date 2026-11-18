@@ -191,6 +191,8 @@ Do not try to fix this by editing the page. Say that the diagrams were not drawn
 
 **Save offline copy** in the page header downloads a second file, `architecture-offline-YYYY-MM-DD.html`, dated with the local date like the built stamp. It holds every view and study as the page showed it at that moment: the drawn pictures, the formatted prose, and a small script for switching views, compare, pan, zoom, fit and full screen. It contains no Mermaid library, no script loaded from an address and no CDN address, so it opens anywhere with no network, and it keeps the theme it was saved in.
 
+While the page redraws its pictures after a theme switch, the button reads **Drawing…** and is off until every picture is drawn in the new theme, so a copy always holds all the pictures, all in the theme the page shows.
+
 - A person makes it in a browser, because drawing needs one. You cannot make it from the Markdown without a browser.
 - It is what gets sent to someone outside: a client, a reviewer without access to the repository. One file, nothing to install.
 - It is not committed. It is a snapshot that goes stale with the next change; the committed page and the Markdown are the record. Make a new copy when someone needs one.

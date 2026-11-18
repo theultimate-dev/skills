@@ -333,6 +333,8 @@ function ArchViewer(data, opts) {
   var MERMAID_URL = 'https://cdn.jsdelivr.net/npm/mermaid@12.3.0/dist/mermaid.min.js';
   var doc = document, results = doc.getElementById('results'), notice = doc.getElementById('notice');
   var data = { title: 'Architecture', theme: 'light', sources: [] }, viewer = null, chosenTheme = null, seq = 0;
+  /* drawnTheme: the theme of the pictures in data, always one whole set. drawing: the redraw under way, or null. */
+  var drawnTheme = null, drawing = null, canDraw = false, canSave = false;
   var media = window.matchMedia ? matchMedia('(prefers-color-scheme: dark)') : null;
   data.theme = media && media.matches ? 'dark' : 'light';
   doc.documentElement.setAttribute('data-theme', data.theme);
@@ -579,22 +581,41 @@ function ArchViewer(data, opts) {
     var lines = String(e && (e.message || e.str) || e).split('\n').map(function (l) { return l.trim(); }).filter(Boolean);
     return short(lines.length > 1 ? lines[0] + ' ' + lines[lines.length - 1] : lines[0] || 'unknown error', 200);
   }
+  /* Draws every diagram in the theme into a new set and puts the set in place only once it is whole and the theme is still the selected one,
+     so data always holds one complete set of pictures in one theme. Gives up early, keeping the old set, when the theme changes meanwhile. */
   async function drawAll(theme) {
     window.mermaid.initialize({ startOnLoad: false, theme: theme === 'dark' ? 'dark' : 'default', securityLevel: 'strict' });
+    var set = [];
     for (var k = 0; k < data.sources.length; k++) {
       var s = data.sources[k];
       for (var j = 0; j < s.diagrams.length; j++) {
-        var d = s.diagrams[j], id = 'arch-d' + (++seq);
-        delete d.svg; delete d.error;
+        var d = s.diagrams[j], id = 'arch-d' + (++seq), r = { d: d };
         try {
           await window.mermaid.parse(d.code);
-          d.svg = legible((await window.mermaid.render(id, d.code)).svg, theme);
+          r.svg = legible((await window.mermaid.render(id, d.code)).svg, theme);
         } catch (e) {
-          d.error = 'Diagram ' + (j + 1) + ' could not be drawn: ' + parseError(e);
+          r.error = 'Diagram ' + (j + 1) + ' could not be drawn: ' + parseError(e);
           var junk = doc.getElementById('d' + id); if (junk) junk.remove();
         }
+        if (theme !== data.theme) return;
+        set.push(r);
       }
     }
+    set.forEach(function (r) { delete r.d.svg; delete r.d.error; if (r.svg) r.d.svg = r.svg; else r.d.error = r.error; });
+    drawnTheme = theme;
+  }
+  /* Draws until the pictures are in the selected theme, one draw at a time. While it runs, Theme and Save wait. */
+  function redraw() {
+    if (drawing) return drawing;
+    drawing = (async function () {
+      try { while (drawnTheme !== data.theme) await drawAll(data.theme); } catch (e) { /* each diagram reports its own error; the last whole set stays */ }
+    })().then(function () {
+      drawing = null;
+      if (viewer) viewer.refresh();
+      themeLabel(); busy();
+    });
+    busy();
+    return drawing;
   }
 
   /* ---- Build ---- */
@@ -652,15 +673,18 @@ function ArchViewer(data, opts) {
     var layout = doc.querySelector('.layout').cloneNode(true);
     layout.querySelector('#main').innerHTML = ''; layout.querySelector('#toc').innerHTML = '';
     var checks = layout.querySelector('#checks'); if (checks) checks.remove();
-    var payload = { title: data.title, theme: data.theme, empty: data.empty, sources: data.sources.map(function (s) {
+    var theme = drawnTheme || data.theme;
+    var payload = { title: data.title, theme: theme, empty: data.empty, sources: data.sources.map(function (s) {
       return { path: s.path, group: s.group, study: s.study, label: s.label, status: s.status, html: s.html, diagrams: s.diagrams.map(function (d) { return d.svg ? { svg: d.svg } : { error: d.error, code: d.code, notDrawn: d.notDrawn }; }) };
     }) };
-    return '<!doctype html>\n<html lang="en" data-theme="' + data.theme + '">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1">\n<title>' + esc(data.title) + ' (offline copy)</title>\n<style>' +
+    return '<!doctype html>\n<html lang="en" data-theme="' + theme + '">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1">\n<title>' + esc(data.title) + ' (offline copy)</title>\n<style>' +
       doc.getElementById('style').textContent + '</style>\n</head>\n<body class="offline">\n' + header.outerHTML + '\n' + layout.outerHTML + '\n' +
       S + ' type="application/json" id="data">' + JSON.stringify(payload).replace(/</g, '\\u003c') + E + '\n' +
       S + '>' + doc.getElementById('runtime').textContent + '\nArchViewer(JSON.parse(document.getElementById("data").textContent), { offline: true });\n' + E + '\n</body>\n</html>\n';
   }
-  function save() {
+  /* Waits for a redraw under way, so the copy holds every picture in the selected theme. */
+  async function save() {
+    while (drawing) await drawing;
     var today = localDate(), a = doc.createElement('a'), url = URL.createObjectURL(new Blob([offlineCopy(today)], { type: 'text/html' }));
     a.href = url; a.download = 'architecture-offline-' + today + '.html';
     doc.body.appendChild(a); a.click(); a.remove();
@@ -668,24 +692,33 @@ function ArchViewer(data, opts) {
   }
 
   /* ---- Start ---- */
-  async function setTheme(theme, btn) {
+  function setTheme(theme) {
     if (theme === data.theme) return;
-    if (btn) btn.disabled = true;
     data.theme = theme;
     doc.documentElement.setAttribute('data-theme', theme);
-    if (window.mermaid) { try { await drawAll(theme); } catch (e) { /* each diagram already reports its own error */ } }
+    if (canDraw) { redraw(); return; }
     if (viewer) viewer.refresh();
-    if (btn) btn.disabled = false;
     themeLabel();
   }
   function themeLabel() { var b = doc.getElementById('theme-btn'); b.textContent = data.theme === 'dark' ? 'Light' : 'Dark'; b.title = 'Switch to the ' + b.textContent.toLowerCase() + ' theme'; }
+  var SAVE_TITLE = 'Download one HTML file with the drawn pictures, for someone without network or this folder';
+  /* Theme and Save are off while a redraw runs; Save says why. */
+  function busy() {
+    var t = doc.getElementById('theme-btn'), b = doc.getElementById('save-btn');
+    t.disabled = !!drawing;
+    if (!canSave) return;
+    b.disabled = !!drawing;
+    b.textContent = drawing ? 'Drawing…' : 'Save offline copy';
+    b.title = drawing ? 'Wait: the pictures are being drawn in the ' + data.theme + ' theme, and the copy needs all of them' : SAVE_TITLE;
+  }
   async function start() {
     try { build(); } catch (e) { results.textContent = 'FAIL page: ' + parseError(e) + '\nDONE 0/1'; return; }
     themeLabel();
     var drawn = await loadMermaid();
     if (drawn) {
-      try { await drawAll(data.theme); } catch (e) { drawn = false; }
+      try { while (drawnTheme !== data.theme) await drawAll(data.theme); } catch (e) { drawn = false; }
     }
+    canDraw = drawn;
     if (!drawn) {
       data.sources.forEach(function (s) { s.diagrams.forEach(function (d, j) { delete d.svg; d.notDrawn = true; d.error = 'Diagram ' + (j + 1) + ' was not drawn. Its source follows as text.'; }); });
       notice.innerHTML = '<strong>The diagrams could not be drawn.</strong> This page draws them with the Mermaid library, which did not load from its pinned address on cdn.jsdelivr.net: this computer is probably offline, or the address is blocked. Each source is shown as text, with every diagram as its Mermaid source. Open the page again with a network connection to see the pictures.';
@@ -694,10 +727,11 @@ function ArchViewer(data, opts) {
     writeChecks(drawn);
     viewer = ArchViewer(data, {});
     var saveBtn = doc.getElementById('save-btn');
-    saveBtn.disabled = !drawn || !data.sources.length;
-    saveBtn.title = drawn ? 'Download one HTML file with the drawn pictures, for someone without network or this folder' : 'Needs the drawn diagrams; open the page with a network connection first';
+    canSave = drawn && !!data.sources.length;
+    saveBtn.disabled = !canSave;
+    saveBtn.title = drawn ? SAVE_TITLE : 'Needs the drawn diagrams; open the page with a network connection first';
     saveBtn.addEventListener('click', save);
-    doc.getElementById('theme-btn').addEventListener('click', function () { chosenTheme = data.theme === 'dark' ? 'light' : 'dark'; setTheme(chosenTheme, this); });
+    doc.getElementById('theme-btn').addEventListener('click', function () { chosenTheme = data.theme === 'dark' ? 'light' : 'dark'; setTheme(chosenTheme); });
     if (media && media.addEventListener) media.addEventListener('change', function (e) { if (!chosenTheme) setTheme(e.matches ? 'dark' : 'light'); });
     window.architecturePage = { data: data, offlineCopy: offlineCopy };
   }
