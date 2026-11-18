@@ -2,12 +2,18 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-lNQ/L/7i786VZo3/KXk7VZ233WKtTnwNazBo+/k5Gbc=' 'sha256-PlIYUaWlg1W/EBO6zyhoP2RkSLykjcOMpTUl/dhMHYY=' 'sha384-HHW54r639fK42Ip0coGF3mz8oSiGn0eEoWNTLs75X7H63pLSDBa0Tqs0RwGmLlXE'; script-src-attr 'none'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Architecture</title>
 <!--
   The built architecture page. It draws the Markdown views and studies copied into the source blocks below.
   The Markdown files stay the source of truth. Change only the stamp line and the source blocks between
   "sources: begin" and "sources: end", as references/building-the-page.md in drawing-architecture-views says.
+  The policy above runs only the two scripts of this file and the pinned Mermaid file, each named by its hash:
+  first the SHA-256 of the runtime script's text, then the builder's, then the SHA-384 of the Mermaid file, which the
+  builder also gives the script element as its integrity value. A script whose hash is not in the policy does not run,
+  so a change to either script's text needs its new hash here: the text between the script's opening tag line and its
+  closing tag line, with the newline after the opening tag and the one before the closing tag, hashed with SHA-256, in base64.
 -->
 <style id="style">
 :root { color-scheme: light; --bg: #ffffff; --fg: #1d2125; --muted: #57616b; --line: #d3d9df; --panel: #f4f6f8; --code: #eceff2; --accent: #0b5cad; --on-accent: #ffffff; --bad: #b42318; --bad-bg: #fdecea; --note-bg: #fff6dc; --note-line: #e3c25a; --built: #1a7f37; --planned: #9a6700; --proposed: #7438c2; --other: #57616b; --more: rgba(11, 92, 173, .5); }
@@ -84,6 +90,7 @@ main { overflow: auto; min-width: 0; }
 .diagram-error { margin: 12px 0 0; padding: 8px 12px; border-radius: 6px 6px 0 0; background: var(--bad-bg); color: var(--bad); font: 12.5px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace; white-space: pre-wrap; }
 .not-drawn .diagram-error { background: var(--note-bg); color: var(--fg); }
 .diagram-error + pre { margin-top: 0; border-radius: 0 0 6px 6px; }
+.diagram-wait { margin: 12px 0 6px; padding: 24px 12px; border: 1px dashed var(--line); border-radius: 8px; color: var(--muted); font-size: 13px; text-align: center; }
 .route-note { margin: 0; padding: 8px 16px; background: var(--note-bg); border-bottom: 1px solid var(--note-line); }
 .compare-view { display: flex; flex-direction: column; height: 100%; }
 .compare-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; padding: 8px 16px; border-bottom: 1px solid var(--line); }
@@ -124,19 +131,59 @@ main { overflow: auto; min-width: 0; }
 <!-- sources: end -->
 </div>
 <script id="runtime">
-/* Shows the views: switcher, compare, pan and zoom. The offline copy carries this script and nothing else. */
+/* Shows the views: switcher, compare, pan and zoom. The offline copy carries this script and nothing else, unchanged, so one policy hash fits both. */
+/* The link targets the page opens: http, https and mailto addresses, in-page anchors with the #view= and #compare= forms, and relative paths.
+   Anything else is refused, however it is written: another scheme (javascript, data, vbscript, file), a scheme reached through leading dot segments,
+   percent-encoding or mixed case, a rooted or protocol-relative path, a backslash, or a control character. The browser's own parse must agree. */
+function archHref(h) {
+  'use strict';
+  h = String(h);
+  if (/[\u0000-\u001f\u007f-\u009f\\]/.test(h) || h.trim() !== h) return null;
+  if (h.charAt(0) === '#') return h;
+  var m = /^([a-z][a-z0-9+.\-]*):/i.exec(h), a = document.createElement('a');
+  a.setAttribute('href', h);
+  if (m) return /^(https?|mailto)$/i.test(m[1]) && a.protocol === m[1].toLowerCase() + ':' ? h : null;
+  var d = h;
+  for (var k = 0; k < 4 && /%[0-9a-f]{2}/i.test(d); k++) { try { d = decodeURIComponent(d); } catch (e) { break; } }
+  d = d.replace(/[\u0000-\u0020\u007f-\u009f]/g, '');
+  while (/^\.{1,2}[\/\\]/.test(d)) d = d.slice(d.search(/[\/\\]/) + 1);
+  if (/^[\/\\]/.test(d) || /^[^\/\\?#]*:/.test(d)) return null;
+  return a.protocol === location.protocol ? h : null;
+}
 function ArchViewer(data, opts) {
   'use strict';
   opts = opts || {};
   var doc = document, root = doc.documentElement, main = doc.getElementById('main');
-  var byPath = {}, frames = [], pendingAnchor = null;
+  var byPath = {}, frames = [], pendingAnchor = null, shown = [];
   data.sources.forEach(function (s) { byPath[s.path] = s; });
-  function esc(t) { return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+  /* Every element here is made with createElement, its attributes with setAttribute and its text as text nodes, so no source text is read as HTML. */
+  function el(tag, attrs, kids) {
+    var e = doc.createElement(tag);
+    if (attrs) Object.keys(attrs).forEach(function (k) { if (attrs[k] != null) e.setAttribute(k, attrs[k]); });
+    add(e, kids);
+    return e;
+  }
+  function add(e, kids) { [].concat(kids == null ? [] : kids).forEach(function (k) { if (k != null) e.appendChild(typeof k === 'string' ? doc.createTextNode(k) : k); }); return e; }
+  function put(box, kids) { box.textContent = ''; return add(box, kids); }
+  /* A rendered source is a tree of [tag, attributes, ...children] and strings. Only these tags and attributes are made, and every href is checked again. */
+  var TAGS = /^(p|h[1-6]|a|em|strong|del|b|i|code|sub|sup|kbd|br|hr|pre|ul|ol|li|blockquote|div|span|table|thead|tbody|tr|th|td)$/;
+  var ATTRS = /^(class|href|title|target|rel|start|style|data-slug|data-anchor|data-target|data-i)$/;
+  function tree(n) {
+    if (typeof n === 'string') return doc.createTextNode(n);
+    var e = doc.createElement(TAGS.test(n[0]) ? n[0] : 'span'), a = n[1] || {};
+    Object.keys(a).forEach(function (k) {
+      var v = String(a[k]);
+      if (!ATTRS.test(k) || (k === 'href' && archHref(v) === null) || (k === 'style' && !/^text-align:(center|right)$/.test(v))) return;
+      e.setAttribute(k, v);
+    });
+    for (var j = 2; j < n.length; j++) e.appendChild(tree(n[j]));
+    return e;
+  }
   function enc(p) { return encodeURI(p).replace(/#/g, '%23').replace(/,/g, '%2C'); }
   function dec(p) { try { return decodeURIComponent(p); } catch (e) { return p; } }
   function home() { return byPath['README.md'] ? 'README.md' : (data.sources[0] || {}).path; }
-  function pill(st) { return st ? ' <span class="pill ' + esc(st) + '">' + esc(st) + '</span>' : ''; }
-  function link(s, cls) { return '<a class="' + cls + '" href="#view=' + enc(s.path) + '" data-path="' + esc(s.path) + '" title="' + esc(s.path) + '">' + esc(s.label) + pill(s.status) + '</a>'; }
+  function pill(st) { return el('span', { 'class': 'pill ' + st }, st); }
+  function link(s, cls) { return el('a', { 'class': cls, href: '#view=' + enc(s.path), 'data-path': s.path, title: s.path }, s.status ? [s.label, ' ', pill(s.status)] : s.label); }
   function groups() {
     var g = { index: [], standing: [], studies: [] }, studies = {};
     data.sources.forEach(function (s) {
@@ -148,46 +195,67 @@ function ArchViewer(data, opts) {
     return g;
   }
   function nav() {
-    var g = groups(), h = '';
-    g.index.forEach(function (s) { h += link(s, 'index'); });
-    if (g.standing.length) h += '<h2>Standing views</h2>' + g.standing.map(function (s) { return link(s, ''); }).join('');
+    var g = groups(), out = [];
+    g.index.forEach(function (s) { out.push(link(s, 'index')); });
+    if (g.standing.length) out = out.concat(el('h2', null, 'Standing views'), g.standing.map(function (s) { return link(s, ''); }));
     if (g.studies.length) {
-      h += '<h2>Studies</h2>';
+      out.push(el('h2', null, 'Studies'));
       g.studies.forEach(function (st) {
         var slug = st.key.split('/')[1] || st.key, date = /^\d{4}-\d{2}-\d{2}/.exec(slug);
-        h += '<div class="study">' + (st.readme ? link(st.readme, '') : '<a>' + esc(slug) + '</a>') + (date ? '<span class="date">' + date[0] + '</span>' : '') + st.views.map(function (s) { return link(s, 'sub'); }).join('') + '</div>';
+        out.push(el('div', { 'class': 'study' }, [st.readme ? link(st.readme, '') : el('a', null, slug), date ? el('span', { 'class': 'date' }, date[0]) : null].concat(st.views.map(function (s) { return link(s, 'sub'); }))));
       });
     }
-    doc.getElementById('toc').innerHTML = h;
+    put(doc.getElementById('toc'), out);
   }
   function picker(sel) {
-    var g = groups(), h = '<select aria-label="Source to compare">';
-    function opt(s, pre) { return '<option value="' + esc(s.path) + '"' + (s.path === sel ? ' selected' : '') + '>' + esc((pre || '') + s.label) + '</option>'; }
-    g.index.forEach(function (s) { h += opt(s); });
-    if (g.standing.length) h += '<optgroup label="Standing views">' + g.standing.map(function (s) { return opt(s); }).join('') + '</optgroup>';
-    g.studies.forEach(function (st) { h += '<optgroup label="Study ' + esc(st.key.split('/')[1] || st.key) + '">' + (st.readme ? opt(st.readme) : '') + st.views.map(function (s) { return opt(s, '- '); }).join('') + '</optgroup>'; });
-    return h + '</select>';
+    var g = groups(), box = el('select', { 'aria-label': 'Source to compare' });
+    function opt(s, pre) { var o = el('option', { value: s.path }, (pre || '') + s.label); if (s.path === sel) o.selected = true; return o; }
+    g.index.forEach(function (s) { box.appendChild(opt(s)); });
+    if (g.standing.length) box.appendChild(el('optgroup', { label: 'Standing views' }, g.standing.map(function (s) { return opt(s); })));
+    g.studies.forEach(function (st) { box.appendChild(el('optgroup', { label: 'Study ' + (st.key.split('/')[1] || st.key) }, (st.readme ? [opt(st.readme)] : []).concat(st.views.map(function (s) { return opt(s, '- '); })))); });
+    return box;
   }
+  function name(s, hosts, k) { return s.label + (hosts.length > 1 ? ', diagram ' + (k + 1) : ', diagram'); }
   function mount(box, path) {
     var s = byPath[path];
-    if (!s) { box.innerHTML = '<p class="empty">This page holds no source named <code>' + esc(path || '') + '</code>.</p>'; return; }
-    box.innerHTML = '<article class="doc" data-path="' + esc(s.path) + '"><p class="path">' + esc(s.path) + '</p>' + s.html + '</article>';
-    var hosts = box.querySelectorAll('.diagram');
-    [].forEach.call(hosts, function (host, k) { fill(host, s.diagrams[+host.getAttribute('data-i')] || {}, s.label + (hosts.length > 1 ? ', diagram ' + (k + 1) : ', diagram')); });
+    if (!s) { put(box, el('p', { 'class': 'empty' }, ['This page holds no source named ', el('code', null, path || ''), '.'])); return; }
+    var art = put(box, el('article', { 'class': 'doc', 'data-path': s.path }, el('p', { 'class': 'path' }, s.path))).firstChild;
+    s.body.forEach(function (n) { art.appendChild(tree(n)); });
+    var hosts = art.querySelectorAll('.diagram');
+    [].forEach.call(hosts, function (host, k) { fill(host, s.diagrams[+host.getAttribute('data-i')] || {}, name(s, hosts, k)); });
   }
-  function fill(host, d, name) {
+  /* Draws again the diagrams of one source wherever it is shown: all of them, or only diagram i. */
+  function update(path, i) {
+    var s = byPath[path];
+    if (!s) return;
+    [].forEach.call(main.querySelectorAll('article.doc'), function (art) {
+      if (art.getAttribute('data-path') !== path) return;
+      var hosts = art.querySelectorAll('.diagram');
+      [].forEach.call(hosts, function (host, k) { var di = +host.getAttribute('data-i'); if (i == null || di === i) fill(host, s.diagrams[di] || {}, name(s, hosts, k)); });
+    });
+  }
+  function button(act, title, label) { return el('button', { type: 'button', 'data-act': act, title: title }, label); }
+  function fill(host, d, label) {
+    if (d.pending) { host.className = 'diagram pending'; put(host, el('div', { 'class': 'diagram-wait', role: 'status' }, 'Drawing this diagram\u2026')); return; }
     if (!d.svg) {
       host.className = 'diagram ' + (d.notDrawn ? 'not-drawn' : 'failed');
-      host.innerHTML = '<div class="diagram-error">' + esc(d.error || 'Not drawn') + '</div><pre><code>' + esc(d.code || '') + '</code></pre>';
+      put(host, [el('div', { 'class': 'diagram-error' }, d.error || 'Not drawn'), el('pre', null, el('code', null, d.code || ''))]);
       return;
     }
-    host.innerHTML = '<div class="frame"><div class="bar"><p class="hint"></p><span class="zoom"><button type="button" data-act="in" title="Zoom in">+</button><button type="button" data-act="out" title="Zoom out">&minus;</button><button type="button" data-act="fit" title="Show the whole picture">Fit</button><button type="button" data-act="full">Full screen</button></span></div>' +
-      '<div class="view" tabindex="0" role="group" aria-label="' + esc(name) + '. Arrow keys pan, plus and minus zoom, 0 fits the whole picture."><div class="stage">' + d.svg + '</div></div></div>';
-    panZoom(host.firstChild);
+    host.className = 'diagram';
+    var stage = el('div', { 'class': 'stage' });
+    /* The picture is Mermaid's own SVG, drawn at securityLevel strict, which sanitises the labels; the page's policy runs no script found in it. */
+    stage.innerHTML = d.svg;
+    var frame = el('div', { 'class': 'frame' }, [
+      el('div', { 'class': 'bar' }, [el('p', { 'class': 'hint' }), el('span', { 'class': 'zoom' }, [button('in', 'Zoom in', '+'), button('out', 'Zoom out', '\u2212'), button('fit', 'Show the whole picture', 'Fit'), el('button', { type: 'button', 'data-act': 'full' }, 'Full screen')])]),
+      el('div', { 'class': 'view', tabindex: '0', role: 'group', 'aria-label': label + '. Arrow keys pan, plus and minus zoom, 0 fits the whole picture.' }, stage)]);
+    put(host, frame);
+    panZoom(frame);
   }
   /* A diagram opens at a size its labels can be read at (no smaller than MIN) and pans when it is then larger than its frame; Fit shows the whole picture. */
   function panZoom(frame) {
-    var MIN = 0.6, PAD = 12, bar = frame.firstChild, hint = bar.firstChild, view = frame.lastChild, stage = view.firstChild, svg = stage.querySelector('svg'), vb = svg.viewBox && svg.viewBox.baseVal;
+    var MIN = 0.6, PAD = 12, bar = frame.firstChild, hint = bar.firstChild, view = frame.lastChild, stage = view.firstChild, svg = stage.querySelector('svg'), vb = svg && svg.viewBox && svg.viewBox.baseVal;
+    if (!svg) return;
     var w = vb && vb.width ? vb.width : (svg.getBBox().width || 400), h = vb && vb.height ? vb.height : (svg.getBBox().height || 300);
     var s = 1, x = 0, y = 0, drag = null, mode = 'open', lastWidth = 0, said = '';
     svg.setAttribute('width', w); svg.setAttribute('height', h); svg.style.maxWidth = 'none';
@@ -266,26 +334,31 @@ function ArchViewer(data, opts) {
     var m = /^#(view|compare)=(.*)$/.exec(location.hash);
     if (m && m[1] === 'compare') {
       var p = m[2].split(',').map(dec).filter(function (x) { return x.trim(); });
-      if (p.length >= 2) return { compare: [p[0], p[1]], note: p.length > 2 ? 'This comparison link names ' + p.length + ' sources; the page compares the first two.' : '' };
-      if (p.length === 1) return { view: p[0], note: 'This comparison link names only one source, <code>' + esc(p[0]) + '</code>, so it is shown alone. A comparison names two paths separated by a comma.' };
-      return { view: home(), note: 'This comparison link names no source, so the overview is shown instead.' };
+      if (p.length >= 2) return { compare: [p[0], p[1]], note: p.length > 2 ? ['This comparison link names ' + p.length + ' sources; the page compares the first two.'] : null };
+      if (p.length === 1) return { view: p[0], note: ['This comparison link names only one source, ', el('code', null, p[0]), ', so it is shown alone. A comparison names two paths separated by a comma.'] };
+      return { view: home(), note: ['This comparison link names no source, so the overview is shown instead.'] };
     }
     return { view: m ? dec(m[2]) : home() };
   }
   function route() {
     var st = state(); frames = []; navOpen(false);
-    if (!data.sources.length) { main.innerHTML = '<p class="empty">' + (data.empty || 'This page holds no sources.') + '</p>'; return; }
+    if (!data.sources.length) { put(main, el('p', { 'class': 'empty' }, data.empty || 'This page holds no sources.')); return; }
     if (st.compare) {
-      main.innerHTML = '<div class="compare-view"><div class="compare-bar"><strong>Compare</strong><span class="hint">Each side pans and zooms on its own.</span><button type="button" data-close>Close</button></div><div class="compare"><section class="side">' + picker(st.compare[0]) + '<div class="body"></div></section><section class="side">' + picker(st.compare[1]) + '<div class="body"></div></section></div></div>';
-      var sides = main.querySelectorAll('.side');
-      [0, 1].forEach(function (k) { mount(sides[k].querySelector('.body'), st.compare[k]); });
+      var bodies = [el('div', { 'class': 'body' }), el('div', { 'class': 'body' })];
+      put(main, el('div', { 'class': 'compare-view' }, [
+        el('div', { 'class': 'compare-bar' }, [el('strong', null, 'Compare'), el('span', { 'class': 'hint' }, 'Each side pans and zooms on its own.'), el('button', { type: 'button', 'data-close': '' }, 'Close')]),
+        el('div', { 'class': 'compare' }, [0, 1].map(function (k) { return el('section', { 'class': 'side' }, [picker(st.compare[k]), bodies[k]]); }))]));
+      [0, 1].forEach(function (k) { mount(bodies[k], st.compare[k]); });
       mark(st.compare); doc.title = 'Compare: ' + st.compare.join(', ') + ' - ' + data.title;
+      shown = st.compare.slice();
     } else {
       mount(main, st.view); main.scrollTop = 0; mark([st.view]);
       doc.title = (byPath[st.view] ? byPath[st.view].label + ' - ' : '') + data.title;
+      shown = [st.view];
     }
-    if (st.note) (main.querySelector('.compare-view') || main).insertAdjacentHTML('afterbegin', '<p class="route-note" role="status">' + st.note + '</p>');
+    if (st.note) { var box = main.querySelector('.compare-view') || main; box.insertBefore(el('p', { 'class': 'route-note', role: 'status' }, st.note), box.firstChild); }
     if (pendingAnchor) { var a = pendingAnchor; pendingAnchor = null; scrollTo(main, a); }
+    if (opts.onRoute) opts.onRoute(shown.slice());
   }
   /* At narrow widths the switcher folds behind the Views button, so a view starts near the top. */
   var navBtn = doc.getElementById('nav-btn');
@@ -293,7 +366,7 @@ function ArchViewer(data, opts) {
   if (navBtn) navBtn.addEventListener('click', function () { navOpen(!root.classList.contains('nav-open')); });
   doc.getElementById('toc').addEventListener('click', function (e) { if (e.target.closest('a')) navOpen(false); });
   doc.getElementById('nav').addEventListener('keydown', function (e) { if (e.key === 'Escape' && root.classList.contains('nav-open')) { navOpen(false); if (navBtn) navBtn.focus(); } });
-  function scrollTo(box, slug) { var t = box.querySelector('[data-slug="' + slug.replace(/["\\]/g, '') + '"]'); if (t) t.scrollIntoView(); }
+  function scrollTo(box, slug) { var t = [].filter.call(box.querySelectorAll('[data-slug]'), function (e) { return e.getAttribute('data-slug') === slug; })[0]; if (t) t.scrollIntoView(); }
   function go(hash) { if (location.hash === hash) route(); else location.hash = hash; }
   main.addEventListener('change', function (e) {
     if (e.target.tagName !== 'SELECT') return;
@@ -323,8 +396,13 @@ function ArchViewer(data, opts) {
   root.setAttribute('data-theme', data.theme);
   doc.getElementById('title').textContent = data.title;
   nav(); route();
-  return { refresh: function () { root.setAttribute('data-theme', data.theme); nav(); route(); } };
+  return { refresh: function () { root.setAttribute('data-theme', data.theme); nav(); route(); }, update: update, shown: function () { return shown.slice(); } };
 }
+/* The offline copy holds its data in a JSON block before this script, and the viewer starts on it there; the page's builder starts it here. */
+(function () {
+  var d = document.getElementById('data');
+  if (d && d.type === 'application/json' && document.body.classList.contains('offline')) ArchViewer(JSON.parse(d.textContent), { offline: true });
+})();
 </script>
 <script id="builder">
 /* Reads the source blocks, renders the Markdown, draws the diagrams, writes the check lines, saves the offline copy. */
@@ -332,31 +410,38 @@ function ArchViewer(data, opts) {
   'use strict';
   var MERMAID_URL = 'https://cdn.jsdelivr.net/npm/mermaid@12.3.0/dist/mermaid.min.js';
   var doc = document, results = doc.getElementById('results'), notice = doc.getElementById('notice');
-  var data = { title: 'Architecture', theme: 'light', sources: [] }, viewer = null, chosenTheme = null, seq = 0;
-  /* drawnTheme: the theme of the pictures in data, always one whole set. drawing: the redraw under way, or null. */
-  var drawnTheme = null, drawing = null, canDraw = false, canSave = false;
+  var data = { title: 'Architecture', theme: 'light', sources: [] }, byPath = {}, viewer = null, chosenTheme = null, seq = 0;
+  /* The hashes come from the page's policy, so each is written once: the first SHA-256 is the runtime script's, the SHA-384 the Mermaid file's. */
+  var policy = (doc.querySelector('meta[http-equiv="Content-Security-Policy"]') || {}).content || '';
+  function token(kind) { var m = new RegExp("'(" + kind + "-[A-Za-z0-9+/=]+)'").exec(policy); return m ? m[1] : ''; }
+  /* want: the sources on screen, drawn first. worker: the drawing under way, or null. checked: the check lines are written. */
+  var canDraw = false, canSave = false, checked = false, worker = null, want = [], waiters = [], mermaidTheme = null;
   var media = window.matchMedia ? matchMedia('(prefers-color-scheme: dark)') : null;
   data.theme = media && media.matches ? 'dark' : 'light';
   doc.documentElement.setAttribute('data-theme', data.theme);
 
   function esc(t) { return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
   function short(t, n) { t = String(t).replace(/\s+/g, ' ').trim(); return t.length > n ? t.slice(0, n - 1) + '\u2026' : t; }
+  /* Control characters: C0 apart from tab and newline, DEL, and C1. The renderer's markers are C0 characters, so no source may hold one. */
+  var CONTROL = /[\u0000-\u0008\u000b-\u001f\u007f-\u009f]/g;
 
   /* ---- Source blocks ---- */
   function unescapeSource(t) { return t.replace(/<\\(\\*)(\/script|!--)/gi, '<$1$2'); }
   function readBlocks() {
     var seen = {}, out = [];
     [].forEach.call(doc.querySelectorAll('#sources script[type="text/markdown"]'), function (b) {
-      var path = b.getAttribute('data-path') || '', text = b.textContent, problems = [];
+      var path = b.getAttribute('data-path') || '', text = b.textContent, problems = [], bad = 0;
       if (text.charAt(0) === '\n') text = text.slice(1);
-      text = unescapeSource(text).replace(/\r\n?/g, '\n');
+      text = unescapeSource(text).replace(/\r\n?/g, '\n').replace(CONTROL, function () { bad++; return '\ufffd'; });
       var n = b.nextSibling;
       while (n && n.nodeType === 3 && !n.data.trim()) n = n.nextSibling;
       if (!n || n.nodeType !== 8 || n.data.trim() !== 'end ' + path) problems.push('the block does not end on its own closing marker line; a closing script tag or comment opener in the source was probably not escaped');
       if (/\n<script type="text\/markdown"/.test(text)) problems.push('the block runs into the next block; its closing marker line is missing');
       if (!path || /^\/|^\.\/|\\/.test(path)) problems.push('data-path must be the path relative to the architecture folder, with forward slashes');
+      if (/[\u0000-\u001f\u007f-\u009f]/.test(path)) problems.push('data-path holds a control character, such as a newline; rename the file');
       if (seen[path]) problems.push('a second block has the same path');
       if (!text.trim()) problems.push('the file is empty');
+      if (bad) problems.push('the file holds ' + bad + ' control character' + (bad > 1 ? 's' : '') + ', such as a form feed or an escape, shown as \ufffd; remove ' + (bad > 1 ? 'them' : 'it'));
       seen[path] = true;
       out.push({ path: path, text: text, problems: problems });
     });
@@ -364,6 +449,10 @@ function ArchViewer(data, opts) {
   }
 
   /* ---- Markdown ---- */
+  /* The renderer makes a tree, never HTML: an element is [tag, attributes, ...children], a string is text. The runtime builds it with createElement. */
+  function N(tag, attrs, kids) { return [tag, attrs || {}].concat(kids || []); }
+  function textOf(n) { return typeof n === 'string' ? n : text(n.slice(2)); }
+  function text(list) { return list.map(textOf).join(''); }
   var RE = {
     fence: /^ {0,3}(`{3,}|~{3,})\s*([^\s`]*)/,
     heading: /^ {0,3}(#{1,6})(?:[ \t]+(.*?))?(?:[ \t]+#+)?[ \t]*$/,
@@ -377,58 +466,60 @@ function ArchViewer(data, opts) {
   function startsBlock(l) {
     return RE.fence.test(l) || RE.heading.test(l) || RE.hr.test(l) || RE.quote.test(l) || RE.comment.test(l) || /^ {0,3}([-*+]|1[.)]) +\S/.test(l);
   }
-  function slugOf(t) { return plain(t).toLowerCase().replace(/[^\p{L}\p{N}_\- ]+/gu, '').trim().replace(/ /g, '-'); }
-  function plain(t) { return String(t).replace(/!?\[([^\]]*)\]\([^)]*\)/g, '$1').replace(/[`*_~]/g, '').replace(/<[^>]+>/g, '').trim(); }
+  function slugOf(t) { return String(t).toLowerCase().replace(/[^\p{L}\p{N}_\- ]+/gu, '').trim().replace(/ /g, '-'); }
 
   function renderMarkdown(src) {
-    var ctx = { path: src.path, dir: src.path.replace(/[^\/]*$/, ''), problems: src.problems, diagrams: [], links: [], keep: [], title: '', status: '' };
-    ctx.html = blocks(src.text.replace(/\t/g, '    ').split('\n'), ctx);
+    var ctx = { path: src.path, dir: src.path.replace(/[^\/]*$/, '').split('/').map(encodeURIComponent).join('/'), problems: src.problems, diagrams: [], links: [], title: '', status: '' };
+    ctx.body = blocks(src.text.replace(/\t/g, '    ').split('\n'), ctx);
     return ctx;
   }
   function blocks(lines, ctx) {
     var out = [], i = 0, n = lines.length, m;
+    function push(node) { if (out.length) out.push('\n'); out.push(node); }
     while (i < n) {
       var line = lines[i];
       if (!line.trim()) { i++; continue; }
+      /* The end of a comment, written in two parts so this script's text never holds it. */
       if (RE.comment.test(line)) { while (i < n && lines[i].indexOf('--' + '>') < 0) i++; i++; continue; }
       if ((m = RE.fence.exec(line))) {
         var close = new RegExp('^ {0,3}' + (m[1].charAt(0) === '`' ? '`' : '~') + '{' + m[1].length + ',}\\s*$'), body = [];
         for (i++; i < n && !close.test(lines[i]); i++) body.push(lines[i]);
         i++;
-        if (m[2].toLowerCase() === 'mermaid') out.push('<div class="diagram" data-i="' + (ctx.diagrams.push({ code: body.join('\n') }) - 1) + '"></div>');
-        else out.push('<pre><code>' + esc(body.join('\n')) + '</code></pre>');
+        if (m[2].toLowerCase() === 'mermaid') push(N('div', { 'class': 'diagram', 'data-i': String(ctx.diagrams.push({ code: body.join('\n'), out: {} }) - 1) }));
+        else push(N('pre', {}, [N('code', {}, [body.join('\n')])]));
         continue;
       }
       if ((m = RE.heading.exec(line))) {
-        var lvl = m[1].length, txt = m[2] || '';
-        if (lvl === 1 && !ctx.title) ctx.title = plain(txt);
-        out.push('<h' + lvl + ' data-slug="' + esc(slugOf(txt)) + '">' + inline(txt, ctx) + '</h' + lvl + '>');
+        var lvl = m[1].length, kids = inline(m[2] || '', ctx), words = text(kids);
+        if (lvl === 1 && !ctx.title) ctx.title = words.trim();
+        push(N('h' + lvl, { 'data-slug': slugOf(words) }, kids));
         i++; continue;
       }
-      if (RE.hr.test(line)) { out.push('<hr>'); i++; continue; }
-      if (line.indexOf('|') >= 0 && i + 1 < n && RE.delim.test(lines[i + 1]) && lines[i + 1].indexOf('-') >= 0 && cells(line).length === cells(lines[i + 1]).length) { i = table(lines, i, out, ctx); continue; }
+      if (RE.hr.test(line)) { push(N('hr')); i++; continue; }
+      if (line.indexOf('|') >= 0 && i + 1 < n && RE.delim.test(lines[i + 1]) && lines[i + 1].indexOf('-') >= 0 && cells(line).length === cells(lines[i + 1]).length) { i = table(lines, i, push, ctx); continue; }
       if (RE.quote.test(line)) {
         var q = [];
         while (i < n && RE.quote.test(lines[i])) q.push(lines[i++].replace(/^ {0,3}> ?/, ''));
-        out.push('<blockquote>' + blocks(q, ctx) + '</blockquote>');
+        push(N('blockquote', {}, blocks(q, ctx)));
         continue;
       }
-      if (RE.item.test(line)) { i = list(lines, i, out, ctx); continue; }
+      if (RE.item.test(line)) { i = list(lines, i, push, ctx); continue; }
       var para = [line];
       for (i++; i < n && lines[i].trim() && !startsBlock(lines[i]); i++) para.push(lines[i]);
-      out.push(paragraph(para, ctx));
+      push(paragraph(para, ctx));
     }
-    return out.join('\n');
+    return out;
   }
+  /* A hard line break is carried to inline() as U+0003. */
   function paragraph(lines, ctx) {
     var last = lines.length - 1;
-    var text = lines.map(function (l, k) { return k < last && /( {2,}|\\)$/.test(l) ? l.replace(/( {2,}|\\)$/, '').trim() + '\u0003' : l.trim(); }).join('\n');
-    if (/^Status:/i.test(text)) {
-      var parts = text.split(/\s+\u00b7\s+/), value = parts[0].replace(/^Status:\s*/i, '').trim(), word = (value.split(/\s/)[0] || '').toLowerCase();
+    var t = lines.map(function (l, k) { return k < last && /( {2,}|\\)$/.test(l) ? l.replace(/( {2,}|\\)$/, '').trim() + '\u0003' : l.trim(); }).join('\n');
+    if (/^Status:/i.test(t)) {
+      var parts = t.split(/\s+\u00b7\s+/), value = parts[0].replace(/^Status:\s*/i, '').trim(), word = (value.split(/\s/)[0] || '').toLowerCase().replace(/[^a-z\-]/g, '');
       if (!ctx.status) ctx.status = word;
-      return '<p class="status"><span>Status</span><span class="pill ' + esc(word) + '">' + inline(value, ctx) + '</span>' + parts.slice(1).map(function (p) { return '<span>' + inline(p, ctx) + '</span>'; }).join('') + '</p>';
+      return N('p', { 'class': 'status' }, [N('span', {}, ['Status']), N('span', { 'class': 'pill ' + word }, inline(value, ctx))].concat(parts.slice(1).map(function (p) { return N('span', {}, inline(p, ctx)); })));
     }
-    return '<p>' + inline(text, ctx).replace(/\u0003/g, '<br>') + '</p>';
+    return N('p', {}, inline(t, ctx));
   }
   function cells(l) {
     l = l.trim();
@@ -442,15 +533,16 @@ function ArchViewer(data, opts) {
     out.push(cur.trim());
     return out;
   }
-  function table(lines, i, out, ctx) {
+  function table(lines, i, push, ctx) {
     var head = cells(lines[i]), align = cells(lines[i + 1]).map(function (d) { return /^:-+:$/.test(d) ? 'center' : /-:$/.test(d) ? 'right' : ''; }), rows = [];
     for (i += 2; i < lines.length && lines[i].trim() && lines[i].indexOf('|') >= 0; i++) rows.push(cells(lines[i]));
-    function cell(tag, c, k) { return '<' + tag + (align[k] ? ' style="text-align:' + align[k] + '"' : '') + '>' + inline(c || '', ctx) + '</' + tag + '>'; }
-    out.push('<div class="table"><table><thead><tr>' + head.map(function (c, k) { return cell('th', c, k); }).join('') + '</tr></thead><tbody>' +
-      rows.map(function (r) { return '<tr>' + head.map(function (x, k) { return cell('td', r[k], k); }).join('') + '</tr>'; }).join('') + '</tbody></table></div>');
+    function cell(tag, c, k) { return N(tag, align[k] ? { style: 'text-align:' + align[k] } : {}, inline(c || '', ctx)); }
+    push(N('div', { 'class': 'table' }, [N('table', {}, [
+      N('thead', {}, [N('tr', {}, head.map(function (c, k) { return cell('th', c, k); }))]),
+      N('tbody', {}, rows.map(function (r) { return N('tr', {}, head.map(function (x, k) { return cell('td', r[k], k); })); }))])]));
     return i;
   }
-  function list(lines, i, out, ctx) {
+  function list(lines, i, push, ctx) {
     var n = lines.length, first = RE.item.exec(lines[i]), ordered = /\d/.test(first[2]), items = [], loose = false, m;
     while (i < n && (m = RE.item.exec(lines[i])) && /\d/.test(m[2]) === ordered) {
       var co = m[3] ? m[0].length : m[1].length + m[2].length + 1, body = [lines[i].slice(m[0].length)];
@@ -472,66 +564,111 @@ function ArchViewer(data, opts) {
         if (nx && /\d/.test(nx[2]) === ordered) { loose = true; i = k; } else break;
       }
     }
-    var start = ordered ? parseInt(first[2], 10) : 1, tag = ordered ? 'ol' : 'ul';
-    out.push('<' + tag + (start !== 1 ? ' start="' + start + '"' : '') + '>' + items.map(function (b) {
+    var start = ordered ? parseInt(first[2], 10) : 1;
+    /* A tight list's items hold their paragraphs' content without the paragraph. */
+    push(N(ordered ? 'ol' : 'ul', start !== 1 ? { start: String(start) } : {}, items.map(function (b) {
       b[0] = b[0].replace(/^\[ \] /, '\u2610 ').replace(/^\[[xX]\] /, '\u2611 ');
       var h = blocks(b, ctx);
-      return '<li>' + (loose ? h : h.replace(/<p>([\s\S]*?)<\/p>/g, '$1')) + '</li>';
-    }).join('') + '</' + tag + '>');
+      return N('li', {}, loose ? h : [].concat.apply([], h.map(function (x) { return typeof x !== 'string' && x[0] === 'p' ? x.slice(2) : [x]; })));
+    })));
     return i;
   }
-  function inline(s, ctx) {
-    function hold(html) { return '\u0001' + (ctx.keep.push(html) - 1) + '\u0002'; }
-    s = s.replace(/(`+)([\s\S]*?[^`])\1(?!`)/g, function (x, t, c) { c = c.replace(/\n/g, ' '); if (/^ [\s\S]* $/.test(c)) c = c.slice(1, -1); return hold('<code>' + esc(c) + '</code>'); });
-    s = s.replace(/\\([!-\/:-@\[-`{-~])/g, function (x, c) { return hold(esc(c)); });
-    s = s.replace(/<((?:https?:\/\/|mailto:)[^\s<>]+)>/g, function (x, u) { return hold(link(u, esc(u), '', ctx)); });
-    s = s.replace(/(!?)\[((?:[^\[\]]|\[[^\]]*\])*)\]\(\s*<?([^\s()<>]*(?:\([^\s()]*\)[^\s()<>]*)*)>?(?:\s+(?:"([^"]*)"|'([^']*)'))?\s*\)/g, function (x, bang, text, href, t1, t2) {
-      if (bang) return hold('<span class="img" title="' + esc(href) + '">[image: ' + inline(text, ctx) + ']</span>');
-      return hold(link(href, inline(text, ctx), t1 || t2 || '', ctx));
+
+  /* Inline Markdown to a list of nodes. Each pass holds what it finds as a numbered marker, U+0001 index U+0002, which later passes step over;
+     emphasis and the raw tags the page keeps are U+0004 (open) or U+0005 (close) and a tag code from U+0010. No source can hold these characters
+     (readBlocks replaces every control character), a marker becomes its nodes only in assemble(), and never text again, and an href or title
+     takes the marker's source text, never its nodes. */
+  var TAG = ['strong', 'em', 'del', 'b', 'i', 'code', 'sub', 'sup', 'kbd'];
+  function mark(open, tag) { return (open ? '\u0004' : '\u0005') + String.fromCharCode(0x10 + TAG.indexOf(tag)); }
+  var LINK = /(!?)\[((?:[^\[\]]|\[[^\]]*\])*)\]\(\s*<?([^\s()<>]*(?:\([^\s()]*\)[^\s()<>]*)*)>?(?:\s+(?:"([^"]*)"|'([^']*)'))?\s*\)/g;
+  function inline(s, ctx, inLink, keep) {
+    keep = keep || [];
+    function hold(list, raw) { return '\u0001' + (keep.push({ list: list, raw: raw }) - 1) + '\u0002'; }
+    function flat(t) { return t.replace(/\u0001(\d+)\u0002/g, function (x, k) { return keep[+k].raw; }); }
+    s = s.replace(/(`+)([\s\S]*?[^`])\1(?!`)/g, function (x, t, c) { c = c.replace(/\u0003/g, '').replace(/\n/g, ' '); if (/^ [\s\S]* $/.test(c)) c = c.slice(1, -1); return hold([N('code', {}, [c])], x); });
+    s = s.replace(/\\([!-\/:-@\[-`{-~])/g, function (x, c) { return hold([c], c); });
+    s = s.replace(/<((?:https?:\/\/|mailto:)[^\s<>]+)>/g, function (x, u) { u = flat(u); return hold(anchor(u, [u], '', ctx), u); });
+    s = s.replace(LINK, function (x, bang, label, href, t1, t2) {
+      href = flat(href);
+      var title = flat(t1 || t2 || ''), kids = inline(label, ctx, true, keep);
+      if (bang) return hold([N('span', { 'class': 'img', title: href }, ['[image: '].concat(kids, [']']))], x);
+      return hold(inLink ? kids : anchor(href, kids, title, ctx), x);
     });
-    s = s.replace(/<(\/?)(b|i|em|strong|code|sub|sup|kbd|br)\s*\/?>/gi, function (x, sl, tag) { tag = tag.toLowerCase(); return hold(tag === 'br' ? '<br>' : '<' + sl + tag + '>'); });
-    s = esc(s)
-      .replace(/\*\*(?=\S)([\s\S]*?\S)\*\*/g, '<strong>$1</strong>')
-      .replace(/(^|[^\w])__(?=\S)([\s\S]*?\S)__(?!\w)/g, '$1<strong>$2</strong>')
-      .replace(/\*(?=[^\s*])([\s\S]*?[^\s*])\*/g, '<em>$1</em>')
-      .replace(/(^|[^\w])_(?=\S)([\s\S]*?\S)_(?!\w)/g, '$1<em>$2</em>')
-      .replace(/~~(?=\S)([\s\S]*?\S)~~/g, '<del>$1</del>');
-    for (var guard = 0; /\u0001\d+\u0002/.test(s) && guard < 20; guard++) s = s.replace(/\u0001(\d+)\u0002/g, function (x, k) { return ctx.keep[+k]; });
-    return s;
+    s = s.replace(/<(\/?)(b|i|em|strong|code|sub|sup|kbd|br)\s*\/?>/gi, function (x, sl, tag) { tag = tag.toLowerCase(); return tag === 'br' ? hold([N('br')], x) : mark(!sl, tag); });
+    s = s.replace(/\*\*(?=\S)([\s\S]*?\S)\*\*/g, function (x, a) { return mark(1, 'strong') + a + mark(0, 'strong'); })
+      .replace(/(^|[^\w])__(?=\S)([\s\S]*?\S)__(?!\w)/g, function (x, p, a) { return p + mark(1, 'strong') + a + mark(0, 'strong'); })
+      .replace(/\*(?=[^\s*])([\s\S]*?[^\s*])\*/g, function (x, a) { return mark(1, 'em') + a + mark(0, 'em'); })
+      .replace(/(^|[^\w])_(?=\S)([\s\S]*?\S)_(?!\w)/g, function (x, p, a) { return p + mark(1, 'em') + a + mark(0, 'em'); })
+      .replace(/~~(?=\S)([\s\S]*?\S)~~/g, function (x, a) { return mark(1, 'del') + a + mark(0, 'del'); });
+    return assemble(s, keep, inLink);
+  }
+  /* Link text holds no link: an anchor inside it gives up its text. */
+  function unlink(list) { return [].concat.apply([], list.map(function (x) { return typeof x === 'string' ? [x] : x[0] === 'a' ? unlink(x.slice(2)) : [x.slice(0, 2).concat(unlink(x.slice(2)))]; })); }
+  function assemble(s, keep, inLink) {
+    var root = N(''), stack = [root], re = /\u0001(\d+)\u0002|\u0003|([\u0004\u0005])([\u0010-\u0018])/g, last = 0, m;
+    function add(x) { stack[stack.length - 1].push(x); }
+    function words(t) { t = t.replace(/[\u0000-\u0008\u000b-\u001f]/g, ''); if (t) add(t); }
+    while ((m = re.exec(s))) {
+      words(s.slice(last, m.index));
+      last = re.lastIndex;
+      if (m[1] !== undefined) (inLink ? unlink(keep[+m[1]].list) : keep[+m[1]].list).forEach(add);
+      else if (!m[2]) add(N('br'));
+      else {
+        var tag = TAG[m[3].charCodeAt(0) - 0x10];
+        if (m[2] === '\u0004') { var e = N(tag); add(e); stack.push(e); continue; }
+        /* A close shuts the nearest open element of its tag and opens again the ones it shut on the way, as a browser does; a stray close is dropped. */
+        for (var k = stack.length - 1; k > 0 && stack[k][0] !== tag; k--) { /* find it */ }
+        if (k > 0) stack.splice(k).slice(1).forEach(function (o) { var r = N(o[0]); add(r); stack.push(r); });
+      }
+    }
+    words(s.slice(last));
+    return root.slice(2);
   }
 
   /* ---- Links ---- */
+  /* Works on the link as written, still percent-encoded; '.' and '..' steps count in either form. */
   function resolve(dir, rel) {
     var parts = (dir + rel).split('/'), out = [], up = 0;
     parts.forEach(function (p, k) {
-      if (p === '.' || (p === '' && k < parts.length - 1)) return;
-      if (p === '..') { if (out.length) out.pop(); else up++; return; }
+      var q = p.replace(/%2e/gi, '.');
+      if (q === '.' || (p === '' && k < parts.length - 1)) return;
+      if (q === '..') { if (out.length) out.pop(); else up++; return; }
       out.push(p);
     });
     return { path: out.join('/'), up: up };
   }
-  function link(href, textHtml, title, ctx) {
-    var t = title ? ' title="' + esc(title) + '"' : '';
-    if (/^[a-z][a-z0-9+.\-]*:/i.test(href) || href.indexOf('//') === 0) return '<a href="' + esc(href) + '"' + t + ' target="_blank" rel="noopener">' + textHtml + '</a>';
-    if (href.charAt(0) === '#') return '<a href="' + esc(href) + '" data-anchor="' + esc(slugOf(decodeSafe(href.slice(1)))) + '"' + t + '>' + textHtml + '</a>';
-    var hash = href.indexOf('#') >= 0 ? href.slice(href.indexOf('#') + 1) : '', file = decodeSafe(href.split('#')[0]);
-    if (href.charAt(0) === '/') return '<a href="' + esc(href) + '"' + t + '>' + textHtml + '</a>';
-    var r = resolve(ctx.dir, file);
-    if (r.up) return '<a href="' + esc(new Array(r.up + 1).join('..' + '/') + r.path + (hash ? '#' + hash : '')) + '"' + t + '>' + textHtml + '</a>';
-    if (r.path === 'architecture.html' && /^(view|compare)=/.test(hash)) {
+  /* A link becomes an anchor only when archHref (in the runtime) admits both its target as written and the href the page writes for it;
+     otherwise its text stays as plain text and its source fails with a line that names the link. */
+  function anchor(href, kids, title, ctx) {
+    function refuse() { ctx.problems.push('link "' + short(href, 80) + '" has a target the page does not open, so it shows as text; use a relative path, a #view= or #compare= link, or an http, https or mailto address'); return kids; }
+    function to(h, more) {
+      if (archHref(h) === null) return refuse();
+      var a = { href: h };
+      if (title) a.title = title;
+      Object.keys(more || {}).forEach(function (k) { a[k] = more[k]; });
+      return [N('a', a, kids)];
+    }
+    if (archHref(href) === null) return refuse();
+    if (/^[a-z][a-z0-9+.\-]*:/i.test(href)) return to(href, { target: '_blank', rel: 'noopener' });
+    if (href.charAt(0) === '#') return to(href, { 'data-anchor': slugOf(decodeSafe(href.slice(1))) });
+    var cut = href.indexOf('#'), hash = cut >= 0 ? href.slice(cut + 1) : '', r = resolve(ctx.dir, cut >= 0 ? href.slice(0, cut) : href), file = decodeSafe(r.path);
+    /* Built in two parts: the repository's validator rejects the literal parent-path string in any skill file (decision 0017). */
+    if (r.up) return to(new Array(r.up + 1).join('..' + '/') + r.path + (hash ? '#' + hash : ''));
+    if (file === 'architecture.html' && /^(view|compare)=/.test(hash)) {
       ctx.links.push({ kind: hash.split('=')[0], targets: hash.slice(hash.indexOf('=') + 1).split(',').map(decodeSafe), href: href });
-      return '<a href="#' + esc(hash) + '" data-anchor=""' + t + '>' + textHtml + '</a>';
+      return to('#' + hash, { 'data-anchor': '' });
     }
-    if (/\.md$/i.test(r.path)) {
-      ctx.links.push({ kind: 'view', targets: [r.path], href: href });
-      return '<a href="#view=' + esc(encodeURI(r.path)) + '" data-anchor="' + esc(hash ? slugOf(decodeSafe(hash)) : '') + '" data-target="' + esc(r.path) + '"' + t + '>' + textHtml + '</a>';
+    if (/\.md$/i.test(file)) {
+      ctx.links.push({ kind: 'view', targets: [file], href: href });
+      return to('#view=' + encodeURI(file), { 'data-anchor': hash ? slugOf(decodeSafe(hash)) : '', 'data-target': file });
     }
-    if (r.path.split('/').pop() === 'architecture.html' && hash) ctx.problems.push('link "' + short(href, 80) + '" reaches architecture.html in another folder');
-    return '<a href="' + esc(r.path + (hash ? '#' + hash : '')) + '"' + t + '>' + textHtml + '</a>';
+    if (file.split('/').pop() === 'architecture.html' && hash) ctx.problems.push('link "' + short(href, 80) + '" reaches architecture.html in another folder');
+    return to(r.path + (hash ? '#' + hash : ''));
   }
   function decodeSafe(p) { try { return decodeURIComponent(p); } catch (e) { return p; } }
 
   /* ---- Diagrams ---- */
+  /* The library is admitted twice over: its integrity value makes the browser refuse other bytes, and the policy runs no other script. */
   function loadMermaid() {
     return new Promise(function (resolveLoad) {
       if (window.mermaid) { resolveLoad(true); return; }
@@ -539,6 +676,7 @@ function ArchViewer(data, opts) {
       function end(ok) { if (!done) { done = true; resolveLoad(ok && !!window.mermaid); } }
       s.onload = function () { end(true); }; s.onerror = function () { end(false); };
       setTimeout(function () { end(false); }, 20000);
+      s.integrity = token('sha384'); s.crossOrigin = 'anonymous';
       s.src = MERMAID_URL; doc.head.appendChild(s);
     });
   }
@@ -581,57 +719,79 @@ function ArchViewer(data, opts) {
     var lines = String(e && (e.message || e.str) || e).split('\n').map(function (l) { return l.trim(); }).filter(Boolean);
     return short(lines.length > 1 ? lines[0] + ' ' + lines[lines.length - 1] : lines[0] || 'unknown error', 200);
   }
-  /* Draws every diagram in the theme into a new set and puts the set in place only once it is whole and the theme is still the selected one,
-     so data always holds one complete set of pictures in one theme. Gives up early, keeping the old set, when the theme changes meanwhile. */
-  async function drawAll(theme) {
-    window.mermaid.initialize({ startOnLoad: false, theme: theme === 'dark' ? 'dark' : 'default', securityLevel: 'strict' });
-    var set = [];
-    for (var k = 0; k < data.sources.length; k++) {
-      var s = data.sources[k];
-      for (var j = 0; j < s.diagrams.length; j++) {
-        var d = s.diagrams[j], id = 'arch-d' + (++seq), r = { d: d };
-        try {
-          await window.mermaid.parse(d.code);
-          r.svg = legible((await window.mermaid.render(id, d.code)).svg, theme);
-        } catch (e) {
-          r.error = 'Diagram ' + (j + 1) + ' could not be drawn: ' + parseError(e);
-          var junk = doc.getElementById('d' + id); if (junk) junk.remove();
-        }
-        if (theme !== data.theme) return;
-        set.push(r);
-      }
+  /* Each diagram keeps one result per theme in d.out, so a theme drawn once is not drawn again; d.svg and d.error are what the viewer shows,
+     and d.checked is the first result, which the check lines report. */
+  function srcOf(p) { return byPath[p]; }
+  function drawnIn(theme, sources) { return sources.every(function (s) { return !s || s.diagrams.every(function (d) { return !!d.out[theme]; }); }); }
+  function complete(theme) { return drawnIn(theme, data.sources); }
+  function counts() { var n = 0, done = 0; data.sources.forEach(function (s) { s.diagrams.forEach(function (d) { n++; if (d.checked) done++; }); }); return [done, n]; }
+  /* The next diagram to draw in the selected theme: those of the sources on screen first, then the rest in page order. */
+  function next() {
+    var t = data.theme, order = want.map(srcOf).filter(Boolean).concat(data.sources);
+    for (var k = 0; k < order.length; k++) for (var j = 0; j < order[k].diagrams.length; j++) if (!order[k].diagrams[j].out[t]) return { s: order[k], d: order[k].diagrams[j], j: j };
+    return null;
+  }
+  async function drawOne(job, theme) {
+    var d = job.d, id = 'arch-d' + (++seq), r;
+    try {
+      if (mermaidTheme !== theme) { window.mermaid.initialize({ startOnLoad: false, theme: theme === 'dark' ? 'dark' : 'default', securityLevel: 'strict' }); mermaidTheme = theme; }
+      await window.mermaid.parse(d.code);
+      r = { svg: legible((await window.mermaid.render(id, d.code)).svg, theme) };
+    } catch (e) {
+      r = { error: 'Diagram ' + (job.j + 1) + ' could not be drawn: ' + parseError(e) };
+      var junk = doc.getElementById('d' + id); if (junk) junk.remove();
     }
-    set.forEach(function (r) { delete r.d.svg; delete r.d.error; if (r.svg) r.d.svg = r.svg; else r.d.error = r.error; });
-    drawnTheme = theme;
+    /* A theme switch during the draw means the labels were measured against the other theme: the diagram is drawn again. */
+    if (theme !== data.theme) return;
+    d.out[theme] = r;
+    if (!d.checked) d.checked = r;
+    d.svg = r.svg; d.error = r.error; d.pending = false;
+    if (viewer) viewer.update(job.s.path, job.j);
   }
-  /* Draws until the pictures are in the selected theme, one draw at a time. While it runs, Theme and Save wait. */
-  function redraw() {
-    if (drawing) return drawing;
-    drawing = (async function () {
-      try { while (drawnTheme !== data.theme) await drawAll(data.theme); } catch (e) { /* each diagram reports its own error; the last whole set stays */ }
-    })().then(function () {
-      drawing = null;
-      if (viewer) viewer.refresh();
-      themeLabel(); busy();
-    });
+  /* One drawing at a time, yielding between diagrams so the page answers clicks while the rest are drawn. */
+  /* A message to itself lets clicks and keys run between two diagrams without the minimum delay a nested timer gets. */
+  var tick = new MessageChannel(), ticked = null;
+  tick.port1.onmessage = function () { var r = ticked; ticked = null; if (r) r(); };
+  function yieldNow() { return new Promise(function (r) { ticked = r; tick.port2.postMessage(0); }); }
+  function pump() {
+    if (worker || !canDraw) return;
+    worker = (async function () {
+      for (var job = next(); job; job = next()) {
+        await drawOne(job, data.theme);
+        progress(); wake(); busy();
+        await yieldNow();
+      }
+    })().then(finish, finish);
     busy();
-    return drawing;
   }
+  function finish() {
+    worker = null;
+    if (next()) { pump(); return; }
+    settle();
+  }
+  /* The check lines are written once, after every diagram of every source has a result and the viewer is up; until then they say how far drawing is. */
+  function settle() {
+    if (!checked && viewer && !worker && counts()[0] === counts()[1]) { checked = true; writeChecks(); }
+    wake(); busy();
+  }
+  function progress() { if (!checked) { var c = counts(); results.textContent = 'Drawing the diagrams: ' + c[0] + ' of ' + c[1]; } }
+  function until(cond) { return new Promise(function (res) { if (cond()) res(); else waiters.push({ cond: cond, res: res }); }); }
+  function wake() { waiters = waiters.filter(function (w) { if (!w.cond()) return true; w.res(); return false; }); }
 
   /* ---- Build ---- */
   function build() {
-    var blocksRead = readBlocks(), byPath = {}, indexLinks = [];
-    blocksRead.forEach(function (b) { byPath[b.path] = b; });
+    var blocksRead = readBlocks(), indexLinks = [];
+    var seen = {};
+    blocksRead.forEach(function (b) { seen[b.path] = b; });
     blocksRead.forEach(function (b) {
       var r = renderMarkdown(b), study = /^studies\/[^\/]+\//.exec(b.path);
-      b.ctx = r;
       b.links = r.links;
       if (b.path === 'README.md') r.links.forEach(function (l) { indexLinks.push(l.targets[0]); });
-      data.sources.push({ path: b.path, group: b.path === 'README.md' ? 'index' : study ? 'study' : 'standing', study: study ? study[0].slice(0, -1) : '', title: r.title || b.path, label: '', status: r.status, html: r.html, diagrams: r.diagrams });
+      data.sources.push({ path: b.path, group: b.path === 'README.md' ? 'index' : study ? 'study' : 'standing', study: study ? study[0].slice(0, -1) : '', title: r.title || b.path, label: '', status: r.status, body: r.body, diagrams: r.diagrams });
     });
     blocksRead.forEach(function (b) {
       b.links.forEach(function (l) {
-        var bad = l.targets.filter(function (t) { return !byPath[t]; });
+        var bad = l.targets.filter(function (t) { return !seen[t]; });
         if (l.kind === 'compare' && l.targets.length !== 2) b.problems.push('compare link "' + short(l.href, 80) + '" must name two sources separated by a comma');
         else if (bad.length) b.problems.push('link "' + short(l.href, 80) + '" points to ' + bad.join(', ') + ', which has no source block');
       });
@@ -643,48 +803,59 @@ function ArchViewer(data, opts) {
       var named = s.title !== s.path, label = s.group === 'index' ? 'Overview' : !named ? (s.group === 'study' && /README\.md$/.test(s.path) ? s.study.split('/')[1] : s.path) : s.title.indexOf(prefix) === 0 ? s.title.slice(prefix.length).trim() : s.title;
       s.label = named ? label.charAt(0).toUpperCase() + label.slice(1) : label;
       s.order = s.group === 'index' ? -1 : indexLinks.indexOf(s.path) >= 0 ? indexLinks.indexOf(s.path) : 1e6;
+      byPath[s.path] = s;
     });
     data.sources.sort(function (a, b) { return a.order - b.order || (a.path < b.path ? -1 : a.path > b.path ? 1 : 0); });
     data.blocks = blocksRead;
     if (!blocksRead.length) data.empty = 'This page holds no source blocks yet. Build it from the Markdown files beside it.';
   }
-  function writeChecks(drawn) {
+  /* One line per block; a control character in a path or a message is shown as U+FFFD, so no line can break in two or pose as another. */
+  function writeChecks() {
     var lines = [], passed = 0;
     if (!data.blocks.length) lines.push('FAIL page: no source blocks; build the page from the Markdown files first');
     data.blocks.forEach(function (b) {
       var s = data.sources.filter(function (x) { return x.path === b.path; })[0], problems = b.problems.slice();
-      s.diagrams.forEach(function (d) { if (d.error) problems.push(d.notDrawn ? 'diagram ' + (s.diagrams.indexOf(d) + 1) + ' not drawn, the Mermaid library did not load' : d.error.replace(/^Diagram/, 'diagram')); });
+      s.diagrams.forEach(function (d, j) {
+        if (d.notDrawn) problems.push('diagram ' + (j + 1) + ' not drawn, the Mermaid library did not load');
+        else if (d.checked && d.checked.error) problems.push(d.checked.error.replace(/^Diagram/, 'diagram'));
+      });
       if (problems.length) lines.push('FAIL ' + b.path + ': ' + problems.join('; '));
       else { passed++; lines.push('PASS ' + b.path); }
     });
     lines.push('DONE ' + passed + '/' + Math.max(data.blocks.length, 1));
-    results.textContent = lines.join('\n');
+    results.textContent = lines.map(function (l) { return l.replace(/[\u0000-\u001f\u007f-\u009f\u2028\u2029]/g, '\ufffd'); }).join('\n');
   }
 
   /* ---- Offline copy ---- */
   /* Today's date in local time, YYYY-MM-DD, the way the build stamp is written. */
   function localDate() { var d = new Date(); function two(n) { return (n < 10 ? '0' : '') + n; } return d.getFullYear() + '-' + two(d.getMonth() + 1) + '-' + two(d.getDate()); }
+  /* The copy's policy runs its one script, the runtime, by the runtime's hash, and loads nothing from anywhere. */
   function offlineCopy(today) {
+    /* Written in parts so this script's own text never holds a script tag. */
     var S = '<' + 'script', E = '<' + '/script>';
     today = today || localDate();
     var header = doc.querySelector('header.top').cloneNode(true);
     ['theme-btn', 'save-btn'].forEach(function (id) { var b = header.querySelector('#' + id); if (b) b.remove(); });
     header.querySelector('#stamp').appendChild(doc.createTextNode(' \u00b7 offline copy saved ' + today));
     var layout = doc.querySelector('.layout').cloneNode(true);
-    layout.querySelector('#main').innerHTML = ''; layout.querySelector('#toc').innerHTML = '';
+    layout.querySelector('#main').textContent = ''; layout.querySelector('#toc').textContent = '';
     var checks = layout.querySelector('#checks'); if (checks) checks.remove();
-    var theme = drawnTheme || data.theme;
+    var theme = data.theme;
     var payload = { title: data.title, theme: theme, empty: data.empty, sources: data.sources.map(function (s) {
-      return { path: s.path, group: s.group, study: s.study, label: s.label, status: s.status, html: s.html, diagrams: s.diagrams.map(function (d) { return d.svg ? { svg: d.svg } : { error: d.error, code: d.code, notDrawn: d.notDrawn }; }) };
+      return { path: s.path, group: s.group, study: s.study, label: s.label, status: s.status, body: s.body, diagrams: s.diagrams.map(function (d) {
+        var r = d.out && d.out[theme];
+        return r && r.svg ? { svg: r.svg } : { error: (r && r.error) || d.error, code: d.code, notDrawn: d.notDrawn };
+      }) };
     }) };
-    return '<!doctype html>\n<html lang="en" data-theme="' + theme + '">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1">\n<title>' + esc(data.title) + ' (offline copy)</title>\n<style>' +
+    var csp = "default-src 'none'; script-src '" + token('sha256') + "'; script-src-attr 'none'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'";
+    return '<!doctype html>\n<html lang="en" data-theme="' + theme + '">\n<head>\n<meta charset="utf-8">\n<meta http-equiv="Content-Security-Policy" content="' + csp + '">\n<meta name="viewport" content="width=device-width, initial-scale=1">\n<title>' + esc(data.title) + ' (offline copy)</title>\n<style>' +
       doc.getElementById('style').textContent + '</style>\n</head>\n<body class="offline">\n' + header.outerHTML + '\n' + layout.outerHTML + '\n' +
       S + ' type="application/json" id="data">' + JSON.stringify(payload).replace(/</g, '\\u003c') + E + '\n' +
-      S + '>' + doc.getElementById('runtime').textContent + '\nArchViewer(JSON.parse(document.getElementById("data").textContent), { offline: true });\n' + E + '\n</body>\n</html>\n';
+      S + '>' + doc.getElementById('runtime').textContent + E + '\n</body>\n</html>\n';
   }
-  /* Waits for a redraw under way, so the copy holds every picture in the selected theme. */
+  /* Waits until every picture exists in the selected theme, so the copy holds all of them, all in the theme the page shows. */
   async function save() {
-    while (drawing) await drawing;
+    await until(function () { return complete(data.theme); });
     var today = localDate(), a = doc.createElement('a'), url = URL.createObjectURL(new Blob([offlineCopy(today)], { type: 'text/html' }));
     a.href = url; a.download = 'architecture-offline-' + today + '.html';
     doc.body.appendChild(a); a.click(); a.remove();
@@ -692,48 +863,61 @@ function ArchViewer(data, opts) {
   }
 
   /* ---- Start ---- */
+  /* The page takes the new theme at once; the diagrams on screen are drawn in it first, from the pictures already drawn where it has them. */
   function setTheme(theme) {
     if (theme === data.theme) return;
     data.theme = theme;
     doc.documentElement.setAttribute('data-theme', theme);
-    if (canDraw) { redraw(); return; }
-    if (viewer) viewer.refresh();
     themeLabel();
+    if (!canDraw) return;
+    data.sources.forEach(function (s) { s.diagrams.forEach(function (d, j) { var r = d.out[theme]; if (!r) return; d.svg = r.svg; d.error = r.error; if (viewer) viewer.update(s.path, j); }); });
+    pump(); busy();
   }
   function themeLabel() { var b = doc.getElementById('theme-btn'); b.textContent = data.theme === 'dark' ? 'Light' : 'Dark'; b.title = 'Switch to the ' + b.textContent.toLowerCase() + ' theme'; }
   var SAVE_TITLE = 'Download one HTML file with the drawn pictures, for someone without network or this folder';
-  /* Theme and Save are off while a redraw runs; Save says why. */
+  /* Save is off until every picture exists in the selected theme, and says why. */
   function busy() {
-    var t = doc.getElementById('theme-btn'), b = doc.getElementById('save-btn');
-    t.disabled = !!drawing;
+    var b = doc.getElementById('save-btn');
     if (!canSave) return;
-    b.disabled = !!drawing;
-    b.textContent = drawing ? 'Drawing…' : 'Save offline copy';
-    b.title = drawing ? 'Wait: the pictures are being drawn in the ' + data.theme + ' theme, and the copy needs all of them' : SAVE_TITLE;
+    var wait = !complete(data.theme);
+    b.disabled = wait;
+    b.textContent = wait ? 'Drawing…' : 'Save offline copy';
+    b.title = wait ? 'Wait: the pictures are being drawn in the ' + data.theme + ' theme, and the copy needs all of them' : SAVE_TITLE;
+  }
+  function home() { return byPath['README.md'] || data.sources[0]; }
+  /* The sources the address opens, so they are drawn before the page shows them. */
+  function opened() {
+    var m = /^#(view|compare)=(.*)$/.exec(location.hash);
+    if (!m) return home() ? [home().path] : [];
+    return m[1] === 'view' ? [decodeSafe(m[2])] : m[2].split(',').map(decodeSafe).slice(0, 2);
   }
   async function start() {
     try { build(); } catch (e) { results.textContent = 'FAIL page: ' + parseError(e) + '\nDONE 0/1'; return; }
     themeLabel();
-    var drawn = await loadMermaid();
-    if (drawn) {
-      try { while (drawnTheme !== data.theme) await drawAll(data.theme); } catch (e) { drawn = false; }
-    }
-    canDraw = drawn;
-    if (!drawn) {
+    canDraw = await loadMermaid();
+    if (canDraw) {
+      data.sources.forEach(function (s) { s.diagrams.forEach(function (d) { d.pending = true; }); });
+      want = opened();
+      pump();
+      await until(function () { return drawnIn(data.theme, want.map(srcOf)); });
+    } else {
       data.sources.forEach(function (s) { s.diagrams.forEach(function (d, j) { delete d.svg; d.notDrawn = true; d.error = 'Diagram ' + (j + 1) + ' was not drawn. Its source follows as text.'; }); });
-      notice.innerHTML = '<strong>The diagrams could not be drawn.</strong> This page draws them with the Mermaid library, which did not load from its pinned address on cdn.jsdelivr.net: this computer is probably offline, or the address is blocked. Each source is shown as text, with every diagram as its Mermaid source. Open the page again with a network connection to see the pictures.';
+      notice.textContent = '';
+      var strong = doc.createElement('strong'); strong.textContent = 'The diagrams could not be drawn.';
+      notice.appendChild(strong);
+      notice.appendChild(doc.createTextNode(' This page draws them with the Mermaid library, which did not load from its pinned address on cdn.jsdelivr.net: this computer is probably offline, or the address is blocked, or what it served did not match the pinned file. Each source is shown as text, with every diagram as its Mermaid source. Open the page again with a network connection to see the pictures.'));
       notice.hidden = false;
     }
-    writeChecks(drawn);
-    viewer = ArchViewer(data, {});
+    viewer = ArchViewer(data, { onRoute: function (paths) { want = paths; pump(); } });
     var saveBtn = doc.getElementById('save-btn');
-    canSave = drawn && !!data.sources.length;
+    canSave = canDraw && !!data.sources.length;
     saveBtn.disabled = !canSave;
-    saveBtn.title = drawn ? SAVE_TITLE : 'Needs the drawn diagrams; open the page with a network connection first';
+    saveBtn.title = canDraw ? SAVE_TITLE : 'Needs the drawn diagrams; open the page with a network connection first';
     saveBtn.addEventListener('click', save);
     doc.getElementById('theme-btn').addEventListener('click', function () { chosenTheme = data.theme === 'dark' ? 'light' : 'dark'; setTheme(chosenTheme); });
     if (media && media.addEventListener) media.addEventListener('change', function (e) { if (!chosenTheme) setTheme(e.matches ? 'dark' : 'light'); });
     window.architecturePage = { data: data, offlineCopy: offlineCopy };
+    if (canDraw) settle(); else { checked = true; writeChecks(); }
   }
   start().catch(function (e) { results.textContent = 'FAIL page: ' + parseError(e) + '\nDONE 0/1'; });
 })();

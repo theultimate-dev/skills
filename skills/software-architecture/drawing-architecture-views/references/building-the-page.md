@@ -2,7 +2,7 @@
 
 `architecture.html` is the one file people open to read the architecture. It sits in the architecture folder beside the index (`README.md`) and holds a copy of every Markdown file in that folder, each in its own source block. In a browser it formats the prose and tables, draws every `mermaid` fence, and writes one check line per file. The Markdown files stay the source of truth; the page is rebuilt from them whenever they change.
 
-You never write HTML for this page. It starts as a copy of `templates/architecture.html`, and after that only two things change: the source blocks and the built stamp. Everything else in the file is the template's own code, and leaving it untouched is what lets the next template update, a diff and the check lines be trusted. Where a shell is available, the script `scripts/build-page.sh` makes both changes; where it is not, you make them by hand as text edits.
+You never write HTML for this page. It starts as a copy of `templates/architecture.html`, and after that only two things change: the source blocks and the built stamp. Everything else in the file is the template's own code, and leaving it untouched is what lets the next template update, a diff and the check lines be trusted. The page's security policy also names each of its scripts by a hash of its text, so a script edited in the page stops running and the check lines never appear. Where a shell is available, the script `scripts/build-page.sh` makes both changes; where it is not, you make them by hand as text edits.
 
 ## What the page holds
 
@@ -38,6 +38,8 @@ The commit says which committed state the views were built on. Views edited sinc
 **Which files.** One block for the index `README.md` and one for every other Markdown file in the architecture folder and its `studies/` folders: each standing view, each study's `README.md`, each view inside a study. The index is a block too: the page opens on it, and its check line fails when it links a file that has no block, which catches a file left out of the build.
 
 The template ships with no source blocks. Opened as it is, it says so and writes `FAIL page: no source blocks; build the page from the Markdown files first`.
+
+**Sources are text.** The page treats every source as text that anyone could have written, since a view may come from a pull request or from text copied out of a codebase. HTML in a source shows as text, apart from the few plain formatting tags the page keeps (`<b>`, `<i>`, `<em>`, `<strong>`, `<code>`, `<sub>`, `<sup>`, `<kbd>`, `<br>`). A link becomes clickable only when its target is a relative path, an in-page `#` link (including the `#view=` and `#compare=` forms), or an `http`, `https` or `mailto` address; any other target, such as `javascript:` or `data:`, a path starting with `/` or `//`, or one with a backslash, shows as the link's text and fails its source. A control character in a source, such as a form feed or an escape, shows as `�` and fails its source too. The page's content security policy runs only its own two scripts and the pinned Mermaid file, so no script inside a source can run even if it got through.
 
 ## Before the first build
 
@@ -148,9 +150,12 @@ What each kind of FAIL asks of you:
 | `compare link ... must name two sources` | Write the compare link with exactly two paths separated by a comma |
 | `the block does not end on its own closing marker line` | The escape was not applied to that file; rebuild it with the escape |
 | `the file is empty` | Write the file, or remove it and its block |
+| `link "..." has a target the page does not open` | Write the target as a relative path, a `#view=` or `#compare=` link, or an `http`, `https` or `mailto` address; a `javascript:` or `data:` target in a view is worth asking its author about |
+| `the file holds N control characters` | Remove them from the file (they are invisible in most editors), then rebuild |
+| `data-path holds a control character` | The block was written by hand with such a path: rename the file and its block |
 | `diagram N not drawn, the Mermaid library did not load` | No network; see below. Not a fault in the views |
 
-**Where the harness can open a browser**, open the page as a `file://` URL, wait until the `results` element contains a line that starts with `DONE` (drawing takes a second or two), and read its text. Report the `DONE` line in your answer, and every `FAIL` line with what you did about it. Also look at the drawn page once: a diagram can parse and still read badly.
+**Where the harness can open a browser**, open the page as a `file://` URL, wait until the `results` element contains a line that starts with `DONE` (drawing takes a second or two; until then it reads `Drawing the diagrams: N of M`, and the `DONE` line appears only once every file has been checked), and read its text. Report the `DONE` line in your answer, and every `FAIL` line with what you did about it. Also look at the drawn page once: a diagram can parse and still read badly.
 
 Where the harness can run a headless Chrome or Chromium but not drive it, this prints the page after drawing; read the `results` lines from its output:
 
@@ -172,7 +177,8 @@ Knowing this lets you point a person at the right thing:
 - Tab reaches each frame. While a frame has focus, the arrow keys pan (further with Shift), `+` and `-` zoom, and `0` fits the whole picture; everywhere else the arrow keys scroll the page as usual.
 - A long or wide table scrolls inside its own box, with its header row kept in view.
 - On a narrow screen, such as a phone, the left column folds behind the **Views** button, so a view starts at the top.
-- **Theme** switches between light and dark. The page starts in the system setting and follows it until the person switches. Nodes styled in the view with `classDef` or `style` keep their fill; where a label would be hard to read on that fill in the current theme, the page draws it in black or white instead.
+- The page opens as soon as the diagrams of the view it opens on are drawn, and draws the others meanwhile; a view opened before its diagrams are ready shows "Drawing this diagram…" in their place for a moment.
+- **Theme** switches between light and dark. The page starts in the system setting and follows it until the person switches. The diagrams on screen are drawn in the new theme first, the others after; a theme drawn once is not drawn again. Nodes styled in the view with `classDef` or `style` keep their fill; where a label would be hard to read on that fill in the current theme, the page draws it in black or white instead.
 - **Compare** shows two sources side by side, each with its own pan and zoom, chosen in the two lists above them. On a narrow screen the two sit one above the other, each scrolling on its own.
 - A Markdown link to another file in the folder switches to that view inside the page. On GitHub the same link opens the Markdown file.
 
@@ -187,7 +193,7 @@ The paths after `=` are always relative to the architecture folder. The part bef
 
 ## With no network
 
-The page loads the Mermaid library from one pinned address, written on the single line `var MERMAID_URL = ...` in the template. It is the only address the page fetches. When the library cannot load (offline, or the address is blocked):
+The page loads the Mermaid library from one pinned address, written on the single line `var MERMAID_URL = ...` in the template. It is the only address the page fetches. The page's security policy, the `Content-Security-Policy` line at the top of the template, holds the SHA-384 of that exact file, which the page also gives the browser as the script's integrity value, so the browser runs the file only if its bytes are the pinned ones. A change to the pinned version therefore changes that hash with it: compute it from the file at the new address, for example with `curl -s <address> | openssl dgst -sha384 -binary | openssl base64 -A`, and write `sha384-` and the result in place of the old value on the policy line. When the library cannot load (offline, the address is blocked, or what it served is not the pinned file):
 
 - a message at the top says the diagrams could not be drawn and why;
 - every source still shows, with its prose formatted and each diagram as its Mermaid source text;
@@ -198,9 +204,9 @@ Do not try to fix this by editing the page. Say that the diagrams were not drawn
 
 ## The offline copy
 
-**Save offline copy** in the page header downloads a second file, `architecture-offline-YYYY-MM-DD.html`, dated with the local date like the built stamp. It holds every view and study as the page showed it at that moment: the drawn pictures, the formatted prose, and a small script for switching views, compare, pan, zoom, fit and full screen. It contains no Mermaid library, no script loaded from an address and no CDN address, so it opens anywhere with no network, and it keeps the theme it was saved in.
+**Save offline copy** in the page header downloads a second file, `architecture-offline-YYYY-MM-DD.html`, dated with the local date like the built stamp. It holds every view and study as the page showed it at that moment: the drawn pictures, the formatted prose, and a small script for switching views, compare, pan, zoom, fit and full screen. It contains no Mermaid library, no script loaded from an address and no CDN address, so it opens anywhere with no network, and it keeps the theme it was saved in. Its own security policy runs its one script and loads nothing from anywhere.
 
-While the page redraws its pictures after a theme switch, the button reads **Drawing…** and is off until every picture is drawn in the new theme, so a copy always holds all the pictures, all in the theme the page shows.
+While the page is still drawing pictures, after it opens or after a theme switch, the button reads **Drawing…** and is off until every picture is drawn in the theme the page shows, so a copy always holds all the pictures, all in that theme.
 
 - A person makes it in a browser, because drawing needs one. You cannot make it from the Markdown without a browser.
 - It is what gets sent to someone outside: a client, a reviewer without access to the repository. One file, nothing to install.
