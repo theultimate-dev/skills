@@ -69,6 +69,10 @@ A quality-attribute scenario turns a vague quality into something a design can b
 | Response | What the system does | Applies every change once and returns the household's current state |
 | Measure | How to tell whether the response is good enough, as a number or an observable condition | Under 2 s end to end, and 0 changes lost |
 
+### When a scenario counts as met
+
+A scenario is met only at its response, as its source observes it, within its measure. Follow it to the last element of the part affected, which is usually where a person sees the result or a caller gets its answer: a change that reached a device's local store is not yet a change the member sees on the screen. Compare the mechanism's own numbers with the measure in the same unit: a retry that waits five minutes cannot meet a measure of one minute. Where the trace stops one element short, or the numbers do not meet, the verdict is at risk or does not hold, with the missing mechanism named, never met with a caveat. The same test applies to every default a proposal carries, a cutover included: a default that gives up part of a promise even once does not keep that scenario.
+
 "Fast" is not a scenario; "a household of 5 syncs 200 items on a mobile connection in under 2 seconds" is. "Reliable" is not a scenario; "the API restarts during a sync and no accepted change is lost or applied twice" is. A measure is something a check could observe: a duration at a percentile, a count of lost or duplicated items, a time to recover, a number of places a change must touch.
 
 ### Kinds of scenario
