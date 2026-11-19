@@ -8,7 +8,7 @@ license: MIT
 
 Produce and evolve `architecture/` in a product context repository: one living description of how the product is structured, with every section tagged by the version it arrives in and whether it is planned or built. Bets consume this architecture; they never define it. When a bet needs a new interface, this skill writes the contract first, and the bet depends on it.
 
-This skill works at the level of containers, boundaries, contracts and cross-cutting rules. How to build one work item inside that structure belongs to the implementation loop in the code repository (`brainstorming-solutions` at its G2). Product scope and behaviour belong to `curating-product-requirements`.
+This skill works at the level of containers, boundaries, contracts and cross-cutting rules. How to build one work item inside that structure belongs to the implementation loop in the code repository (`brainstorming-solutions` at its G2). Product scope and behaviour belong to `curating-product-requirements`. Architecture work in a code repository that has no product context repository, such as recovering what an existing application really is, reviewing it or simplifying it, belongs to the `software-architecture` plugin when it is installed; a study it produces arrives here as input.
 
 ## Modes
 

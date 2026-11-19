@@ -39,7 +39,7 @@ Omit what the prototype does not need. Keep the directory names; agents rely on 
 5. **Decisions are superseded, never edited.** An accepted record's decision text never changes; a new record supersedes it.
 6. **Research is evidence, not truth.** A note records what was found on a date. A current fact belongs in its layer, citing the note.
 7. **Point at the code, never copy it.** Describe structure, contracts and rules; leave file layouts and code to the code.
-8. **Markdown only,** except prototypes under `design/`, which may be offline HTML.
+8. **Markdown only,** except prototypes under `design/`, which may be offline HTML, and `architecture/architecture.html`, one page built from the architecture's Markdown files so that people can read the views drawn. The Markdown stays the source; the page is rebuilt from it and never edited.
 9. **A bet is read at the commit it was approved at, so what it reads stays still.** The approved bet's shaped fields cannot drift. While a bet is open, the files its Context pack and Architecture › Relies on name change only through that bet, or with the person's agreement as a reshape. From approval, building writes the code and, in the bet file, only its Status and Build log; closing writes the Result and the catalogue. Research notes, `notes.md` rows and derived indexes may change at any time. Before approval, shaping writes the bet, the board, the planned sections and `notes.md` rows.
 
 ## Statuses

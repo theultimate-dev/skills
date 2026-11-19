@@ -8,6 +8,12 @@ Releases are tagged `product-context--vX.Y.Z`.
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-11-18
+
+### Changed
+
+- `designing-system-architecture` now names the `software-architecture` plugin for architecture work in a code repository that has no product context repository, and says that a study from it arrives as input.
+
 ## [0.2.0] - 2026-11-08
 
 ### Changed
@@ -25,6 +31,7 @@ Releases are tagged `product-context--vX.Y.Z`.
 - `shaping-bets` skill: cuts a milestone into bets, units of work sized for an agent and closer to epics than to tasks. Each bet has a fixed appetite (one plan, or two to three), an outcome you can demo, the requirement IDs it covers, observable acceptance criteria, no-gos, rabbit holes, scope that may be cut, and an ordered list of what to read. It checks that every requirement of the milestone is covered exactly once, checks readiness, pins the context repository's commit, and gives you the line that starts the `product-engineering` loop on the bet. When the loop stops a bet that outgrew its appetite, it reshapes the bet and gives you the kickoff line that resumes it at the new commit; a bet you decide not to hand over, it drops.
 - `reconciling-product-context` skill: closes a bet once its pull requests merge. It reads the code repository and its pull requests without changing them, confirms that every acceptance criterion was observed on merged code or cut in your words, and brings the context repository in line with what was built: requirement statuses, the architecture as built, contract details settled during implementation, links to the implementation decisions that moved the architecture, the risk and question registers, the bet's outcome log, and every derived index. It also closes a bet in delivery that you drop. Run it as an audit too, to find broken links, reused IDs, requirements no bet covers, stale indexes and facts kept in two places.
 
-[Unreleased]: https://github.com/theultimate-dev/skills/compare/product-context--v0.2.0...HEAD
+[Unreleased]: https://github.com/theultimate-dev/skills/compare/product-context--v0.2.1...HEAD
+[0.2.1]: https://github.com/theultimate-dev/skills/compare/product-context--v0.2.0...product-context--v0.2.1
 [0.2.0]: https://github.com/theultimate-dev/skills/compare/product-context--v0.1.0...product-context--v0.2.0
 [0.1.0]: https://github.com/theultimate-dev/skills/releases/tag/product-context--v0.1.0

@@ -8,7 +8,7 @@
   },
   "metadata": {
     "description": "The Ultimate Dev skills catalog",
-    "version": "0.5.0"
+    "version": "0.6.0"
   },
   "plugins": [
     {
@@ -54,7 +54,7 @@
     {
       "name": "product-context",
       "description": "A long-running product's whole context in a Markdown repository kept apart from the code: requirements with permanent IDs, a living architecture with shared contracts, decisions, and a roadmap cut into appetite-bounded bets that the product-engineering loop builds, folded back into the documents after every bet.",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "source": "./",
       "strict": false,
       "license": "MIT",
@@ -91,7 +91,7 @@
     {
       "name": "product-engineering",
       "description": "One implementation loop from a work item to merged pull requests: you are interviewed, pick an approach, agree the verification method and approve the roadmap; the agent then implements, verifies in the running app, reviews with five parallel lenses, and merges the PRs it may merge.",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "source": "./",
       "strict": false,
       "license": "MIT",
@@ -112,7 +112,7 @@
     {
       "name": "product-prototyping",
       "description": "A prototype's context beside its code and a fast loop for each idea: frame it, shape it into a bet you approve, build it with self-verification and an independent review, then try it and keep it or remove it, with history in the app's changelog.",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "source": "./",
       "strict": false,
       "license": "MIT",
@@ -137,6 +137,23 @@
       "keywords": ["prompts", "prompt-engineering", "context-engineering", "system-prompts", "agents"],
       "skills": [
         "./skills/prompt-engineering/improving-prompts"
+      ]
+    },
+    {
+      "name": "software-architecture",
+      "description": "The architecture of a long-lived application, worked on in any repository: recover what is really built with evidence, take a critical look, compare options, simplify without losing a guarantee, and draw it as Markdown views with Mermaid that everyone reads in one built HTML page.",
+      "version": "0.1.0",
+      "source": "./",
+      "strict": false,
+      "license": "MIT",
+      "homepage": "https://github.com/theultimate-dev/skills",
+      "keywords": ["software-architecture", "architecture", "c4", "mermaid", "diagrams", "risk-review", "simplification", "adr", "agents"],
+      "skills": [
+        "./skills/software-architecture/recovering-built-architecture",
+        "./skills/software-architecture/evaluating-architecture-risks",
+        "./skills/software-architecture/exploring-architecture-options",
+        "./skills/software-architecture/simplifying-system-architecture",
+        "./skills/software-architecture/drawing-architecture-views"
       ]
     }
   ]

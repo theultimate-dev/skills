@@ -8,6 +8,12 @@ Releases are tagged `product-engineering--vX.Y.Z`.
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-11-18
+
+### Changed
+
+- `brainstorming-solutions` now sends a choice about the system as a whole (a new system, a boundary between applications, a store, one deployable or several) to `exploring-architecture-options` when that skill is installed, and keeps choices inside one work item.
+
 ## [0.2.0] - 2026-10-20
 
 ### Added
@@ -41,6 +47,7 @@ Releases are tagged `product-engineering--vX.Y.Z`.
   - `reviewing-code-changes` runs a quick intent review before the PR and a five-lens review (architecture, security, conventions and idioms, efficiency, intent) on it.
   - `shipping-pull-requests` opens one PR per slice, marks it for human or agent review, and merges agent-reviewed PRs only when checks pass on the reviewed head and you authorized it.
 
-[Unreleased]: https://github.com/theultimate-dev/skills/compare/product-engineering--v0.2.0...HEAD
+[Unreleased]: https://github.com/theultimate-dev/skills/compare/product-engineering--v0.2.1...HEAD
+[0.2.1]: https://github.com/theultimate-dev/skills/compare/product-engineering--v0.2.0...product-engineering--v0.2.1
 [0.2.0]: https://github.com/theultimate-dev/skills/compare/product-engineering--v0.1.0...product-engineering--v0.2.0
 [0.1.0]: https://github.com/theultimate-dev/skills/releases/tag/product-engineering--v0.1.0

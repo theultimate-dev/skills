@@ -16,7 +16,7 @@ Start from `spec.md` whose status line starts with `Status: agreed`, as in `Stat
 
 Two requests skip G1:
 
-- **Options outside a work item**, such as "what are our options for search?": write no `spec.md`. Derive the problem and 2–5 criteria from the request and the code, and state them as assumptions in the comparison's Context line. After the pick, offer a decision record.
+- **Options outside a work item**, such as "what are our options for search?": write no `spec.md`. Derive the problem and 2–5 criteria from the request and the code, and state them as assumptions in the comparison's Context line. After the pick, offer a decision record. A choice about the system as a whole, such as a new system, a boundary between applications, a store, or one deployable against several, goes to `exploring-architecture-options` when that skill is installed; choices inside one work item stay here.
 - **A standalone spike** needs no spec: take the question from the request, and follow "Settle feasibility with a spike".
 
 An approach the request names ("move to date-fns") is recorded as `Chosen:` with the user's words. G2 only checks it against the ACs and writes the decision record (step 6).
